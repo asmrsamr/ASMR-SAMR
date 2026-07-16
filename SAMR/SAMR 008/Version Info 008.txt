@@ -1,0 +1,15 @@
+SAMR Perfume — version 008
+created: 2026-07-11 09:53:22
+files:
+  - SAMR_Production_Suite 008.xlsx
+  - SAMR Perfume 008.xlsx
+  - SAMR Preparation Guide 008.docx
+  - README 008.md
+  - SAMR Body Spray 008.xlsx
+  - SAMR Cream 008.xlsx
+  - build_workbook.py
+  - build_preparation_doc.py
+  - check_workbook.py
+  - distribute.py
+
+This folder is permanent. New builds create the next number; the unnumbered files at the root are always the latest copy.

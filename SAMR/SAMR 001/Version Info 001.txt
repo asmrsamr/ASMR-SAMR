@@ -1,0 +1,7 @@
+SAMR Perfume — version 001
+created: 2026-07-10 17:58:07
+files:
+  - SAMR Perfume 001.xlsx
+  - README 001.md
+
+This folder is permanent. New builds create the next number; the unnumbered files at the root are always the latest copy.

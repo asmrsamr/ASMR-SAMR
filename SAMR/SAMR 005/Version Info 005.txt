@@ -1,0 +1,13 @@
+SAMR Perfume — version 005
+created: 2026-07-11 08:07:30
+files:
+  - SAMR_Production_Suite 005.xlsx
+  - SAMR Perfume 005.xlsx
+  - SAMR Preparation Guide 005.docx
+  - README 005.md
+  - build_workbook.py
+  - build_preparation_doc.py
+  - check_workbook.py
+  - distribute.py
+
+This folder is permanent. New builds create the next number; the unnumbered files at the root are always the latest copy.

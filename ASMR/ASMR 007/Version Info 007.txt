@@ -1,0 +1,16 @@
+ASMR Perfume — version 007
+created: 2026-07-11 09:53:22
+files:
+  - ASMR_Production_Suite 007.xlsx
+  - ASMR Perfume 007.xlsx
+  - ASMR Perfume - Master Method 007.docx
+  - ASMR Preparation Guide 007.docx
+  - README 007.md
+  - ASMR Body Spray 007.xlsx
+  - ASMR Cream 007.xlsx
+  - build_workbook.py
+  - build_preparation_doc.py
+  - check_workbook.py
+  - distribute.py
+
+This folder is permanent. New builds create the next number; the unnumbered files at the root are always the latest copy.

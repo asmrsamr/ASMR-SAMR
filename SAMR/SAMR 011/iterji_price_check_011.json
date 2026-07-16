@@ -1,0 +1,1166 @@
+{
+  "checkedAt": "2026-07-14T02:30:41.992Z",
+  "results": [
+    {
+      "row": 4,
+      "material": "Bergamot Accord",
+      "pack": 30,
+      "unit": "ml",
+      "packs": 1,
+      "oldPrice": 18.75,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-accords/bergamot.html",
+      "desired": "30 ml",
+      "fetchedPrice": 54,
+      "selectedSize": "30 ml (1.01 fl. oz.)",
+      "productId": "556",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3694",
+          "text": "10 ml (0.34 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3695",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3696",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3697",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3698",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Bergamot Accord",
+      "changed": true,
+      "optionId": "868",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_556\" class=\"ty-price-num\">54<sup>00</sup></span>"
+    },
+    {
+      "row": 5,
+      "material": "Pink Peppercorn",
+      "pack": 10,
+      "unit": "ml",
+      "packs": 1,
+      "oldPrice": 141.25,
+      "url": "https://iterji.com/perfumery-ingredients/natural-ingredients/pink-peppercorn.html",
+      "desired": "10 ml",
+      "fetchedPrice": 141.25,
+      "selectedSize": "10 ml (0.34 fl. oz.)",
+      "productId": "692",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3694",
+          "text": "10 ml (0.34 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3695",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3696",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3697",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3698",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Pink Peppercorn",
+      "changed": true,
+      "optionId": "868",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_692\" class=\"ty-price-num\">141<sup>25</sup></span>"
+    },
+    {
+      "row": 6,
+      "material": "Aldehyde C-14 Peach",
+      "pack": 10,
+      "unit": "ml",
+      "packs": 2,
+      "oldPrice": 16.74,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-chemicals/aldehyde-c-14-peach.html",
+      "desired": "10 ml",
+      "fetchedPrice": 16.74,
+      "selectedSize": "10 ml (0.34 fl. oz.)",
+      "productId": "1066",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3694",
+          "text": "10 ml (0.34 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3695",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3696",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3697",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3698",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Aldehyde C-14 PEACH",
+      "changed": true,
+      "optionId": "868",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_1066\" class=\"ty-price-num\">16<sup>74</sup></span>"
+    },
+    {
+      "row": 7,
+      "material": "Raspberry Accord",
+      "pack": 10,
+      "unit": "ml",
+      "packs": 1,
+      "oldPrice": 22.5,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-accords/raspberry.html",
+      "desired": "10 ml",
+      "fetchedPrice": 22.5,
+      "selectedSize": "10 ml (0.34 fl. oz.)",
+      "productId": "583",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3694",
+          "text": "10 ml (0.34 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3695",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3696",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3697",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3698",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Raspberry Accord",
+      "changed": true,
+      "optionId": "868",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_583\" class=\"ty-price-num\">22<sup>50</sup></span>"
+    },
+    {
+      "row": 8,
+      "material": "Hedione (Firmenich)",
+      "pack": 100,
+      "unit": "ml",
+      "packs": 1,
+      "oldPrice": 23.9,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-chemicals/hedione-firmenich.html",
+      "desired": "100 ml",
+      "fetchedPrice": 39.84,
+      "selectedSize": "100 ml (3.38 fl. oz.)",
+      "productId": "1136",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3782",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3783",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3784",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3785",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Hedione (Firmenich)",
+      "changed": true,
+      "optionId": "889",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_1136\" class=\"ty-price-num\">39<sup>84</sup></span>"
+    },
+    {
+      "row": 9,
+      "material": "Jasmin Absolute Accord",
+      "pack": 10,
+      "unit": "ml",
+      "packs": 2,
+      "oldPrice": 45,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-accords/jasmin-absolute.html",
+      "desired": "10 ml",
+      "fetchedPrice": 45,
+      "selectedSize": "10 ml (0.34 fl. oz.)",
+      "productId": "598",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3694",
+          "text": "10 ml (0.34 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3695",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3696",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3697",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3698",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Jasmin Absolute Accord",
+      "changed": true,
+      "optionId": "868",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_598\" class=\"ty-price-num\">45<sup>00</sup></span>"
+    },
+    {
+      "row": 10,
+      "material": "Tuberose Accord",
+      "pack": 10,
+      "unit": "ml",
+      "packs": 1,
+      "oldPrice": 35.63,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-accords/tuberose.html",
+      "desired": "10 ml",
+      "fetchedPrice": 35.63,
+      "selectedSize": "10 ml (0.34 fl. oz.)",
+      "productId": "623",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3694",
+          "text": "10 ml (0.34 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3695",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3696",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3697",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3698",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Tuberose Accord",
+      "changed": true,
+      "optionId": "868",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_623\" class=\"ty-price-num\">35<sup>63</sup></span>"
+    },
+    {
+      "row": 11,
+      "material": "Methyl Alpha Ionone Iso",
+      "pack": 30,
+      "unit": "ml",
+      "packs": 1,
+      "oldPrice": 17.46,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-chemicals/methyl-alpha-ionone-iso.html",
+      "desired": "30 ml",
+      "fetchedPrice": 50.27,
+      "selectedSize": "30 ml (1.01 fl. oz.)",
+      "productId": "1263",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3694",
+          "text": "10 ml (0.34 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3695",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3696",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3697",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3698",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "methyl Alpha Ionone Iso",
+      "changed": true,
+      "optionId": "868",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_1263\" class=\"ty-price-num\">50<sup>27</sup></span>"
+    },
+    {
+      "row": 12,
+      "material": "Benzyl Salicylate",
+      "pack": 30,
+      "unit": "ml",
+      "packs": 2,
+      "oldPrice": 11.16,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-chemicals/benzyl-salicylate.html",
+      "desired": "30 ml",
+      "fetchedPrice": 32.14,
+      "selectedSize": "30 ml (1.01 fl. oz.)",
+      "productId": "1089",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3694",
+          "text": "10 ml (0.34 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3695",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3696",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3697",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3698",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Benzyl Salicylate",
+      "changed": true,
+      "optionId": "868",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_1089\" class=\"ty-price-num\">32<sup>14</sup></span>"
+    },
+    {
+      "row": 13,
+      "material": "Linalool",
+      "pack": 10,
+      "unit": "ml",
+      "packs": 2,
+      "oldPrice": 16.74,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-chemicals/linalool.html",
+      "desired": "10 ml",
+      "fetchedPrice": 16.74,
+      "selectedSize": "10 ml (0.34 fl. oz.)",
+      "productId": "1156",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3694",
+          "text": "10 ml (0.34 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3695",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3696",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3697",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3698",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Linalool",
+      "changed": true,
+      "optionId": "868",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_1156\" class=\"ty-price-num\">16<sup>74</sup></span>"
+    },
+    {
+      "row": 14,
+      "material": "Damascone Beta",
+      "pack": 10,
+      "unit": "ml",
+      "packs": 1,
+      "oldPrice": 98.75,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-chemicals/damascone-beta.html",
+      "desired": "10 ml",
+      "fetchedPrice": 98.75,
+      "selectedSize": "10 ml (0.34 fl. oz.)",
+      "productId": "1262",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3694",
+          "text": "10 ml (0.34 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3695",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3696",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3697",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3698",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Damascone Beta",
+      "changed": true,
+      "optionId": "868",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_1262\" class=\"ty-price-num\">98<sup>75</sup></span>"
+    },
+    {
+      "row": 15,
+      "material": "Vanillin Crystals",
+      "pack": 30,
+      "unit": "g",
+      "packs": 1,
+      "oldPrice": 14.65,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-chemicals/vanillin-crystals.html",
+      "desired": "30 g",
+      "fetchedPrice": 42.18,
+      "selectedSize": "30 Grams",
+      "productId": "1192",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3764",
+          "text": "10 Grams",
+          "selected": true
+        },
+        {
+          "value": "3765",
+          "text": "30 Grams",
+          "selected": false
+        },
+        {
+          "value": "3766",
+          "text": "50 Grams",
+          "selected": false
+        },
+        {
+          "value": "3767",
+          "text": "500 Grams",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Vanillin Crystals",
+      "changed": true,
+      "optionId": "883",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_1192\" class=\"ty-price-num\">42<sup>18</sup></span>"
+    },
+    {
+      "row": 16,
+      "material": "Ethyl Vanillin",
+      "pack": 10,
+      "unit": "g",
+      "packs": 2,
+      "oldPrice": 15.69,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-chemicals/ethyl-vanillin.html",
+      "desired": "10 g",
+      "fetchedPrice": 15.69,
+      "selectedSize": "10 Grams",
+      "productId": "1125",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3764",
+          "text": "10 Grams",
+          "selected": true
+        },
+        {
+          "value": "3765",
+          "text": "30 Grams",
+          "selected": false
+        },
+        {
+          "value": "3766",
+          "text": "50 Grams",
+          "selected": false
+        },
+        {
+          "value": "3767",
+          "text": "500 Grams",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Ethyl vanillin",
+      "changed": true,
+      "optionId": "883",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_1125\" class=\"ty-price-num\">15<sup>69</sup></span>"
+    },
+    {
+      "row": 17,
+      "material": "Maltol (Crystals)",
+      "pack": 10,
+      "unit": "g",
+      "packs": 1,
+      "oldPrice": 26.51,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-chemicals/maltol-crystals.html",
+      "desired": "10 g",
+      "fetchedPrice": 26.51,
+      "selectedSize": "10 Grams",
+      "productId": "1158",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3764",
+          "text": "10 Grams",
+          "selected": true
+        },
+        {
+          "value": "3765",
+          "text": "30 Grams",
+          "selected": false
+        },
+        {
+          "value": "3766",
+          "text": "50 Grams",
+          "selected": false
+        },
+        {
+          "value": "3767",
+          "text": "500 Grams",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Maltol (Crystals)",
+      "changed": true,
+      "optionId": "883",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_1158\" class=\"ty-price-num\">26<sup>51</sup></span>"
+    },
+    {
+      "row": 18,
+      "material": "Coumarin",
+      "pack": 500,
+      "unit": "g",
+      "packs": 1,
+      "oldPrice": 150,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-chemicals/coumarin-crystalline-powder.html",
+      "desired": "500 g",
+      "fetchedPrice": 150,
+      "selectedSize": "",
+      "productId": "1107",
+      "status": "default-or-no-size-match",
+      "options": [],
+      "error": null,
+      "title": "Coumarin (crystalline powder)",
+      "changed": false,
+      "optionId": null,
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_1107\" class=\"ty-price-num\">150<sup>00</sup></span>"
+    },
+    {
+      "row": 19,
+      "material": "Heliotrope Accord",
+      "pack": 10,
+      "unit": "ml",
+      "packs": 1,
+      "oldPrice": 33.75,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-accords/heliotrope.html",
+      "desired": "10 ml",
+      "fetchedPrice": 33.75,
+      "selectedSize": "10 ml (0.34 fl. oz.)",
+      "productId": "647",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3694",
+          "text": "10 ml (0.34 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3695",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3696",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3697",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3698",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Heliotrope Accord",
+      "changed": true,
+      "optionId": "868",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_647\" class=\"ty-price-num\">33<sup>75</sup></span>"
+    },
+    {
+      "row": 20,
+      "material": "Aldehyde C-18 Coconut",
+      "pack": 10,
+      "unit": "ml",
+      "packs": 1,
+      "oldPrice": 13.25,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-chemicals/aldehyde-c-18-coconut.html",
+      "desired": "10 ml",
+      "fetchedPrice": 13.25,
+      "selectedSize": "10 ml (0.34 fl. oz.)",
+      "productId": "1068",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3694",
+          "text": "10 ml (0.34 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3695",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3696",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3697",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3698",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Aldehyde C-18 COCONUT",
+      "changed": true,
+      "optionId": "868",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_1068\" class=\"ty-price-num\">13<sup>25</sup></span>"
+    },
+    {
+      "row": 21,
+      "material": "Ambroxan",
+      "pack": 10,
+      "unit": "g",
+      "packs": 2,
+      "oldPrice": 133.75,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-chemicals/ambroxan.html",
+      "desired": "10 g",
+      "fetchedPrice": 133.75,
+      "selectedSize": "10 Grams",
+      "productId": "1404",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3764",
+          "text": "10 Grams",
+          "selected": true
+        },
+        {
+          "value": "3765",
+          "text": "30 Grams",
+          "selected": false
+        },
+        {
+          "value": "3766",
+          "text": "50 Grams",
+          "selected": false
+        },
+        {
+          "value": "3767",
+          "text": "500 Grams",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Ambroxan",
+      "changed": true,
+      "optionId": "883",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_1404\" class=\"ty-price-num\">133<sup>75</sup></span>"
+    },
+    {
+      "row": 22,
+      "material": "Iso E Super",
+      "pack": 30,
+      "unit": "ml",
+      "packs": 1,
+      "oldPrice": 13.6,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-chemicals/iso-e-super.html",
+      "desired": "30 ml",
+      "fetchedPrice": 39.17,
+      "selectedSize": "30 ml (1.01 fl. oz.)",
+      "productId": "1145",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3694",
+          "text": "10 ml (0.34 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3695",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3696",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3697",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3698",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Iso E super",
+      "changed": true,
+      "optionId": "868",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_1145\" class=\"ty-price-num\">39<sup>17</sup></span>"
+    },
+    {
+      "row": 23,
+      "material": "Cashmeran IFF",
+      "pack": 10,
+      "unit": "ml",
+      "packs": 1,
+      "oldPrice": 55.86,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-chemicals/cashmeran-iff.html",
+      "desired": "10 ml",
+      "fetchedPrice": 55.86,
+      "selectedSize": "10 ml (0.34 fl. oz.)",
+      "productId": "1275",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3694",
+          "text": "10 ml (0.34 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3695",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3696",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3697",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3698",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Cashmeran IFF",
+      "changed": true,
+      "optionId": "868",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_1275\" class=\"ty-price-num\">55<sup>86</sup></span>"
+    },
+    {
+      "row": 24,
+      "material": "Sandalore (Givaudan)",
+      "pack": 10,
+      "unit": "ml",
+      "packs": 2,
+      "oldPrice": 23.54,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-chemicals/sandalore-givaudan.html",
+      "desired": "10 ml",
+      "fetchedPrice": 23.54,
+      "selectedSize": "10 ml (0.34 fl. oz.)",
+      "productId": "1276",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3694",
+          "text": "10 ml (0.34 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3695",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3696",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3697",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3698",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Sandalore (Givaudan)",
+      "changed": true,
+      "optionId": "868",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_1276\" class=\"ty-price-num\">23<sup>54</sup></span>"
+    },
+    {
+      "row": 25,
+      "material": "Ethylene Brassylate",
+      "pack": 50,
+      "unit": "ml",
+      "packs": 1,
+      "oldPrice": 10.11,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-chemicals/ethylene-brassylate.html",
+      "desired": "50 ml",
+      "fetchedPrice": 34.39,
+      "selectedSize": "50 ml (1.69 fl. oz.)",
+      "productId": "1126",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3694",
+          "text": "10 ml (0.34 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3695",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3696",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3697",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3698",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Ethylene Brassylate",
+      "changed": true,
+      "optionId": "868",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_1126\" class=\"ty-price-num\">34<sup>39</sup></span>"
+    },
+    {
+      "row": 26,
+      "material": "Galaxolide",
+      "pack": 30,
+      "unit": "ml",
+      "packs": 1,
+      "oldPrice": 27,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-chemicals/galaxolide.html",
+      "desired": "30 ml",
+      "fetchedPrice": 27,
+      "selectedSize": "30 ml (1.01 fl. oz.)",
+      "productId": "1130",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3782",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3783",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3784",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3785",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Galaxolide",
+      "changed": true,
+      "optionId": "889",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_1130\" class=\"ty-price-num\">27<sup>00</sup></span>"
+    },
+    {
+      "row": 27,
+      "material": "Exaltolide Total (Firmenich)",
+      "pack": 10,
+      "unit": "ml",
+      "packs": 1,
+      "oldPrice": 27.53,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-chemicals/exaltolide-total-firmenich.html",
+      "desired": "10 ml",
+      "fetchedPrice": 27.53,
+      "selectedSize": "10 ml (0.34 fl. oz.)",
+      "productId": "1278",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3694",
+          "text": "10 ml (0.34 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3695",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3696",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3697",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3698",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Exaltolide Total (Firmenich)",
+      "changed": true,
+      "optionId": "868",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_1278\" class=\"ty-price-num\">27<sup>53</sup></span>"
+    },
+    {
+      "row": 28,
+      "material": "Saffron Accord",
+      "pack": 10,
+      "unit": "ml",
+      "packs": 1,
+      "oldPrice": 33.75,
+      "url": "https://iterji.com/perfumery-ingredients/aroma-accords/saffron.html",
+      "desired": "10 ml",
+      "fetchedPrice": 33.75,
+      "selectedSize": "10 ml (0.34 fl. oz.)",
+      "productId": "710",
+      "status": "matched-size",
+      "options": [
+        {
+          "value": "3694",
+          "text": "10 ml (0.34 fl. oz.)",
+          "selected": true
+        },
+        {
+          "value": "3695",
+          "text": "30 ml (1.01 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3696",
+          "text": "50 ml (1.69 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3697",
+          "text": "100 ml (3.38 fl. oz.)",
+          "selected": false
+        },
+        {
+          "value": "3698",
+          "text": "500 ml (16.9 fl. oz.)",
+          "selected": false
+        }
+      ],
+      "error": null,
+      "title": "Saffron Accord",
+      "changed": true,
+      "optionId": "868",
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_710\" class=\"ty-price-num\">33<sup>75</sup></span>"
+    },
+    {
+      "row": 29,
+      "material": "DPG (Dipropylene Glycol)",
+      "pack": 500,
+      "unit": "ml",
+      "packs": 1,
+      "oldPrice": 50,
+      "url": "https://iterji.com/perfumery-ingredients/other-ingredients/dipropylene-glycol-dpg.html",
+      "desired": "500 ml",
+      "fetchedPrice": 50,
+      "selectedSize": "",
+      "productId": "717",
+      "status": "default-or-no-size-match",
+      "options": [],
+      "error": null,
+      "title": "Dipropylene Glycol - DPG",
+      "changed": false,
+      "optionId": null,
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_717\" class=\"ty-price-num\">50<sup>00</sup></span>"
+    },
+    {
+      "row": 30,
+      "material": "Alcohol 190 proof SDA 40B",
+      "pack": 5000,
+      "unit": "ml",
+      "packs": 1,
+      "oldPrice": 150,
+      "url": "https://iterji.com/perfumery-ingredients/other-ingredients/alcohol-190-proof-sda-40b.html",
+      "desired": "5000 ml",
+      "fetchedPrice": 150,
+      "selectedSize": "",
+      "productId": "674",
+      "status": "default-or-no-size-match",
+      "options": [],
+      "error": null,
+      "title": "Alcohol 190 proof SDA 40B",
+      "changed": false,
+      "optionId": null,
+      "stock": "In stock",
+      "priceHtml": "<span id=\"sec_discounted_price_674\" class=\"ty-price-num\">150<sup>00</sup></span>"
+    }
+  ]
+}
