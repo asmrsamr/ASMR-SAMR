@@ -61,4 +61,18 @@ but two accounts are recommended for operational recovery.
 4. Create a disposable draft product, edit it, archive it, and confirm the related audit entries.
 5. Confirm the session is cleared after logout and that a customer account cannot open a dashboard module.
 
+For automated authenticated acceptance, run the local prompt-based QA helper.
+It asks for the password in PowerShell and does not require pasting secrets into
+chat:
+
+```powershell
+.\scripts\run-authenticated-admin-qa.ps1 -Email "j.zoneng@gmail.com"
+```
+
+To include the transient create/update/delete audit cycle:
+
+```powershell
+.\scripts\run-authenticated-admin-qa.ps1 -Email "j.zoneng@gmail.com" -AllowWrites
+```
+
 Do not put a service-role key in `website/config.local.js`, browser storage, source code, Git, or the dashboard. The browser configuration must contain only the Supabase URL and publishable/anon key.
