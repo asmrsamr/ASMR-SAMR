@@ -141,10 +141,13 @@ Completed:
 - Added the deployment package build/test to the GitHub quality gate.
 - Added `docs/deployment-package.md` with build commands, required public environment variables, and verification steps.
 - Added `dist/` to `.gitignore`.
+- Added Cloudflare Pages project config via `wrangler.toml`.
+- Set the public default WhatsApp launch number to `966560505651`.
+- Added `docs/cloudflare-pages-free-hosting.md` with the free Cloudflare Pages + Supabase setup.
 
 Pending:
 
-- Provide final production values for WhatsApp, domain, founder metadata, and publishable Supabase key at deployment time.
+- Provide final production values for domain, founder metadata, and publishable Supabase key at deployment time.
 - Upload or deploy the generated `dist/` directory to the selected hosting provider.
 - Run final production smoke tests after deployment.
 

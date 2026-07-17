@@ -35,7 +35,7 @@ EXCLUDED_SUFFIXES = {
 PUBLIC_CONFIG_FIELDS = {
     "supabaseUrl": ("ASMR_SAMR_SUPABASE_URL", "https://thpuomqhqghqskyegpfj.supabase.co"),
     "supabaseAnonKey": ("ASMR_SAMR_SUPABASE_ANON_KEY", "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY"),
-    "whatsappNumber": ("ASMR_SAMR_WHATSAPP_NUMBER", "9665XXXXXXXX"),
+    "whatsappNumber": ("ASMR_SAMR_WHATSAPP_NUMBER", "966560505651"),
     "siteDomain": ("ASMR_SAMR_SITE_DOMAIN", "https://your-production-domain.com"),
     "founderName": ("ASMR_SAMR_FOUNDER_NAME", "Founder Name"),
     "instagramUrl": ("ASMR_SAMR_INSTAGRAM_URL", "https://instagram.com/asmr.samr.perfumes"),

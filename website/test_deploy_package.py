@@ -21,6 +21,7 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "build_static_site.py"
 SOURCE_CONFIG = ROOT / "website" / "config.local.js"
+WRANGLER = ROOT / "wrangler.toml"
 
 passed: list[str] = []
 failed: list[str] = []
@@ -83,6 +84,9 @@ try:
         local_key = re.search(r"supabaseAnonKey:\s*'([^']+)'", source)
         if local_key:
             (ok if local_key.group(1) not in generated else fail)("developer-local Supabase key is absent from package")
+
+    wrangler = WRANGLER.read_text(encoding="utf-8") if WRANGLER.exists() else ""
+    (ok if 'pages_build_output_dir = "./dist"' in wrangler else fail)("Cloudflare Pages output directory is configured")
 finally:
     shutil.rmtree(tmp_root, ignore_errors=True)
 

@@ -30,7 +30,7 @@ Example:
 ```bash
 ASMR_SAMR_SUPABASE_URL="https://thpuomqhqghqskyegpfj.supabase.co" \
 ASMR_SAMR_SUPABASE_ANON_KEY="YOUR_PUBLISHABLE_KEY" \
-ASMR_SAMR_WHATSAPP_NUMBER="9665XXXXXXXX" \
+ASMR_SAMR_WHATSAPP_NUMBER="966560505651" \
 ASMR_SAMR_SITE_DOMAIN="https://your-production-domain.com" \
 ASMR_SAMR_FOUNDER_NAME="Founder Name" \
 python scripts/build_static_site.py --output dist
@@ -48,3 +48,5 @@ python -m http.server 8000 --directory dist
 ```
 
 Then open `http://localhost:8000/#/admin/status` and confirm launch readiness.
+
+For free hosting setup, see [cloudflare-pages-free-hosting.md](cloudflare-pages-free-hosting.md).
