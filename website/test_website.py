@@ -199,6 +199,9 @@ for handler in ("openGenericForm", "saveGeneric", "deleteGeneric", "exportCurren
 (ok if "loadPublicCatalogFromSupabase().then" in js else fail)("storefront renders before the live catalog refresh completes")
 (ok if "Number.parseFloat(left)" in js else fail)("dynamic product sizes remain in numeric order")
 (ok if "persistStorefrontOrder" in js and "rpc/submit_storefront_order" in js else fail)("storefront orders use a transactional Supabase RPC")
+(ok if "p_customer_email" in js and "p_customer_city" in js and "p_source_route" in js else fail)("storefront orders send customer contact, delivery, and route context")
+(ok if "Could not find the function|schema cache|p_customer_email|p_source_route" in js else fail)("storefront order RPC remains backward compatible during migration rollout")
+(ok if "createStorefrontOrderNo" in js and "Order Reference:" in js else fail)("WhatsApp checkout includes a traceable storefront order reference")
 (ok if "newsletter_subscribers" in js and "preorders" in js else fail)("newsletter and preorder forms persist to Supabase")
 (ok if "function getSellableProductSelection" in js else fail)("storefront commerce validates sellable product selections")
 (ok if "Number(product.prices[validSize] || 0)" in js else fail)("cart actions use catalog prices instead of rendered button prices")
@@ -233,6 +236,8 @@ for rpc in ("adjust_product_stock", "adjust_ingredient_stock", "confirm_producti
             "reverse_finance_transaction", "recalculate_order_totals", "submit_storefront_order",
             "get_storefront_catalog"):
     (ok if rpc in migrations else fail)(f"server-side operation: {rpc}")
+(ok if "p_customer_email text" in migrations and "customer_city" in migrations and "source_route" in migrations else fail)("checkout order migration stores structured customer delivery context")
+(ok if "orders_status_created_idx" in migrations and "orders_channel_created_idx" in migrations else fail)("checkout order migration adds operational order indexes")
 (ok if "enable row level security" in migrations.lower() else fail)("RLS is enabled by migration")
 (ok if "revoke select on table" in migrations.lower() and "internal costs" in migrations.lower() else fail)("public catalog cannot read internal product fields directly")
 (ok if "key_hash" in migrations and "raw keys are never stored" in migrations.lower() else fail)("raw API keys are never stored")

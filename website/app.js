@@ -1837,6 +1837,7 @@ async function addToCart(productId, size) {
   }
   const { product, price: currentPrice } = selection;
   size = selection.size;
+  const orderNo = createStorefrontOrderNo();
 
   const cartIndex = state.cart.findIndex(item => item.id === productId && item.size === size);
 
@@ -2217,23 +2218,66 @@ function getOrders() {
   try { return JSON.parse(localStorage.getItem('asmr_samr_orders')) || []; } catch (e) { return []; }
 }
 
-function logOrder(type, items, total, message) {
+function createStorefrontOrderNo() {
+  return 'B077-' + Date.now().toString(36).toUpperCase();
+}
+
+function updateLoggedOrder(orderId, patch) {
+  const orders = getOrders();
+  const index = orders.findIndex(order => order.id === orderId);
+  if (index === -1) return;
+  orders[index] = { ...orders[index], ...patch };
+  localStorage.setItem('asmr_samr_orders', JSON.stringify(orders.slice(0, 50)));
+}
+
+function logOrder(type, items, total, message, options = {}) {
   const orders = getOrders();
   const order = {
-    id: 'B077-' + Date.now().toString(36).toUpperCase(),
+    id: options.orderNo || createStorefrontOrderNo(),
     ts: new Date().toISOString(),
+    sourceRoute: window.location.hash || '#/',
     type, items, total, message
   };
   orders.unshift(order);
   localStorage.setItem('asmr_samr_orders', JSON.stringify(orders.slice(0, 50)));
-  if (type === 'cart' || type === 'buy-now' || type === 'whatsapp') {
+  if (options.persist !== false && (type === 'cart' || type === 'buy-now' || type === 'whatsapp')) {
     persistStorefrontOrder(order).catch(() => {});
   }
+  return order;
 }
 
 async function persistStorefrontOrder(order) {
   const profile = getProfile();
-  await publicSupabaseRequest('rpc/submit_storefront_order', {
+  const items = (order.items || []).map((item) => ({
+    product_id: item.id,
+    size: item.size,
+    qty: Number(item.qty) || 1
+  }));
+  const richBody = {
+    p_order_no: order.id,
+    p_customer_name: profile.name || null,
+    p_customer_phone: profile.phone || null,
+    p_customer_email: profile.email || null,
+    p_customer_city: profile.city || null,
+    p_customer_address: profile.address || null,
+    p_source_route: order.sourceRoute || window.location.hash || '#/',
+    p_type: order.type === 'buy-now' ? 'buy_now' : order.type,
+    p_note: order.message || null,
+    p_items: items
+  };
+
+  try {
+    return await publicSupabaseRequest('rpc/submit_storefront_order', {
+      method: 'POST',
+      body: richBody
+    });
+  } catch (error) {
+    const message = String(error?.message || '');
+    const canFallback = /Could not find the function|schema cache|p_customer_email|p_source_route/i.test(message);
+    if (!canFallback) throw error;
+  }
+
+  return publicSupabaseRequest('rpc/submit_storefront_order', {
     method: 'POST',
     body: {
       p_order_no: order.id,
@@ -2241,11 +2285,7 @@ async function persistStorefrontOrder(order) {
       p_customer_phone: profile.phone || null,
       p_type: order.type === 'buy-now' ? 'buy_now' : order.type,
       p_note: order.message || null,
-      p_items: (order.items || []).map((item) => ({
-        product_id: item.id,
-        size: item.size,
-        qty: Number(item.qty) || 1
-      }))
+      p_items: items
     }
   });
 }
@@ -4761,6 +4801,7 @@ async function checkoutToWhatsApp() {
     showUnavailableProductNotice();
     return;
   }
+  const orderNo = createStorefrontOrderNo();
 
   let message = '';
   if (state.lang === 'ar') {
@@ -4789,21 +4830,36 @@ async function checkoutToWhatsApp() {
     message += `Subtotal: ${subtotal} SAR\n`;
     message += `VAT (15%): ${vat} SAR\n`;
     message += `Total Estimate: ${total} SAR\n\n`;
+    message += `Order Reference: ${orderNo}\n`;
     message += `Batch Reference: B.077\n`;
     message += `Please provide details to finalize my transfer. Shipped from ${CONFIG.PRODUCTION_CITY_EN}. Thank you.`;
   }
 
   const profile = getProfile();
-  if (profile.name || profile.phone) {
+  if (profile.name || profile.phone || profile.city || profile.address) {
     message += state.lang === 'ar'
       ? `\n\nالاسم: ${profile.name || '-'}\nواتساب: ${profile.phone || '-'}`
-      : `\n\nName: ${profile.name || '-'}\nWhatsApp: ${profile.phone || '-'}`;
+      : `\n\nName: ${profile.name || '-'}\nWhatsApp: ${profile.phone || '-'}\nCity: ${profile.city || '-'}\nAddress: ${profile.address || '-'}`;
   }
 
   const orderSubtotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  logOrder('cart',
+  const order = logOrder('cart',
     state.cart.map(i => ({ id: i.id, name: state.lang === 'ar' ? i.nameAr : i.nameEn, size: i.size, qty: i.quantity, price: i.price })),
-    orderSubtotal + Math.round(orderSubtotal * 0.15), message);
+    orderSubtotal + Math.round(orderSubtotal * 0.15), message, { persist: false, orderNo });
+  try {
+    const remoteOrder = await persistStorefrontOrder(order);
+    updateLoggedOrder(order.id, {
+      remoteOrderId: remoteOrder?.id || null,
+      remoteOrderNo: remoteOrder?.order_no || order.id,
+      status: remoteOrder?.status || 'awaiting_confirmation',
+      subtotal: remoteOrder?.subtotal || orderSubtotal,
+      vat: remoteOrder?.vat || Math.round(orderSubtotal * 0.15),
+      total: remoteOrder?.total || order.total,
+      persistedAt: new Date().toISOString()
+    });
+  } catch (_) {
+    updateLoggedOrder(order.id, { syncStatus: 'pending', syncErrorAt: new Date().toISOString() });
+  }
 
   const encodedMessage = encodeURIComponent(message);
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
@@ -4839,13 +4895,28 @@ async function buyNowWhatsApp(productId, size) {
     message += `Product: ${product.nameEn}\n`;
     message += `Size: ${size}\n`;
     message += `Price: ${currentPrice} SAR (+ VAT: ${total} SAR)\n\n`;
+    message += `Order Reference: ${orderNo}\n`;
     message += `Batch Reference: B.077\n`;
     message += `Please send payment bank transfer instructions.`;
   }
 
-  logOrder('buy-now',
+  const order = logOrder('buy-now',
     [{ id: product.id, name: state.lang === 'ar' ? product.nameAr : product.nameEn, size, qty: 1, price: currentPrice }],
-    total, message);
+    total, message, { persist: false, orderNo });
+  try {
+    const remoteOrder = await persistStorefrontOrder(order);
+    updateLoggedOrder(order.id, {
+      remoteOrderId: remoteOrder?.id || null,
+      remoteOrderNo: remoteOrder?.order_no || order.id,
+      status: remoteOrder?.status || 'awaiting_confirmation',
+      subtotal: remoteOrder?.subtotal || currentPrice,
+      vat: remoteOrder?.vat || Math.round(currentPrice * 0.15),
+      total: remoteOrder?.total || total,
+      persistedAt: new Date().toISOString()
+    });
+  } catch (_) {
+    updateLoggedOrder(order.id, { syncStatus: 'pending', syncErrorAt: new Date().toISOString() });
+  }
 
   const encodedMessage = encodeURIComponent(message);
   openWhatsAppUrl(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`, pendingWindow);

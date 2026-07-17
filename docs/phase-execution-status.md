@@ -70,8 +70,27 @@ Pending:
 - Replace placeholder launch configuration values: WhatsApp number, production domain, and founder name.
 - Complete authenticated CRUD/RLS acceptance once an admin password is entered locally.
 
+## Phase 5: Checkout And Orders
+
+Status: Live checkout order context migration applied; launch checkout validation pending
+
+Completed:
+
+- Added and applied migration `20260717170655_phase5_checkout_order_context.sql` to capture checkout customer email, city, address, source route, and order follow-up indexes.
+- Added an extended `submit_storefront_order` RPC overload that keeps server-side product pricing, VAT calculation, and published-product validation.
+- Kept the existing RPC signature available so current live deployments and older clients remain compatible.
+- Storefront checkout now creates a stable order reference before WhatsApp opens.
+- Cart checkout and buy-now wait for Supabase order persistence, record the remote order id/status/totals back into local order history, and mark sync as pending if the network is unavailable.
+- WhatsApp cart checkout includes the order reference and customer delivery details when the visitor saved them in Account.
+- Live Supabase verification confirmed 4 new order context columns and 2 `submit_storefront_order` RPC overloads.
+
+Pending:
+
+- Run an end-to-end checkout against live Supabase after the real WhatsApp number is configured.
+- Decide whether to add public inventory availability to the storefront RPC before launch.
+
 ## Later Phases
 
-Phases 4 through 8 remain gated by authenticated acceptance, approved checkout
+Phases 6 through 8 remain gated by authenticated acceptance, approved checkout
 path, real business data, launch content, production configuration, and
 stakeholder acceptance.
