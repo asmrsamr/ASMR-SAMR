@@ -102,6 +102,31 @@ const handler = withSupabase({ auth: "user" }, async (req, ctx) => {
     if (existingError) throw existingError;
     if (!existing) return jsonResponse(req, { error: "User not found" }, 404);
 
+    const protectAdminContinuity = async (nextRole: string, nextStatus: string) => {
+      if (existing.role !== "admin" || (nextRole === "admin" && nextStatus === "active")) {
+        return null;
+      }
+      if (userId === actorId) {
+        return jsonResponse(req, {
+          error: "You cannot disable or demote your own administrator account",
+        }, 409);
+      }
+      const { count, error } = await ctx.supabaseAdmin
+        .from("profiles")
+        .select("id", { count: "exact", head: true })
+        .eq("role", "admin")
+        .eq("status", "active")
+        .is("anonymized_at", null)
+        .neq("id", userId);
+      if (error) throw error;
+      if (!count) {
+        return jsonResponse(req, {
+          error: "At least one active administrator must remain",
+        }, 409);
+      }
+      return null;
+    };
+
     if (action === "update") {
       const role = cleanString(body.role, 32) || existing.role;
       const status = cleanString(body.status, 32) || existing.status;
@@ -109,6 +134,8 @@ const handler = withSupabase({ auth: "user" }, async (req, ctx) => {
       if (!roles.has(role) || !statuses.has(status) || !tiers.has(tier)) {
         return jsonResponse(req, { error: "Invalid role, status, or membership tier" }, 422);
       }
+      const continuityError = await protectAdminContinuity(role, status);
+      if (continuityError) return continuityError;
       const email = body.email === undefined ? existing.email : cleanString(body.email, 254).toLowerCase();
       if (email && !/^\S+@\S+\.\S+$/.test(email)) return jsonResponse(req, { error: "Email is invalid" }, 422);
       const fullName = body.full_name === undefined ? existing.full_name : cleanString(body.full_name, 160) || null;
@@ -143,6 +170,8 @@ const handler = withSupabase({ auth: "user" }, async (req, ctx) => {
 
     if (["activate", "deactivate", "suspend"].includes(action)) {
       const status = action === "activate" ? "active" : action === "suspend" ? "suspended" : "inactive";
+      const continuityError = await protectAdminContinuity(existing.role, status);
+      if (continuityError) return continuityError;
       const banDuration = status === "active" ? "none" : "876000h";
       const { error: authError } = await ctx.supabaseAdmin.auth.admin.updateUserById(userId, { ban_duration: banDuration });
       if (authError) throw authError;
@@ -168,6 +197,8 @@ const handler = withSupabase({ auth: "user" }, async (req, ctx) => {
     if (action === "anonymize") {
       const reason = cleanString(body.reason, 500);
       if (!reason) return jsonResponse(req, { error: "An anonymization reason is required" }, 422);
+      const continuityError = await protectAdminContinuity("customer", "anonymized");
+      if (continuityError) return continuityError;
       await log("anonymize", userId, { reason, previous_role: existing.role });
       const { error: profileError } = await ctx.supabaseAdmin.from("profiles").update({
         full_name: "Anonymized user",

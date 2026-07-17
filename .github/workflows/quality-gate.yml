@@ -1,0 +1,53 @@
+name: Quality Gate
+
+on:
+  push:
+    branches: [main, Codex]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  storefront-and-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check website/app.js
+          node --check website/admin-dashboard.js
+
+      - name: Start static website
+        run: |
+          python -m http.server 8000 --directory website > /tmp/asmr-samr-http.log 2>&1 &
+          for attempt in {1..20}; do
+            curl --fail --silent http://localhost:8000/ > /dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/asmr-samr-http.log
+          exit 1
+
+      - name: Run storefront tests
+        run: python website/test_website.py
+
+      - name: Run Phase 1 security gate
+        run: python website/test_security.py

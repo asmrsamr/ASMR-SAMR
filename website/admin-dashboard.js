@@ -2,6 +2,9 @@
   'use strict';
 
   const SESSION_KEY = 'asmr_samr_admin_supabase_session_v1';
+  const SESSION_META_KEY = 'asmr_samr_admin_session_meta_v1';
+  const ADMIN_IDLE_TIMEOUT_MS = 30 * 60 * 1000;
+  const ADMIN_MAX_SESSION_MS = 8 * 60 * 60 * 1000;
   const DEFAULT_URL = 'https://thpuomqhqghqskyegpfj.supabase.co';
   const PAGE_SIZE = 20;
   const STAFF_ROLES = new Set(['admin', 'manager', 'finance', 'marketing', 'inventory', 'production', 'support']);
@@ -48,6 +51,35 @@
     { label: 'System', tabs: ['users', 'campaigns', 'api-keys', 'audit'] }
   ];
 
+  const TAB_PERMISSION_GROUPS = {
+    overview: ['dashboard'],
+    orders: ['orders'],
+    products: ['products'],
+    inventory: ['inventory'],
+    customers: ['customers'],
+    wishlist: ['customers'],
+    rewards: ['customers'],
+    gifting: ['finance'],
+    preorders: ['orders'],
+    coupons: ['marketing'],
+    content: ['content'],
+    marketing: ['marketing'],
+    notifications: ['notifications'],
+    reports: ['reports'],
+    roles: ['roles'],
+    settings: ['settings'],
+    status: ['dashboard'],
+    ingredients: ['ingredients'],
+    suppliers: ['ingredients'],
+    'purchase-orders': ['purchasing'],
+    formulas: ['production'],
+    production: ['production'],
+    finance: ['finance'],
+    costing: ['costing'],
+    campaigns: ['marketing'],
+    audit: ['reports']
+  };
+
   const LABELS = Object.fromEntries(NAV_ITEMS);
   const runtime = {
     route: 'overview',
@@ -64,7 +96,9 @@
     activeForm: null,
     confirmation: null,
     flashTimer: 0,
-    searchTimer: 0
+    searchTimer: 0,
+    sessionGuardStarted: false,
+    lastSessionTouch: 0
   };
 
   function esc(value) {
@@ -135,19 +169,76 @@
     };
   }
 
-  function getSession() {
-    const own = parseJson(localStorage.getItem(SESSION_KEY), null);
-    if (own && own.access_token) return own;
-    const projectRef = (getConfig().url.match(/https:\/\/([^.]+)\.supabase\.co/i) || [])[1];
-    if (!projectRef) return null;
-    const standard = parseJson(localStorage.getItem(`sb-${projectRef}-auth-token`), null);
-    if (standard && standard.access_token) return standard;
-    if (standard && standard.currentSession && standard.currentSession.access_token) return standard.currentSession;
-    return null;
+  function clearSession() {
+    sessionStorage.removeItem(SESSION_KEY);
+    sessionStorage.removeItem(SESSION_META_KEY);
+    localStorage.removeItem(SESSION_KEY);
   }
 
-  function saveSession(session) {
-    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  function sessionExpired(meta = parseJson(sessionStorage.getItem(SESSION_META_KEY), null)) {
+    if (!meta) return false;
+    const now = Date.now();
+    return now - Number(meta.lastActivityAt || 0) > ADMIN_IDLE_TIMEOUT_MS ||
+      now - Number(meta.signedInAt || 0) > ADMIN_MAX_SESSION_MS;
+  }
+
+  function saveSession(session, options = {}) {
+    if (!session || !session.access_token) {
+      clearSession();
+      return;
+    }
+    const now = Date.now();
+    const previous = parseJson(sessionStorage.getItem(SESSION_META_KEY), null) || {};
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    sessionStorage.setItem(SESSION_META_KEY, JSON.stringify({
+      signedInAt: options.newSession ? now : Number(previous.signedInAt || now),
+      lastActivityAt: now
+    }));
+    localStorage.removeItem(SESSION_KEY);
+    runtime.lastSessionTouch = now;
+  }
+
+  function getSession() {
+    let own = parseJson(sessionStorage.getItem(SESSION_KEY), null);
+    if (!own) {
+      const legacy = parseJson(localStorage.getItem(SESSION_KEY), null);
+      if (legacy && legacy.access_token) {
+        saveSession(legacy, { newSession: true });
+        own = legacy;
+      }
+    }
+    if (!own || !own.access_token) return null;
+    if (sessionExpired()) {
+      clearSession();
+      return null;
+    }
+    return own;
+  }
+
+  function touchSessionActivity() {
+    const now = Date.now();
+    if (now - runtime.lastSessionTouch < 30_000) return;
+    const meta = parseJson(sessionStorage.getItem(SESSION_META_KEY), null);
+    if (!meta || sessionExpired(meta)) return;
+    meta.lastActivityAt = now;
+    sessionStorage.setItem(SESSION_META_KEY, JSON.stringify(meta));
+    runtime.lastSessionTouch = now;
+  }
+
+  function startSessionGuard() {
+    if (runtime.sessionGuardStarted) return;
+    runtime.sessionGuardStarted = true;
+    const recordActivity = () => {
+      if (window.location.hash.startsWith('#/admin') && getSession()) touchSessionActivity();
+    };
+    window.addEventListener('pointerdown', recordActivity, { passive: true });
+    window.addEventListener('keydown', recordActivity);
+    window.setInterval(() => {
+      const stored = parseJson(sessionStorage.getItem(SESSION_KEY), null);
+      if (!stored || !sessionExpired()) return;
+      clearSession();
+      if (window.location.hash.startsWith('#/admin')) reload();
+    }, 60_000);
   }
 
   function decodeJwt(token) {
@@ -225,9 +316,11 @@
       payload = raw;
     }
     if (!response.ok) {
+      if (response.status === 401 && !options.public) clearSession();
       const message = payload && (payload.message || payload.error || payload.details || payload.hint);
       throw new Error(message || `Request failed (${response.status})`);
     }
+    if (!options.public) touchSessionActivity();
     return {
       data: payload,
       count: parseContentRange(response.headers.get('content-range')),
@@ -323,18 +416,37 @@
   }
 
   function renderNav(activeTab) {
-    return NAV_SECTIONS.map((section) => `
-      <div class="admin-nav-section">
-        <span class="admin-nav-heading">${esc(section.label)}</span>
-        ${section.tabs.map((tab) => `
+    return NAV_SECTIONS.map((section) => {
+      const tabs = section.tabs.filter(tabVisibleForCurrentRole);
+      if (!tabs.length) return '';
+      return `
+        <div class="admin-nav-section">
+          <span class="admin-nav-heading">${esc(section.label)}</span>
+          ${tabs.map((tab) => `
           <a href="#/admin${tab === 'overview' ? '' : '/' + tab}"
              class="admin-nav-link ${activeTab === tab ? 'active' : ''}"
              ${activeTab === tab ? 'aria-current="page"' : ''}>
             <span>${esc(LABELS[tab])}</span>
           </a>
-        `).join('')}
-      </div>
-    `).join('');
+          `).join('')}
+        </div>
+      `;
+    }).join('');
+  }
+
+  function tabVisibleForCurrentRole(tab) {
+    if (!runtime.profile) return true;
+    if (runtime.profile.role === 'admin') return true;
+    if (tab === 'users' || tab === 'api-keys') return false;
+    const groups = TAB_PERMISSION_GROUPS[tab] || [];
+    return groups.some((group) =>
+      runtime.permissions.has(`${group}.read`) || runtime.permissions.has(`${group}.write`)
+    );
+  }
+
+  function updateNavigation() {
+    const nav = document.querySelector('.admin-dashboard-enhanced .admin-nav');
+    if (nav) nav.innerHTML = renderNav(runtime.tab);
   }
 
   function render(route = 'overview') {
@@ -419,7 +531,7 @@
       setBusy(true);
       session = await refreshSessionIfNeeded(session);
       if (!session) {
-        localStorage.removeItem(SESSION_KEY);
+        clearSession();
         renderLogin(root, 'Your session expired. Sign in again.');
         return;
       }
@@ -442,6 +554,7 @@
         );
         runtime.permissions = new Set((permissionResult.data || []).map((row) => row.permission));
       }
+      updateNavigation();
       updateIdentity(profile);
       updateHeader(LABELS[tab], pageDescription(tab, section), true);
       await dispatchPage(tab, section, root, mountId);
@@ -590,7 +703,7 @@
       if (!response.ok) {
         throw new Error(payload.error_description || payload.msg || payload.message || 'Sign in failed.');
       }
-      saveSession(payload);
+      saveSession(payload, { newSession: true });
       reload();
     } catch (error) {
       if (errorNode) {
@@ -606,7 +719,7 @@
     try {
       if (getSession()) await request('/auth/v1/logout', { method: 'POST' }).catch(() => null);
     } finally {
-      localStorage.removeItem(SESSION_KEY);
+      clearSession();
       runtime.profile = null;
       runtime.permissions = new Set();
       reload();
@@ -6333,6 +6446,8 @@
       announce(errorMessage(error), 'error');
     }
   }
+
+  startSessionGuard();
 
   window.ASMRSAMRAdmin = {
     render,

@@ -39,11 +39,16 @@ from public.profiles
 where lower(email) = lower('replace-with-real-admin@example.com');
 ```
 
+Create a second named administrator before launch. The Phase 1 access policy
+prevents self-demotion and prevents removal of the final active administrator,
+but two accounts are recommended for operational recovery.
+
 ## 3. Verify Access
 
 1. Open `http://localhost:8000/#/admin`.
 2. Sign in with the invited account.
 3. Confirm the overview loads and the API Keys page never exposes stored raw keys.
 4. Create a disposable draft product, edit it, archive it, and confirm the related audit entries.
+5. Confirm the session is cleared after logout and that a customer account cannot open a dashboard module.
 
 Do not put a service-role key in `website/config.local.js`, browser storage, source code, Git, or the dashboard. The browser configuration must contain only the Supabase URL and publishable/anon key.
