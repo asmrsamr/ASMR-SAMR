@@ -200,6 +200,12 @@ for handler in ("openGenericForm", "saveGeneric", "deleteGeneric", "exportCurren
 (ok if "Number.parseFloat(left)" in js else fail)("dynamic product sizes remain in numeric order")
 (ok if "persistStorefrontOrder" in js and "rpc/submit_storefront_order" in js else fail)("storefront orders use a transactional Supabase RPC")
 (ok if "newsletter_subscribers" in js and "preorders" in js else fail)("newsletter and preorder forms persist to Supabase")
+(ok if "function getSellableProductSelection" in js else fail)("storefront commerce validates sellable product selections")
+(ok if "Number(product.prices[validSize] || 0)" in js else fail)("cart actions use catalog prices instead of rendered button prices")
+(ok if "async function checkoutToWhatsApp" in js and "await refreshPublicCatalogForCommerce();" in js else fail)("checkout refreshes the public catalog before WhatsApp order generation")
+(ok if "async function buyNowWhatsApp" in js else fail)("buy-now refreshes catalog data before direct WhatsApp order generation")
+(ok if "async function handlePreorderSubmit" in js else fail)("preorder submission revalidates current catalog availability")
+(ok if "showUnavailableProductNotice" in js else fail)("unavailable products are blocked with a storefront-safe notice")
 
 # ---- 12 · navigation, responsive layout, and exports --------------------------
 print("\n[12] Admin navigation, responsive layout, and exports")

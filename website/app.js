@@ -771,6 +771,7 @@ const productImages = Object.fromEntries(
 );
 
 let storefrontContent = [];
+let storefrontCatalogRefreshPromise = null;
 
 const heroImages = {
   landing: 'assets/hero/landing-reference-bottles.png?v=landing-reference-20260712',
@@ -958,6 +959,18 @@ async function loadPublicCatalogFromSupabase() {
     document.documentElement.dataset.catalogError = String(error?.message || 'request-failed').slice(0, 160);
     return false;
   }
+}
+
+async function refreshPublicCatalogForCommerce() {
+  const config = getPublicSupabaseConfig();
+  if (!config.url || !config.key) return false;
+  if (!storefrontCatalogRefreshPromise) {
+    storefrontCatalogRefreshPromise = loadPublicCatalogFromSupabase()
+      .finally(() => {
+        storefrontCatalogRefreshPromise = null;
+      });
+  }
+  return storefrontCatalogRefreshPromise;
 }
 
 function titleCaseForCatalog(value) {
@@ -1791,11 +1804,39 @@ function syncCartWithCatalog() {
   }
 }
 
-function addToCart(productId, size, price) {
+function getSellableProductSelection(productId, size) {
   const product = getProductById(productId);
-  if (!product) return;
-  const currentPrice = Number(product.prices[size] || price || 0);
-  if (!product.sizes.includes(size) || !currentPrice) return;
+  if (!product || !isProductPublic(product)) return null;
+  const validSize = product.sizes.includes(size) ? size : product.heroSize || product.sizes[0];
+  const currentPrice = Number(product.prices[validSize] || 0);
+  if (!validSize || !currentPrice) return null;
+  return { product, size: validSize, price: currentPrice };
+}
+
+function showUnavailableProductNotice() {
+  showToast(state.lang === 'ar'
+    ? 'هذا المنتج غير متاح حالياً'
+    : 'This product is not available right now');
+}
+
+function openWhatsAppUrl(whatsappUrl, pendingWindow) {
+  if (pendingWindow && !pendingWindow.closed) {
+    pendingWindow.location.href = whatsappUrl;
+    return;
+  }
+  window.open(whatsappUrl, '_blank', 'noopener');
+}
+
+async function addToCart(productId, size) {
+  const selection = getSellableProductSelection(productId, size);
+  if (!selection) {
+    showUnavailableProductNotice();
+    syncCartWithCatalog();
+    renderCartDrawer();
+    return;
+  }
+  const { product, price: currentPrice } = selection;
+  size = selection.size;
 
   const cartIndex = state.cart.findIndex(item => item.id === productId && item.size === size);
 
@@ -1820,8 +1861,20 @@ function addToCart(productId, size, price) {
 
 function updateCartQty(id, size, change) {
   const item = state.cart.find(i => i.id === id && i.size === size);
+  const selection = getSellableProductSelection(id, size);
+  if (!selection) {
+    state.cart = state.cart.filter(i => !(i.id === id && i.size === size));
+    showUnavailableProductNotice();
+    saveCart();
+    renderCartDrawer();
+    return;
+  }
   if (item) {
     item.quantity += change;
+    item.price = selection.price;
+    item.nameEn = selection.product.nameEn;
+    item.nameAr = selection.product.nameAr;
+    item.brand = selection.product.brand;
     if (item.quantity <= 0) {
       state.cart = state.cart.filter(i => !(i.id === id && i.size === size));
     }
@@ -1975,17 +2028,25 @@ function ensurePreorderModal() {
   document.getElementById('product-preorder-form').addEventListener('submit', handlePreorderSubmit);
 }
 
-function openPreorderModal(productId, size, price) {
-  preorderContext = { productId, size, price };
+function openPreorderModal(productId, size) {
+  const selection = getSellableProductSelection(productId, size);
+  if (!selection) {
+    showUnavailableProductNotice();
+    return;
+  }
+  preorderContext = {
+    productId,
+    size: selection.size,
+    price: selection.price
+  };
   ensurePreorderModal();
 
-  const product = getProductById(productId);
-  if (!product) return;
+  const product = selection.product;
 
   const productTitle = state.lang === 'ar' ? product.nameAr : product.nameEn;
   const modalTitle = state.lang === 'ar' ? 'حجز من الدفعة B.077' : 'Reserve from Batch B.077';
   const summaryLabel = state.lang === 'ar' ? 'العطر المختار:' : 'Selected Scent:';
-  const summaryValue = `${productTitle} (${size})`;
+  const summaryValue = `${productTitle} (${selection.size})`;
   const labelName = state.lang === 'ar' ? 'الاسم الكامل' : 'Your Full Name';
   const labelPhone = state.lang === 'ar' ? 'رقم الواتساب للتواصل' : 'WhatsApp Phone Number';
   const submitBtn = state.lang === 'ar' ? 'تأكيد الحجز المسبق' : 'Confirm Pre-order';
@@ -2029,7 +2090,7 @@ function closePreorderModal() {
   }
 }
 
-function handlePreorderSubmit(e) {
+async function handlePreorderSubmit(e) {
   e.preventDefault();
   if (!preorderContext) return;
 
@@ -2073,9 +2134,17 @@ function handlePreorderSubmit(e) {
 
   const name = nameInput.value.trim();
   const phone = phoneInput.value.trim();
-  const product = getProductById(preorderContext.productId);
-  const size = preorderContext.size;
-  const price = preorderContext.price;
+  const pendingWindow = window.open('', '_blank', 'noopener');
+  await refreshPublicCatalogForCommerce();
+  const selection = getSellableProductSelection(preorderContext.productId, preorderContext.size);
+  if (!selection) {
+    if (pendingWindow && !pendingWindow.closed) pendingWindow.close();
+    showUnavailableProductNotice();
+    closePreorderModal();
+    return;
+  }
+  const { product, price } = selection;
+  const size = selection.size;
   const total = price + Math.round(price * 0.15);
 
   const list = JSON.parse(localStorage.getItem('asmr_samr_preorders')) || [];
@@ -2121,11 +2190,7 @@ function handlePreorderSubmit(e) {
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
 
   closePreorderModal();
-
-  // Redirect to WhatsApp
-  setTimeout(() => {
-    window.open(whatsappUrl, '_blank');
-  }, 200);
+  openWhatsAppUrl(whatsappUrl, pendingWindow);
 }
 
 // ==========================================
@@ -4686,9 +4751,16 @@ function renderAccount() {
 }
 
 // WhatsApp Link Generator
-function checkoutToWhatsApp() {
+async function checkoutToWhatsApp() {
+  const pendingWindow = window.open('', '_blank', 'noopener');
+  await refreshPublicCatalogForCommerce();
   syncCartWithCatalog();
-  if (state.cart.length === 0) return;
+  renderCartDrawer();
+  if (state.cart.length === 0) {
+    if (pendingWindow && !pendingWindow.closed) pendingWindow.close();
+    showUnavailableProductNotice();
+    return;
+  }
 
   let message = '';
   if (state.lang === 'ar') {
@@ -4735,15 +4807,23 @@ function checkoutToWhatsApp() {
 
   const encodedMessage = encodeURIComponent(message);
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
-  window.open(whatsappUrl, '_blank');
+  openWhatsAppUrl(whatsappUrl, pendingWindow);
 }
 
 // Generate single WhatsApp prefill order link directly from product detail page
-function buyNowWhatsApp(productId, size, price) {
-  const product = getProductById(productId);
-  if (!product) return;
-  const currentPrice = Number(product.prices[size] || price || 0);
-  if (!product.sizes.includes(size) || !currentPrice) return;
+async function buyNowWhatsApp(productId, size) {
+  const pendingWindow = window.open('', '_blank', 'noopener');
+  await refreshPublicCatalogForCommerce();
+  const selection = getSellableProductSelection(productId, size);
+  if (!selection) {
+    if (pendingWindow && !pendingWindow.closed) pendingWindow.close();
+    showUnavailableProductNotice();
+    syncCartWithCatalog();
+    renderCartDrawer();
+    return;
+  }
+  const { product, price: currentPrice } = selection;
+  size = selection.size;
 
   const total = currentPrice + Math.round(currentPrice * 0.15);
   let message = '';
@@ -4768,7 +4848,7 @@ function buyNowWhatsApp(productId, size, price) {
     total, message);
 
   const encodedMessage = encodeURIComponent(message);
-  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`, '_blank');
+  openWhatsAppUrl(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`, pendingWindow);
 }
 
 // Render dynamic site shell & routing templates

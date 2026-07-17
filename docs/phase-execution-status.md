@@ -51,7 +51,27 @@ Pending:
 - Audit-log verification for sensitive changes.
 - Correction of defects found during real-account testing.
 
+## Phase 3: Public Website Dynamic Catalog
+
+Status: Supabase-backed catalog active; commerce price/availability hardening applied
+
+Completed:
+
+- Public storefront loads the catalog through `rpc/get_storefront_catalog` with the static product catalog retained as fallback.
+- Home, shop, brand pages, product pages, gifting, newsletter, preorder, and order submission paths use the public Supabase configuration when available.
+- Cart items are resynced against current product records whenever the cart is rendered or checkout starts.
+- Add-to-cart, buy-now, and preorder flows now validate the current sellable product/size selection instead of trusting rendered button prices.
+- WhatsApp checkout and buy-now refresh the public catalog before generating the order message.
+- Local browser smoke test confirmed `#/product/samr-extrait` loads from Supabase and adds the current `50 ml` / `270 SAR` catalog price to the cart.
+
+Pending:
+
+- Add public inventory quantity/availability to the storefront catalog RPC if real-time out-of-stock blocking is required before checkout.
+- Replace placeholder launch configuration values: WhatsApp number, production domain, and founder name.
+- Complete authenticated CRUD/RLS acceptance once an admin password is entered locally.
+
 ## Later Phases
 
-Phases 3 through 8 remain gated by the approved checkout path, real business
-data, launch content, production configuration, and stakeholder acceptance.
+Phases 4 through 8 remain gated by authenticated acceptance, approved checkout
+path, real business data, launch content, production configuration, and
+stakeholder acceptance.
