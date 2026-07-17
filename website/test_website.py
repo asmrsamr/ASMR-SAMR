@@ -44,6 +44,8 @@ def read(name):
 
 html = read("index.html")
 js = read("app.js")
+admin_js = read("admin-dashboard.js")
+all_js = js + "\n" + admin_js
 css = read("style.css") if os.path.exists(os.path.join(HERE, "style.css")) else ""
 
 # ---- 1 · assets referenced in code all resolve -----------------------------
@@ -171,34 +173,72 @@ print("\n[10] Dashboard routing + header controls")
 (ok if ".nav-btn:disabled" in css or '.nav-btn[aria-disabled="true"]' in css else warn)("nav buttons have a disabled state")
 (ok if ".nav-btn.is-active" in css else fail)("nav buttons have an active state")
 
-# ---- 11 · admin operations dashboard -----------------------------------------
-print("\n[11] Admin operations dashboard")
+# ---- 11 · live admin operations dashboard ------------------------------------
+print("\n[11] Live admin operations dashboard")
 (ok if "route.startsWith('#/admin/')" in js else fail)("admin routes wired (#/admin, #/admin/<tab>)")
-for fn in ("renderAdmin", "renderAdminOverview", "renderAdminProducts", "renderAdminOrders",
-           "renderAdminContent", "renderAdminStatus", "renderAdminReports"):
-    (ok if f"function {fn}" in js else fail)(f"admin view: {fn}")
-for fn in ("applyAdminState", "getPublicProducts", "getFeaturedProducts", "getAdminState", "getAdminAnalytics"):
-    (ok if f"function {fn}" in js else fail)(f"catalog helper: {fn}")
-for handler in ("adminSaveProductRow", "adminOpenProductEditor", "adminCloseProductEditor",
-                "adminSaveProductDetails", "adminFilterProducts", "adminUpdateOrderStatus",
-                "adminSaveSettings", "adminSeedSampleOrder", "adminResetState", "adminExportData"):
-    (ok if f"window.{handler}" in js else fail)(f"admin handler exposed: {handler}")
-(ok if "getProductById(productId, options" in js and "includeInactive" in js else fail)("getProductById supports includeInactive")
-(ok if "getPublicAnnouncementBanner" in js else fail)("public announcement is admin-aware")
-(ok if "[920, 1460, 1180, 2050, 1720, 2360]" not in js else fail)("revenue chart is real (no hardcoded seed data)")
-(ok if "getPublicProducts()" in js and "let filtered = getPublicProducts()" in js else warn)("shop reads admin-aware public catalog")
+(ok if "admin-dashboard.js" in html else fail)("Supabase admin application is loaded")
+for fn in ("renderOverview", "renderProducts", "renderOrders", "renderInventory",
+           "renderIngredients", "renderFinance", "renderContent",
+           "renderMarketing", "renderUsers", "renderApiKeys", "renderReports", "renderSettings"):
+    (ok if f"function {fn}" in admin_js else fail)(f"live admin view: {fn}")
+(ok if "production: CONFIGS.production" in admin_js and "return renderGeneric(genericMap[tab], root)" in admin_js else fail)("live admin view: production")
+for tab in ("products", "orders", "inventory", "ingredients", "production", "finance",
+            "marketing", "content", "users", "api-keys", "reports", "settings"):
+    (ok if f"['{tab}'," in admin_js else fail)(f"admin tab wired: {tab}")
+for handler in ("openGenericForm", "saveGeneric", "deleteGeneric", "exportCurrent",
+                "openProductAdjustment", "openIngredientAdjustment", "confirmBatch",
+                "rotateApiKey", "revokeApiKey", "saveOrderItem"):
+    (ok if f"{handler}:" in admin_js or f"{handler}," in admin_js else fail)(f"admin handler exposed: {handler}")
+(ok if "adminSeedSampleOrder" not in all_js else fail)("no sample-order or mock-data generator remains")
+(ok if "loadPublicCatalogFromSupabase" in js else fail)("public catalog reads published Supabase products")
+(ok if "rpc/get_storefront_catalog" in js else fail)("public catalog uses the safe server-side projection")
+(ok if "website_content?select=content_type" in js and "storefrontContent" in js else fail)("published homepage content is loaded from Supabase")
+(ok if "function renderApp() {\n  applyAdminState();" not in js else fail)("legacy local admin state cannot overwrite the storefront catalog")
+(ok if "WELCOME10" not in js and "DUO50" not in js else fail)("legacy seeded coupons are absent")
+(ok if "(0, eval)" not in html and "config.local.js" in html else fail)("browser config loads without eval or CSP bypasses")
+(ok if "loadPublicCatalogFromSupabase().then" in js else fail)("storefront renders before the live catalog refresh completes")
+(ok if "Number.parseFloat(left)" in js else fail)("dynamic product sizes remain in numeric order")
+(ok if "persistStorefrontOrder" in js and "rpc/submit_storefront_order" in js else fail)("storefront orders use a transactional Supabase RPC")
+(ok if "newsletter_subscribers" in js and "preorders" in js else fail)("newsletter and preorder forms persist to Supabase")
 
-# ---- 12 · extended admin (customers, coupons, marketing) ---------------------
-print("\n[12] Extended admin tabs + analytics")
-for tab in ("customers", "coupons", "marketing"):
-    (ok if f"'{tab}'" in js and f"function renderAdmin{tab.capitalize()}" in js else fail)(f"admin tab wired: {tab}")
-for h in ("getAdminCustomers", "getRevenueByCategory", "getOrderChannels", "getAdminCoupons"):
-    (ok if f"function {h}" in js else fail)(f"analytics helper: {h}")
-for handler in ("adminAddCoupon", "adminToggleCoupon", "adminDeleteCoupon"):
-    (ok if f"window.{handler}" in js else fail)(f"coupon handler exposed: {handler}")
-(ok if "revenueByCategory" in js and "orderChannels" in js and "topCustomers" in js else fail)("overview analytics extended")
-(ok if "admin-breakdown-row" in css and "admin-insight-grid" in css else fail)("new admin panels have CSS")
-(ok if "'overview', 'orders', 'products', 'customers', 'coupons', 'content', 'marketing', 'reports', 'status'" in js else warn)("ADMIN_TABS includes new tabs")
+# ---- 12 · navigation, responsive layout, and exports --------------------------
+print("\n[12] Admin navigation, responsive layout, and exports")
+(ok if "position: fixed" in css and "admin-sidebar" in css else fail)("dashboard sidebar remains fixed")
+(ok if "overflow-y: auto" in css and ".admin-dashboard-enhanced .admin-nav" in css else fail)("sidebar navigation scrolls independently")
+(ok if "admin-sidebar-footer" in admin_js and "logout" in admin_js.lower() else fail)("bottom profile/settings/logout actions remain accessible")
+(ok if "@media" in css and "admin-mobile" in css else fail)("dashboard has mobile navigation behavior")
+for tabs in ("PRODUCT_TABS", "ORDER_TABS", "CONTENT_TABS", "MARKETING_TABS"):
+    (ok if f"const {tabs}" in admin_js else fail)(f"correct sub-route mapping: {tabs}")
+for fn in ("buildCsv", "buildXlsx", "buildPdf", "printTable"):
+    (ok if f"function {fn}" in admin_js else fail)(f"export support: {fn}")
+
+# ---- 13 · database, RLS, and server-side security -----------------------------
+print("\n[13] Database migrations and server-side security")
+migration_dir = os.path.join(HERE, "..", "supabase", "migrations")
+migrations = "\n".join(
+    open(os.path.join(migration_dir, name), encoding="utf-8").read()
+    for name in sorted(os.listdir(migration_dir)) if name.endswith(".sql")
+)
+for table in ("product_stock_movements", "ingredients", "ingredient_stock_movements", "formulas",
+              "production_batches", "finance_transactions", "marketing_campaigns",
+              "api_keys", "audit_logs", "product_images"):
+    (ok if f"create table public.{table}" in migrations.lower() else fail)(f"database module: {table}")
+for rpc in ("adjust_product_stock", "adjust_ingredient_stock", "confirm_production_batch",
+            "reverse_finance_transaction", "recalculate_order_totals", "submit_storefront_order",
+            "get_storefront_catalog"):
+    (ok if rpc in migrations else fail)(f"server-side operation: {rpc}")
+(ok if "enable row level security" in migrations.lower() else fail)("RLS is enabled by migration")
+(ok if "revoke select on table" in migrations.lower() and "internal costs" in migrations.lower() else fail)("public catalog cannot read internal product fields directly")
+(ok if "key_hash" in migrations and "raw keys are never stored" in migrations.lower() else fail)("raw API keys are never stored")
+(ok if "SUPABASE_SERVICE_ROLE_KEY" not in all_js else fail)("service-role credentials are absent from frontend code")
+function_dir = os.path.join(HERE, "..", "supabase", "functions")
+function_sources = "\n".join(
+    open(os.path.join(root, name), encoding="utf-8").read()
+    for root, _, names in os.walk(function_dir) for name in names if name.endswith(".ts")
+)
+for function_name in ("admin-api-keys", "verify-api-key", "admin-users", "admin-gift-cards"):
+    (ok if os.path.isdir(os.path.join(function_dir, function_name)) else fail)(f"Edge Function source: {function_name}")
+(ok if "crypto.subtle.digest" in function_sources and "key_hash" in function_sources else fail)("API keys use server-side cryptographic hashing")
 
 # ---- summary -----------------------------------------------------------------
 print("\n" + "=" * 70)

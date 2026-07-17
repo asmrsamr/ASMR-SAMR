@@ -3,35 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <!-- Accessibility & Theme Metadata -->
   <meta name="color-scheme" content="dark light">
   <meta name="theme-color" content="#2C2825">
-  
+
   <!-- Primary SEO Metadata -->
   <title>ASMR & SAMR | Luxury Artisan Fragrance House Riyadh</title>
   <meta name="description" content="Handcrafted in Riyadh, Saudi Arabia, ASMR & SAMR is an intimate his-and-hers perfume house. We produce true Extrait de Parfum (28% concentration), body sprays, and body creams in small numbered batches. Discover SAMR for her and ASMR for him.">
   <meta name="keywords" content="niche perfume Saudi Arabia, extrait de parfum, عطر, luxury Arabian perfume, his and hers fragrance, oud-adjacent amber, Riyadh small batch perfume, ASMR, SAMR">
   <meta name="author" content="ASMR & SAMR Fragrances">
-  
+
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="ASMR & SAMR | Luxury Artisan Fragrance House Riyadh">
   <meta property="og:description" content="Handcrafted in Riyadh, Saudi Arabia, ASMR & SAMR is an intimate his-and-hers perfume house. We produce true Extrait de Parfum (28% concentration), body sprays, and body creams in small numbered batches. Discover SAMR for her and ASMR for him.">
   <meta property="og:image" content="https://asmrsamr.com/assets/hero/landing-duo-photo.png">
-  
+
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:title" content="ASMR & SAMR | Luxury Artisan Fragrance House Riyadh">
   <meta property="twitter:description" content="Handcrafted in Riyadh, Saudi Arabia, ASMR & SAMR is an intimate his-and-hers perfume house. We produce true Extrait de Parfum (28% concentration), body sprays, and body creams in small numbered batches. Discover SAMR for her and ASMR for him.">
-  
+
   <!-- Preconnect Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  
+
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=admin-operations-20260717e">
-  
+  <link rel="stylesheet" href="style.css?v=admin-dashboard-20260717">
+
   <!-- Structured Schema Data (JSON-LD) -->
   <script type="application/ld+json">
     {
@@ -104,31 +104,23 @@
   <!-- Cart Backdrop Overlay -->
   <div class="drawer-backdrop" id="drawer-backdrop"></div>
 
-  <!-- Optional browser-safe local config, then application engine. -->
+  <!-- Optional local config loader, then application engine. -->
   <script>
     (function loadConfigThenApp() {
       function loadApp() {
         var script = document.createElement('script');
-        script.src = 'app.js?v=admin-operations-20260717g';
+        script.src = 'app.js?v=admin-dashboard-20260717';
         script.charset = 'utf-8';
         document.body.appendChild(script);
       }
 
-      function loadAdminThenApp() {
-        var admin = document.createElement('script');
-        admin.src = 'admin-dashboard.js?v=admin-operations-20260717b';
-        admin.charset = 'utf-8';
-        admin.onload = loadApp;
-        admin.onerror = loadApp;
-        document.body.appendChild(admin);
-      }
-
-      var config = document.createElement('script');
-      config.src = 'config.local.js?v=admin-operations-20260717c';
-      config.charset = 'utf-8';
-      config.onload = loadAdminThenApp;
-      config.onerror = loadAdminThenApp;
-      document.head.appendChild(config);
+      fetch('config.local.js', { cache: 'no-store' })
+        .then(function(response) { return response.ok ? response.text() : ''; })
+        .then(function(code) {
+          if (code) (0, eval)(code);
+        })
+        .catch(function() {})
+        .finally(loadApp);
     })();
   </script>
 </body>

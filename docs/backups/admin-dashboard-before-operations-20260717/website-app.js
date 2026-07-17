@@ -94,7 +94,7 @@ function syncSEOAndMetadata() {
   // Update meta elements
   const ogTitle = document.querySelector('meta[property="og:title"]');
   if (ogTitle) ogTitle.setAttribute('content', `ASMR & SAMR | Luxury Artisan Fragrance House ${CONFIG.PRODUCTION_CITY_EN}`);
-  
+
   const twitterTitle = document.querySelector('meta[name="twitter:title"]');
   if (twitterTitle) twitterTitle.setAttribute('content', `ASMR & SAMR | Luxury Artisan Fragrance House ${CONFIG.PRODUCTION_CITY_EN}`);
 
@@ -185,18 +185,18 @@ const svgTemplates = {
         <stop offset="100%" stop-color="#2C2825"/>
       </linearGradient>
     </defs>
-    
+
     <!-- Ambient Flare & Soft Grounding Shadow -->
     <rect width="200" height="240" fill="url(#samr-glow)" rx="4"/>
     <ellipse cx="100" cy="210" rx="48" ry="8" fill="#181513" opacity="0.6"/>
     <ellipse cx="100" cy="210" rx="35" ry="4" fill="#000" opacity="0.8"/>
-    
+
     <!-- Outer Glass Bottle Shape (Thick Heavy Base) -->
     <rect x="62" y="85" width="76" height="110" rx="8" fill="url(#samr-glass)" stroke="url(#gold-foil)" stroke-width="1"/>
-    
+
     <!-- Liquid Chamber (Starts 20px above bottle bottom for luxury heavy base look) -->
     <rect x="68" y="93" width="64" height="82" rx="4" fill="url(#samr-liquid)"/>
-    
+
     <!-- Heavy Cap Assembly (Detailed Ridges & Gold Accent Ring) -->
     <rect x="88" y="75" width="24" height="10" fill="url(#gold-foil)"/>
     <rect x="76" y="45" width="48" height="30" rx="2" fill="url(#cap-metallic)" stroke="url(#gold-foil)" stroke-width="0.8"/>
@@ -206,13 +206,13 @@ const svgTemplates = {
     <line x1="100" y1="45" x2="100" y2="75" stroke="#181513" stroke-width="0.5"/>
     <line x1="108" y1="45" x2="108" y2="75" stroke="#181513" stroke-width="0.5"/>
     <line x1="116" y1="45" x2="116" y2="75" stroke="#181513" stroke-width="0.5"/>
-    
+
     <!-- Embossed Label with Motif -->
     <rect x="74" y="115" width="52" height="42" fill="#2C2825" stroke="url(#gold-foil)" stroke-width="0.8"/>
     <text x="100" y="131" fill="#EBDFC6" font-family="Instrument Serif" font-size="8" font-weight="500" text-anchor="middle" letter-spacing="1.5">SAMR</text>
     <text x="100" y="141" fill="#8A8072" font-family="Plus Jakarta Sans" font-size="4.2" text-anchor="middle" letter-spacing="0.5">EXTRAIT DE PARFUM</text>
     <text x="100" y="148" fill="#C4A566" font-family="Plus Jakarta Sans" font-size="3.8" text-anchor="middle" letter-spacing="0.2">B.077 / 28%</text>
-    
+
     <!-- Glass Reflections & Light Passes -->
     <rect x="66" y="90" width="3" height="98" rx="1" fill="#FFF" opacity="0.25"/>
     <rect x="71" y="90" width="1" height="98" fill="#FFF" opacity="0.12"/>
@@ -254,18 +254,18 @@ const svgTemplates = {
         <stop offset="100%" stop-color="#9C7B3C"/>
       </linearGradient>
     </defs>
-    
+
     <!-- Ambient Flare & Soft Grounding Shadow -->
     <rect width="200" height="240" fill="url(#asmr-glow)" rx="4"/>
     <ellipse cx="100" cy="210" rx="48" ry="8" fill="#181513" opacity="0.7"/>
     <ellipse cx="100" cy="210" rx="35" ry="4" fill="#000" opacity="0.9"/>
-    
+
     <!-- Outer Glass Bottle Shape (Thick Heavy Base) -->
     <rect x="62" y="85" width="76" height="110" rx="8" fill="url(#asmr-glass)" stroke="url(#gold-foil-asmr)" stroke-width="1"/>
-    
+
     <!-- Liquid Chamber (Thick Base Look) -->
     <rect x="68" y="93" width="64" height="82" rx="4" fill="url(#asmr-liquid)"/>
-    
+
     <!-- Heavy Cap Assembly (Detailed Ridges & Gold Accent Ring) -->
     <rect x="88" y="75" width="24" height="10" fill="url(#cap-gold)"/>
     <rect x="76" y="45" width="48" height="30" rx="2" fill="url(#cap-gold)" stroke="#181513" stroke-width="0.5"/>
@@ -275,13 +275,13 @@ const svgTemplates = {
     <line x1="100" y1="45" x2="100" y2="75" stroke="#9C7B3C" stroke-width="0.5"/>
     <line x1="108" y1="45" x2="108" y2="75" stroke="#9C7B3C" stroke-width="0.5"/>
     <line x1="116" y1="45" x2="116" y2="75" stroke="#9C7B3C" stroke-width="0.5"/>
-    
+
     <!-- Embossed Label with Motif -->
     <rect x="74" y="115" width="52" height="42" fill="#2C2825" stroke="url(#gold-foil-asmr)" stroke-width="0.8"/>
     <text x="100" y="131" fill="#EBDFC6" font-family="Instrument Serif" font-size="8" font-weight="500" text-anchor="middle" letter-spacing="1.5">ASMR</text>
     <text x="100" y="141" fill="#8A8072" font-family="Plus Jakarta Sans" font-size="4.2" text-anchor="middle" letter-spacing="0.5">EXTRAIT DE PARFUM</text>
     <text x="100" y="148" fill="#C4A566" font-family="Plus Jakarta Sans" font-size="3.8" text-anchor="middle" letter-spacing="0.2">B.077 / 28%</text>
-    
+
     <!-- Glass Reflections & Light Passes -->
     <rect x="66" y="90" width="3" height="98" rx="1" fill="#FFF" opacity="0.18"/>
     <rect x="71" y="90" width="1" height="98" fill="#FFF" opacity="0.08"/>
@@ -304,21 +304,21 @@ const svgTemplates = {
     </defs>
     <rect width="200" height="240" fill="#2C2825" rx="4"/>
     <ellipse cx="100" cy="212" rx="42" ry="7" fill="#000" opacity="0.6"/>
-    
+
     <!-- Canister Body -->
     <rect x="74" y="68" width="52" height="138" rx="6" fill="url(#spray-metallic)" stroke="url(#spray-gold)" stroke-width="0.8"/>
-    
+
     <!-- Metallic Atomizer Collar -->
     <rect x="88" y="55" width="24" height="13" fill="url(#spray-gold)"/>
     <rect x="92" y="47" width="16" height="8" rx="1" fill="#181513"/>
     <circle cx="100" cy="51" r="1" fill="url(#spray-gold)"/>
-    
+
     <!-- Label -->
     <rect x="78" y="110" width="44" height="48" fill="#2C2825" stroke="url(#spray-gold)" stroke-width="0.6"/>
     <text x="100" y="128" fill="#EBDFC6" font-family="Instrument Serif" font-size="8" text-anchor="middle" letter-spacing="1">BODY SPRAY</text>
     <text x="100" y="138" fill="#8A8072" font-family="Plus Jakarta Sans" font-size="4.2" text-anchor="middle" letter-spacing="0.5">B.077 · 100ML</text>
     <text x="100" y="145" fill="#C4A566" font-family="Plus Jakarta Sans" font-size="3.5" text-anchor="middle" letter-spacing="0.5">RIYADH EDITION</text>
-    
+
     <!-- Reflections -->
     <rect x="78" y="72" width="2" height="130" fill="#FFF" opacity="0.12"/>
   </svg>`,
@@ -344,22 +344,22 @@ const svgTemplates = {
     </defs>
     <rect width="200" height="240" fill="#2C2825" rx="4"/>
     <ellipse cx="100" cy="198" rx="62" ry="10" fill="#000" opacity="0.5"/>
-    
+
     <!-- Jar Body (Squat Luxury Glass with heavy base) -->
     <rect x="42" y="112" width="116" height="76" rx="8" fill="url(#cream-jar-glass)" stroke="url(#cream-gold)" stroke-width="1"/>
     <!-- Cream Contents Layer (Starts 18px from bottom) -->
     <rect x="48" y="122" width="104" height="52" rx="4" fill="url(#cream-liquid)"/>
-    
+
     <!-- Premium Metallic Cap -->
     <rect x="38" y="90" width="124" height="22" rx="3" fill="url(#cream-gold)" stroke="#181513" stroke-width="0.5"/>
     <line x1="38" y1="96" x2="162" y2="96" stroke="#9C7B3C" stroke-width="0.5"/>
     <line x1="38" y1="102" x2="162" y2="102" stroke="#9C7B3C" stroke-width="0.5"/>
-    
+
     <!-- Tiny Label -->
     <rect x="65" y="134" width="70" height="28" fill="#2C2825" stroke="url(#cream-gold)" stroke-width="0.5"/>
     <text x="100" y="148" fill="#EBDFC6" font-family="Instrument Serif" font-size="8" text-anchor="middle" letter-spacing="1">BODY CREAM</text>
     <text x="100" y="156" fill="#C4A566" font-family="Plus Jakarta Sans" font-size="4" text-anchor="middle" letter-spacing="0.5">B.077 · 100G</text>
-    
+
     <!-- Highlights -->
     <rect x="48" y="116" width="3" height="66" fill="#FFF" opacity="0.15"/>
   </svg>`,
@@ -374,7 +374,7 @@ const svgTemplates = {
     <rect width="200" height="240" fill="#2C2825" rx="4"/>
     <ellipse cx="68" cy="208" rx="22" ry="5" fill="#000" opacity="0.4"/>
     <ellipse cx="132" cy="208" rx="22" ry="5" fill="#000" opacity="0.4"/>
-    
+
     <!-- SAMR Vial (Left) -->
     <rect x="54" y="65" width="28" height="135" rx="4" fill="#F7F3EA" fill-opacity="0.12" stroke="url(#vial-gold)" stroke-width="0.7"/>
     <rect x="58" y="85" width="20" height="105" rx="2" fill="#C98A6A" opacity="0.35"/>
@@ -382,7 +382,7 @@ const svgTemplates = {
     <!-- Label -->
     <rect x="58" y="110" width="20" height="45" fill="#2C2825" stroke="url(#vial-gold)" stroke-width="0.5"/>
     <text x="68" y="133" fill="#EBDFC6" font-family="Instrument Serif" font-size="6.5" font-weight="500" text-anchor="middle" transform="rotate(-90 68 133)">SAMR</text>
-    
+
     <!-- ASMR Vial (Right) -->
     <rect x="118" y="65" width="28" height="135" rx="4" fill="#F7F3EA" fill-opacity="0.12" stroke="url(#vial-gold)" stroke-width="0.7"/>
     <rect x="122" y="85" width="20" height="105" rx="2" fill="#C4A566" opacity="0.18"/>
@@ -407,15 +407,15 @@ const svgTemplates = {
     </defs>
     <rect width="200" height="240" fill="#2C2825" rx="4"/>
     <ellipse cx="100" cy="208" rx="78" ry="14" fill="#000" opacity="0.6"/>
-    
+
     <!-- Open Luxury Coffret Outer Shell -->
     <rect x="30" y="55" width="140" height="135" rx="4" fill="url(#duo-box-card)" stroke="url(#duo-gold)" stroke-width="1.2"/>
     <line x1="100" y1="55" x2="100" y2="190" stroke="url(#duo-gold)" stroke-width="0.5" opacity="0.4"/>
-    
+
     <!-- Mold cutouts representing nested bottles -->
     <rect x="44" y="75" width="42" height="95" rx="3" fill="#181513" stroke="url(#duo-gold)" stroke-width="0.5" stroke-dasharray="2,2"/>
     <rect x="114" y="75" width="42" height="95" rx="3" fill="#181513" stroke="url(#duo-gold)" stroke-width="0.5" stroke-dasharray="2,2"/>
-    
+
     <!-- Coffret Seal Logo -->
     <circle cx="100" cy="122" r="24" fill="#2C2825" stroke="url(#duo-gold)" stroke-width="0.8"/>
     <text x="100" y="119" fill="#EBDFC6" font-family="Instrument Serif" font-size="7.5" font-weight="500" text-anchor="middle" letter-spacing="1">RIYADH</text>
@@ -431,15 +431,15 @@ const svgTemplates = {
     </defs>
     <rect width="200" height="240" fill="#2C2825" rx="4"/>
     <ellipse cx="100" cy="210" rx="80" ry="12" fill="#000" opacity="0.6"/>
-    
+
     <!-- Body Spray (Back Left) -->
     <rect x="36" y="75" width="34" height="110" rx="4" fill="#3B3531" stroke="url(#trio-gold)" stroke-width="0.6"/>
     <rect x="46" y="65" width="14" height="10" fill="url(#trio-gold)"/>
-    
+
     <!-- Body Cream (Back Right) -->
     <rect x="118" y="130" width="52" height="55" rx="4" fill="#4E4641" stroke="url(#trio-gold)" stroke-width="0.6"/>
     <rect x="114" y="118" width="60" height="12" fill="url(#trio-gold)"/>
-    
+
     <!-- Perfume Bottle (Front Center) -->
     <rect x="66" y="95" width="58" height="92" rx="4" fill="#2C2825" stroke="url(#trio-gold)" stroke-width="1.2"/>
     <rect x="71" y="112" width="48" height="64" fill="#C98A6A" opacity="0.25"/>
@@ -770,8 +770,6 @@ const productImages = Object.fromEntries(
   ])
 );
 
-let storefrontContent = [];
-
 const heroImages = {
   landing: 'assets/hero/landing-reference-bottles.png?v=landing-reference-20260712',
   samr: 'assets/hero/samr-campaign-wide.png?v=campaign-wide-20260712',
@@ -804,164 +802,6 @@ function getProductById(productId, options = {}) {
   if (!product) return undefined;
   if (!options.includeInactive && !isProductPublic(product)) return undefined;
   return product;
-}
-
-function getPublicSupabaseConfig() {
-  const config = window.ASMR_SAMR_CONFIG || window.ASMR_SAMR_SUPABASE || {};
-  return {
-    url: String(config.supabaseUrl || config.SUPABASE_URL || '').replace(/\/+$/, ''),
-    key: config.supabaseAnonKey || config.SUPABASE_ANON_KEY || config.anonKey || ''
-  };
-}
-
-async function publicSupabaseRequest(path, options = {}) {
-  const config = getPublicSupabaseConfig();
-  if (!config.url || !config.key) throw new Error('Storefront database configuration is unavailable.');
-  const response = await fetch(`${config.url}/rest/v1/${path.replace(/^\/+/, '')}`, {
-    method: options.method || 'GET',
-    headers: {
-      apikey: config.key,
-      Authorization: `Bearer ${config.key}`,
-      ...(options.body !== undefined ? { 'Content-Type': 'application/json' } : {}),
-      ...(options.headers || {})
-    },
-    body: options.body === undefined ? undefined : JSON.stringify(options.body)
-  });
-  const raw = await response.text();
-  let payload = null;
-  try { payload = raw ? JSON.parse(raw) : null; } catch (_) { payload = raw; }
-  if (!response.ok) throw new Error((payload && (payload.message || payload.error)) || `Storefront request failed (${response.status}).`);
-  return payload;
-}
-
-function storefrontImageUrl(value) {
-  const url = String(value || '').trim();
-  if (!url || /^(javascript|data):/i.test(url)) return '';
-  return url;
-}
-
-async function loadPublicCatalogFromSupabase() {
-  document.documentElement.dataset.catalogSource = 'loading';
-  delete document.documentElement.dataset.catalogError;
-  const config = getPublicSupabaseConfig();
-  if (!config.url || !config.key) {
-    document.documentElement.dataset.catalogSource = 'fallback';
-    document.documentElement.dataset.catalogError = 'configuration-unavailable';
-    return false;
-  }
-  try {
-    const [catalog, contentRows] = await Promise.all([
-      publicSupabaseRequest('rpc/get_storefront_catalog', { method: 'POST', body: {} }),
-      publicSupabaseRequest(
-        'website_content?select=content_type,slug,title_en,title_ar,body_en,body_ar,metadata,sort_order,published_at&status=eq.published&order=sort_order.asc',
-        { method: 'GET' }
-      )
-    ]);
-    storefrontContent = Array.isArray(contentRows) ? contentRows : [];
-    const rows = catalog?.products;
-    const noteRows = catalog?.fragrance_notes;
-    const relationRows = catalog?.related_products;
-    if (!Array.isArray(rows) || !rows.length) {
-      document.documentElement.dataset.catalogSource = 'fallback';
-      return false;
-    }
-
-    const fallbackById = new Map(products.map((product) => [product.id, product]));
-    const notesByProduct = new Map();
-    (noteRows || []).forEach((row) => {
-      if (!notesByProduct.has(row.product_id)) notesByProduct.set(row.product_id, { top: [], heart: [], base: [], profile: [] });
-      const note = row.fragrance_notes || {};
-      const phase = notesByProduct.get(row.product_id)[row.phase] || notesByProduct.get(row.product_id).profile;
-      phase.push({ en: note.name_en || '', ar: note.name_ar || note.name_en || '' });
-    });
-    const relatedByProduct = new Map();
-    (relationRows || []).forEach((row) => {
-      if (!relatedByProduct.has(row.product_id)) relatedByProduct.set(row.product_id, []);
-      relatedByProduct.get(row.product_id).push(row.related_product_id);
-    });
-
-    const dynamicProducts = rows.map((row) => {
-      const fallback = fallbackById.get(row.id) || {};
-      const prices = Object.fromEntries((row.product_prices || []).map((price) => [price.size, Number(price.price) || 0]));
-      const sizes = Object.keys(prices).sort((left, right) => {
-        const numericDifference = Number.parseFloat(left) - Number.parseFloat(right);
-        return Number.isFinite(numericDifference) && numericDifference !== 0
-          ? numericDifference
-          : left.localeCompare(right);
-      });
-      const notes = notesByProduct.get(row.id) || { top: [], heart: [], base: [], profile: [] };
-      const images = (row.product_images || []).slice().sort((a, b) => Number(a.sort_order) - Number(b.sort_order));
-      const primary = images.find((image) => image.is_primary) || images[0];
-      const primaryUrl = storefrontImageUrl(primary && (primary.public_url || primary.fallback_url));
-      if (primaryUrl) {
-        const fallbackPng = storefrontImageUrl(primary.fallback_url) || primaryUrl;
-        productImages[row.id] = {
-          webp: primary.mime_type === 'image/webp' ? primaryUrl : (productImages[row.id]?.webp || primaryUrl),
-          png: fallbackPng
-        };
-      }
-      const badges = [
-        row.gender_identity === 'for_her' ? 'For Her' : row.gender_identity === 'for_him' ? 'For Him' : row.gender_identity === 'duo' ? 'Duo Box' : row.brand,
-        row.type === 'extrait' ? 'Extrait 28%' : row.type === 'spray' || row.type === 'mist' ? 'Body Spray' : row.type === 'cream' ? 'Body Cream' : row.type === 'set' || row.type === 'sets' ? 'Gift Set' : titleCaseForCatalog(row.type),
-        row.featured_on_home ? 'Best Seller' : ''
-      ].filter(Boolean);
-      const giftMessage = row.gift_ready_message || '';
-      productMerchandising[row.id] = {
-        ...(productMerchandising[row.id] || {}),
-        badges,
-        profile: row.scent_profile || row.desc_en || '',
-        who: row.who_it_is_for || '',
-        how: row.how_to_wear || '',
-        pairIds: relatedByProduct.get(row.id) || [],
-        ...(giftMessage ? { gift: { title: 'Gift-ready presentation', copy: giftMessage, bullets: ['Prepared with care', 'Luxury presentation', 'Concierge ordering'] } } : {})
-      };
-      return {
-        ...fallback,
-        id: row.id,
-        brand: row.brand,
-        type: row.type === 'set' ? 'sets' : row.type,
-        nameEn: row.name_en,
-        nameAr: row.name_ar || row.name_en,
-        familyEn: row.family_en || row.concentration || '',
-        familyAr: row.family_ar || row.family_en || row.concentration || '',
-        descEn: row.desc_en || '',
-        descAr: row.desc_ar || row.desc_en || '',
-        sizes: sizes.length ? sizes : (fallback.sizes || []),
-        prices: sizes.length ? prices : (fallback.prices || {}),
-        heroSize: sizes.includes(row.hero_size) ? row.hero_size : (sizes[0] || fallback.heroSize),
-        pyramid: {
-          topEn: notes.top.map((note) => note.en).join(' · ') || fallback.pyramid?.topEn || '',
-          topAr: notes.top.map((note) => note.ar).join(' · ') || fallback.pyramid?.topAr || '',
-          heartEn: notes.heart.map((note) => note.en).join(' · ') || fallback.pyramid?.heartEn || '',
-          heartAr: notes.heart.map((note) => note.ar).join(' · ') || fallback.pyramid?.heartAr || '',
-          baseEn: notes.base.map((note) => note.en).join(' · ') || fallback.pyramid?.baseEn || '',
-          baseAr: notes.base.map((note) => note.ar).join(' · ') || fallback.pyramid?.baseAr || ''
-        },
-        wearEn: row.how_to_wear || fallback.wearEn || '',
-        wearAr: fallback.wearAr || row.how_to_wear || '',
-        badgeEn: row.badge_en || fallback.badgeEn || '',
-        badgeAr: row.badge_ar || row.badge_en || fallback.badgeAr || '',
-        admin: { isActive: true, featuredOnHome: Boolean(row.featured_on_home), sortOrder: Number(row.sort_order) || 0 }
-      };
-    }).filter((product) => product.sizes.length && Object.keys(product.prices).length);
-
-    if (!dynamicProducts.length) {
-      document.documentElement.dataset.catalogSource = 'fallback';
-      return false;
-    }
-    products.splice(0, products.length, ...dynamicProducts);
-    syncCartWithCatalog();
-    document.documentElement.dataset.catalogSource = 'supabase';
-    return true;
-  } catch (error) {
-    document.documentElement.dataset.catalogSource = 'fallback';
-    document.documentElement.dataset.catalogError = String(error?.message || 'request-failed').slice(0, 160);
-    return false;
-  }
-}
-
-function titleCaseForCatalog(value) {
-  return String(value || '').replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function renderProductPhoto(productOrId, options = {}) {
@@ -1404,7 +1244,6 @@ function renderUpgradedProductDetail(productId) {
   const desc = state.lang === 'ar' ? product.descAr : product.descEn;
   const merchandising = getProductMerchandising(product);
   const facts = getProductFacts(product);
-  const profileCopy = getMerchCopy(product, 'profile');
 
   if (!state.selectedSize[productId]) {
     state.selectedSize[productId] = getProductStartSize(product);
@@ -1452,7 +1291,7 @@ function renderUpgradedProductDetail(productId) {
             </div>
 
             <p class="product-detail-lede">${desc}</p>
-            ${profileCopy && profileCopy !== desc ? `<p class="product-detail-profile">${profileCopy}</p>` : ''}
+            <p class="product-detail-profile">${getMerchCopy(product, 'profile')}</p>
 
             <div class="product-trust-grid">
               ${facts.map(fact => `<span>${fact}</span>`).join('')}
@@ -1855,7 +1694,7 @@ function openCartDrawer() {
   previousActiveElement = document.activeElement;
   const drawer = document.getElementById('cart-drawer');
   const backdrop = document.getElementById('drawer-backdrop');
-  
+
   drawer.classList.add('open');
   drawer.removeAttribute('aria-hidden');
   drawer.removeAttribute('inert');
@@ -1873,7 +1712,7 @@ function openCartDrawer() {
 function closeCartDrawer() {
   const drawer = document.getElementById('cart-drawer');
   const backdrop = document.getElementById('drawer-backdrop');
-  
+
   if (drawer.classList.contains('open')) {
     drawer.classList.remove('open');
     drawer.setAttribute('aria-hidden', 'true');
@@ -1897,13 +1736,13 @@ function openMobileNav() {
   const mobileToggle = document.getElementById('mobile-toggle');
   const navLinks = document.getElementById('nav-links');
   const backdrop = document.getElementById('drawer-backdrop');
-  
+
   if (mobileToggle && !mobileToggle.classList.contains('open')) {
     mobileToggle.classList.add('open');
     mobileToggle.setAttribute('aria-expanded', 'true');
     navLinks.classList.add('open');
     if (backdrop) backdrop.classList.add('open');
-    
+
     setTimeout(() => {
       const firstLink = navLinks.querySelector('a');
       if (firstLink) firstLink.focus();
@@ -1915,13 +1754,13 @@ function closeMobileNav() {
   const mobileToggle = document.getElementById('mobile-toggle');
   const navLinks = document.getElementById('nav-links');
   const backdrop = document.getElementById('drawer-backdrop');
-  
+
   if (mobileToggle && mobileToggle.classList.contains('open')) {
     mobileToggle.classList.remove('open');
     mobileToggle.setAttribute('aria-expanded', 'false');
     navLinks.classList.remove('open');
     if (backdrop) backdrop.classList.remove('open');
-    
+
     if (previousActiveElement) {
       previousActiveElement.focus();
     } else {
@@ -1947,19 +1786,19 @@ function ensurePreorderModal() {
             <span id="modal-product-summary-label" style="color: var(--taupe);"></span>
             <span id="modal-product-summary-value" class="text-gold" style="font-weight: 500;"></span>
           </div>
-          
+
           <div class="form-field-group" style="display: flex; flex-direction: column; gap: 0.4rem;">
             <label for="modal-form-name" id="modal-label-name" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gold);"></label>
             <input type="text" id="modal-form-name" class="form-input" style="width: 100%;" required>
             <span class="form-error" id="modal-err-name" style="display: none; color: #E07A7A; font-size: 0.75rem; margin-top: 0.2rem; text-align: start;"></span>
           </div>
-          
+
           <div class="form-field-group" style="display: flex; flex-direction: column; gap: 0.4rem;">
             <label for="modal-form-phone" id="modal-label-phone" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gold);"></label>
             <input type="tel" id="modal-form-phone" class="form-input" style="width: 100%;" placeholder="e.g. +966 50 000 0000" required>
             <span class="form-error" id="modal-err-phone" style="display: none; color: #E07A7A; font-size: 0.75rem; margin-top: 0.2rem; text-align: start;"></span>
           </div>
-          
+
           <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem; width: 100%;" id="modal-submit-btn">
           </button>
         </form>
@@ -2154,35 +1993,12 @@ function getOrders() {
 
 function logOrder(type, items, total, message) {
   const orders = getOrders();
-  const order = {
+  orders.unshift({
     id: 'B077-' + Date.now().toString(36).toUpperCase(),
     ts: new Date().toISOString(),
     type, items, total, message
-  };
-  orders.unshift(order);
-  localStorage.setItem('asmr_samr_orders', JSON.stringify(orders.slice(0, 50)));
-  if (type === 'cart' || type === 'buy-now' || type === 'whatsapp') {
-    persistStorefrontOrder(order).catch(() => {});
-  }
-}
-
-async function persistStorefrontOrder(order) {
-  const profile = getProfile();
-  await publicSupabaseRequest('rpc/submit_storefront_order', {
-    method: 'POST',
-    body: {
-      p_order_no: order.id,
-      p_customer_name: profile.name || null,
-      p_customer_phone: profile.phone || null,
-      p_type: order.type === 'buy-now' ? 'buy_now' : order.type,
-      p_note: order.message || null,
-      p_items: (order.items || []).map((item) => ({
-        product_id: item.id,
-        size: item.size,
-        qty: Number(item.qty) || 1
-      }))
-    }
   });
+  localStorage.setItem('asmr_samr_orders', JSON.stringify(orders.slice(0, 50)));
 }
 
 function getWishlist() {
@@ -2214,7 +2030,7 @@ function saveProfileFromForm(e) {
   const city = (document.getElementById('acct-city') || {}).value || '';
   const address = (document.getElementById('acct-address') || {}).value || '';
   const preference = (document.getElementById('acct-preference') || {}).value || '';
-  
+
   saveProfileData(name.trim(), phone.trim(), email.trim(), city.trim(), address.trim(), preference.trim());
   const fb = document.getElementById('acct-save-feedback');
   if (fb) { fb.style.display = 'block'; fb.innerText = t('acct_saved'); }
@@ -2262,18 +2078,7 @@ const ADMIN_TABS = [
   'reports',
   'roles',
   'settings',
-  'status',
-  'ingredients',
-  'suppliers',
-  'purchase-orders',
-  'formulas',
-  'production',
-  'finance',
-  'costing',
-  'users',
-  'campaigns',
-  'api-keys',
-  'audit'
+  'status'
 ];
 const ADMIN_STATUS_OPTIONS = ['new', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled'];
 const ADMIN_BADGE_OPTIONS = [
@@ -2500,7 +2305,13 @@ function getNewsletterSubscribers() {
 }
 
 function getDefaultStock(product) {
-  return 0;
+  if (product.id === 'duo-box') return 14;
+  if (product.id === 'discovery-set') return 36;
+  if (product.id.includes('trio')) return 18;
+  if (product.type === 'extrait') return 32;
+  if (product.type === 'spray') return 48;
+  if (product.type === 'cream') return 40;
+  return 20;
 }
 
 function getDefaultBadge(product) {
@@ -2547,7 +2358,10 @@ function getDefaultAdminState() {
     }, {}),
     orderStatuses: {},
     activity: [],
-    coupons: []
+    coupons: [
+      { code: 'WELCOME10', kind: 'percent', value: 10, active: true, minTotal: 0 },
+      { code: 'DUO50', kind: 'fixed', value: 50, active: true, minTotal: 599 }
+    ]
   };
 }
 
@@ -2639,10 +2453,8 @@ function applyAdminState() {
 }
 
 function getPublicAnnouncementBanner() {
-  const banner = storefrontContent.find((item) => item.content_type === 'homepage_banner');
-  const customCopy = state.lang === 'ar'
-    ? (banner?.body_ar || banner?.title_ar)
-    : (banner?.body_en || banner?.title_en);
+  const settings = getAdminState().settings || {};
+  const customCopy = state.lang === 'ar' ? settings.bannerAr : settings.bannerEn;
   return esc(customCopy || t('first_batch_banner'));
 }
 
@@ -2911,19 +2723,8 @@ function renderAdminKpi(label, value, helper, tone = '') {
 }
 
 function renderAdmin(activeTab = 'overview') {
-  if (window.ASMRSAMRAdmin && typeof window.ASMRSAMRAdmin.render === 'function') {
-    return window.ASMRSAMRAdmin.render(activeTab);
-  }
-  return `
-    <main class="admin-unavailable" role="alert">
-      <p class="eyebrow">Admin Studio</p>
-      <h1>Dashboard unavailable</h1>
-      <p>The secure admin application could not be loaded. Refresh the page to try again.</p>
-      <a class="btn btn-primary" href="#/">Return to storefront</a>
-    </main>
-  `;
-
-  /* Legacy dashboard rendering remains below for migration history only. */
+  applyAdminState();
+  ensureAdminSync();
   const tab = ADMIN_TABS.includes(activeTab) ? activeTab : 'overview';
   const analytics = getAdminAnalytics();
   const tabLabel = tab.charAt(0).toUpperCase() + tab.slice(1);
@@ -3078,7 +2879,7 @@ function renderAdminOverview(analytics) {
           </div>
         </div>
         <div class="admin-activity-list">
-          ${(activities.length ? activities : [{ message: 'No activity has been recorded yet.', type: 'info', ts: new Date().toISOString() }]).map(activity => `
+          ${(activities.length ? activities : [{ message: 'No activity yet. Add a sample order or save a product update.', type: 'info', ts: new Date().toISOString() }]).map(activity => `
             <div class="admin-activity-row">
               <span>${esc(activity.type || 'update')}</span>
               <div>
@@ -3174,6 +2975,7 @@ function renderAdminOverview(analytics) {
           <a href="#/admin/products">Update prices and stock</a>
           <a href="#/admin/coupons">Manage coupons</a>
           <a href="#/admin/content">Change launch banner</a>
+          <button type="button" onclick="adminSeedSampleOrder()">Add sample order</button>
           <button type="button" class="danger" onclick="adminResetState()">Reset admin edits</button>
         </div>
       </article>
@@ -3325,6 +3127,7 @@ function renderAdminOrders(analytics) {
             <span class="admin-eyebrow">Orders</span>
             <h2>WhatsApp checkout log</h2>
           </div>
+          <button type="button" class="admin-secondary-btn" onclick="adminSeedSampleOrder()">Add sample order</button>
         </div>
         <div class="admin-order-list">
           ${analytics.orders.length ? analytics.orders.map(order => renderAdminOrderRow(order, analytics.adminState)).join('') : '<p class="admin-empty">No checkout orders yet. Orders created by Add to Cart, Buy Now, and WhatsApp checkout will appear here.</p>'}
@@ -3947,6 +3750,18 @@ function adminSaveSettings(event) {
   renderApp();
 }
 
+function adminSeedSampleOrder() {
+  const product = getProductById('duo-box', { includeInactive: true }) || products[0];
+  const size = product.heroSize || product.sizes[0];
+  const price = product.prices[size] || getProductStartPrice(product);
+  const total = Math.round(price * 1.15);
+  const message = `Hello ASMR & SAMR, sample admin order for ${product.nameEn} / ${size}.`;
+  logOrder('admin-sample', [{ id: product.id, name: product.nameEn, size, qty: 1, price }], total, message);
+  recordAdminActivity(`Sample order added for ${product.nameEn}`, 'order');
+  showToast('Sample order added');
+  renderApp();
+}
+
 function adminResetState() {
   if (!window.confirm('Reset all admin edits on this device?')) return;
   localStorage.removeItem(ADMIN_STATE_KEY);
@@ -4306,7 +4121,7 @@ function renderAccount() {
   const activeTab = state.accountTab || 'overview';
   let notifPrefs = {};
   try { notifPrefs = JSON.parse(localStorage.getItem('asmr_samr_notif')) || {}; } catch (e) { notifPrefs = {}; }
-  
+
   const typeLabel = { cart: t('acct_type_cart'), 'buy-now': t('acct_type_buynow'), preorder: t('acct_type_preorder') };
 
   let mainContentHtml = '';
@@ -4357,21 +4172,21 @@ function renderAccount() {
             <p class="quick-card-desc">${ar ? 'تتبع شحناتك، الإرجاع، أو الشراء مرة أخرى.' : 'Track, return or buy again.'}</p>
             <span class="quick-card-arrow">&rarr;</span>
           </a>
-          
+
           <a href="#" class="quick-access-card" onclick="switchAccountTab(event, 'addresses')">
             <svg class="quick-card-icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
             <h4 class="quick-card-title">${ar ? 'العناوين' : 'ADDRESSES'}</h4>
             <p class="quick-card-desc">${ar ? 'إدارة عناوين الشحن والتوصيل.' : 'Manage your shipping addresses.'}</p>
             <span class="quick-card-arrow">&rarr;</span>
           </a>
-          
+
           <a href="#" class="quick-access-card" onclick="switchAccountTab(event, 'payments')">
             <svg class="quick-card-icon" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
             <h4 class="quick-card-title">${ar ? 'طرق الدفع' : 'PAYMENT METHODS'}</h4>
             <p class="quick-card-desc">${ar ? 'تحديث بطاقات الدفع المحفوظة.' : 'Update your saved payment methods.'}</p>
             <span class="quick-card-arrow">&rarr;</span>
           </a>
-          
+
           <a href="#" class="quick-access-card" onclick="switchAccountTab(event, 'wishlist')">
             <svg class="quick-card-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
             <h4 class="quick-card-title">${ar ? 'المفضلة' : 'WISHLIST'}</h4>
@@ -4567,7 +4382,7 @@ function renderAccount() {
             <label class="account-label" for="acct-name" style="font-size:0.8rem; color:var(--gold); text-transform:uppercase; margin-bottom:0.4rem; display:block;">${t('acct_name')}</label>
             <input type="text" id="acct-name" class="form-input" value="${(profile.name || '').replace(/"/g, '&quot;')}" autocomplete="name" placeholder="e.g. Yousif">
           </div>
-          
+
           <div>
             <label class="account-label" for="acct-phone" style="font-size:0.8rem; color:var(--gold); text-transform:uppercase; margin-bottom:0.4rem; display:block;">${t('acct_phone')}</label>
             <input type="tel" id="acct-phone" class="form-input" value="${(profile.phone || '').replace(/"/g, '&quot;')}" autocomplete="tel" dir="ltr" style="text-align: start;" placeholder="e.g. +966 50 000 0000">
@@ -4600,9 +4415,9 @@ function renderAccount() {
           <button type="submit" class="btn btn-primary" style="margin-top: 1rem; width: 100%;">${t('acct_save')}</button>
           <p id="acct-save-feedback" class="account-feedback" style="display:none; text-align: center; margin-top: 0.5rem;"></p>
         </form>
-        
+
         <hr style="border:none; border-top:1px solid rgba(0,0,0,0.06); margin: 2rem 0;">
-        
+
         <p class="account-label" style="font-size:0.8rem; color:var(--gold); text-transform:uppercase; margin-bottom:0.6rem;">${t('acct_lang')}</p>
         <button class="btn btn-outline account-btn-small" onclick="document.getElementById('lang-btn').click()">
           ${state.lang === 'en' ? 'العربية' : 'English'}
@@ -4637,12 +4452,12 @@ function renderAccount() {
       <div class="account-page-layout">
         <!-- Left Sidebar Panel -->
         ${renderLeftSidebar(ar, activeTab, profile)}
-        
+
         <!-- Main Area Panel -->
         <main class="account-main-area">
           ${mainContentHtml}
         </main>
-        
+
         <!-- Right Sidebar Panel -->
         ${renderRightSidebar(ar, profile, orders)}
       </div>
@@ -4883,7 +4698,7 @@ function renderCartDrawer() {
   document.getElementById('cart-subtotal').innerText = `${subtotal} ${t('sar')}`;
   document.getElementById('cart-vat').innerText = `${vat} ${t('sar')}`;
   document.getElementById('cart-total').innerText = `${total} ${t('sar')}`;
-  
+
   const checkoutBtn = document.getElementById('cart-checkout-btn');
   checkoutBtn.disabled = false;
   checkoutBtn.style.opacity = 1;
@@ -5071,7 +4886,7 @@ function renderHome() {
         <div id="newsletter-feedback" style="display: none; margin-top: 1.5rem; color: var(--gold); font-size: 0.9rem; font-family: var(--font-sans);"></div>
 
         <p style="font-size: 0.75rem; color: var(--taupe); margin-top: 1.5rem; font-family: var(--font-sans); letter-spacing: 0.05em;">
-          ${state.lang === 'ar' ? 
+          ${state.lang === 'ar' ?
             `أو انضم مباشرة عبر <a href="mailto:concierge@asmrsamr.com?subject=الانضمام إلى الدفعة الأولى المرقمة" style="color: var(--gold); text-decoration: none;">البريد الإلكتروني</a> أو <a href="https://wa.me/${WHATSAPP_NUMBER}?text=مرحباً دار عطور أسمر وسَمَر، يرجى إضافتي للدفعة الأولى المرقمة" target="_blank" rel="noopener" style="color: var(--gold); text-decoration: none;">واتساب</a>` :
             `Or join directly via <a href="mailto:concierge@asmrsamr.com?subject=Join the First Numbered Batch" style="color: var(--gold); text-decoration: none;">Email</a> or <a href="https://wa.me/${WHATSAPP_NUMBER}?text=Hello ASMR & SAMR, please add me to the first numbered batch list" target="_blank" rel="noopener" style="color: var(--gold); text-decoration: none;">WhatsApp</a>`}
         </p>
@@ -5309,7 +5124,7 @@ function renderProductDetail(productId) {
               ${state.lang === 'ar' ? BATCH_MOTIF_AR : BATCH_MOTIF_EN}
             </span>
             <h1 class="serif-display" style="font-size: clamp(2.2rem, 5vw, 3.2rem); font-weight: 200; letter-spacing: 0.02em; line-height: 1.15; margin-bottom: 1.5rem; color: var(--ivory-100);">${name}</h1>
-            
+
             <div style="display: flex; gap: 1.5rem; align-items: center; margin-bottom: 2.5rem;">
               <span class="serif-display" style="font-size: 1.8rem; font-weight: 300; color: var(--gold-light);">${price} ${t('sar')}</span>
               <span class="card-badge" style="position: static; font-weight: 300; letter-spacing: 0.15em; font-size: 0.6rem;">${state.lang === 'ar' ? p.badgeAr || t('numbered_badge') : p.badgeEn || t('numbered_badge')}</span>
@@ -5351,7 +5166,7 @@ function renderProductDetail(productId) {
                 ${t('order_whatsapp')}
               </button>
             </div>
-            
+
             <button class="btn btn-outline btn-block" onclick="navigateTo('#/contact')" style="margin-top: 1rem; text-align: center; border-color: rgba(196,165,102,0.15);">
               ${t('join_list')}
             </button>
@@ -5413,7 +5228,7 @@ function toggleAccordion(elementId) {
   const item = document.getElementById(elementId);
   if (item) {
     const isAct = item.classList.contains('active');
-    
+
     // Close others
     document.querySelectorAll('.accordion-item').forEach(el => {
       el.classList.remove('active');
@@ -5452,7 +5267,7 @@ function renderStory() {
 
         <div class="story-text" style="max-width: 100%;">
           <p style="font-size: 1.25rem; line-height: 1.8; margin-bottom: 2.5rem; font-weight: 300;">
-            ${state.lang === 'ar' ? 
+            ${state.lang === 'ar' ?
               'تأسست دار عطور أسمر وسَمَر على فلسفة أن العطر ليس مجرد رائحة، بل هو أثر من الألفة ووثيقة حضور غير منطوق. الفكرة مستوحاة من ثنائية الرجل والمرأة - حضور ممتد للزوج ورائحة لا ينساها لزوجته.' :
               'ASMR & SAMR is built upon the philosophy that fragrance is not a mere cosmetic commodity, but an unspoken signature of physical proximity and lingering memory. The house operates as a dedicated craft workshop.'}
           </p>
@@ -5570,14 +5385,14 @@ function renderGifting() {
 
 function renderContact() {
   // Custom pre-order intake form validation
-  window.submitPreorderForm = async function(e) {
+  window.submitPreorderForm = function(e) {
     e.preventDefault();
-    
+
     const nameInput = document.getElementById('form-name');
     const phoneInput = document.getElementById('form-phone');
     const emailInput = document.getElementById('form-email');
     const interestInput = document.getElementById('form-interest');
-    
+
     let isValid = true;
     let firstInvalidEl = null;
 
@@ -5637,55 +5452,23 @@ function renderContact() {
     const interest = interestInput.value;
     const notes = document.getElementById('form-notes').value;
 
-    const interestMap = {
-      'SAMR Extrait 50ml': 'samr-extrait', 'ASMR Extrait 50ml': 'asmr-extrait',
-      'His & Hers Duo Box': 'duo-box', 'Discovery Set': 'discovery-set',
-      'SAMR Trio Set': 'samr-trio', 'ASMR Trio Set': 'asmr-trio'
-    };
-    const selectedProduct = getProductById(interestMap[interest]);
-    if (selectedProduct && getPublicSupabaseConfig().key) {
-      try {
-        await publicSupabaseRequest('preorders', {
-          method: 'POST', headers: { Prefer: 'return=minimal' },
-          body: {
-            reservation_number: `PRE-${Date.now().toString(36).toUpperCase()}`,
-            product_id: selectedProduct.id,
-            quantity: 1,
-            unit_price: Number(selectedProduct.prices[selectedProduct.heroSize] || getProductStartPrice(selectedProduct) || 0),
-            deposit_amount: 0,
-            currency: 'SAR',
-            status: 'requested',
-            source: 'web',
-            customer_name: name.trim(),
-            customer_email: email.trim().toLowerCase(),
-            customer_phone: phone.trim(),
-            notes: notes.trim() || null
-          }
-        });
-      } catch (_) {
-        const feedback = document.getElementById('form-feedback');
-        feedback.style.display = 'block';
-        feedback.innerText = state.lang === 'ar' ? '\u062a\u0639\u0630\u0631 \u062d\u0641\u0638 \u0627\u0644\u062d\u062c\u0632 \u0627\u0644\u0622\u0646. \u0633\u064a\u062a\u0645 \u0641\u062a\u062d \u0648\u0627\u062a\u0633\u0627\u0628 \u0644\u0625\u0643\u0645\u0627\u0644 \u0637\u0644\u0628\u0643.' : 'The reservation could not be saved online. WhatsApp will still open so you can complete it.';
-      }
-    }
-
     const list = JSON.parse(localStorage.getItem('asmr_samr_preorders')) || [];
     list.push({ name, email, phone, interest, notes, date: new Date().toISOString() });
     localStorage.setItem('asmr_samr_preorders', JSON.stringify(list));
 
-    const resultMessage = state.lang === 'ar' ? 
+    const resultMessage = state.lang === 'ar' ?
       `مرحباً دار عطور أسمر وسَمَر، أود تسجيل رغبتي بحجز عطر ${interest}. الاسم: ${name}، هاتف: ${phone}، بريد: ${email}. ملاحظات: ${notes}` :
       `Hello ASMR & SAMR, I have registered my waitlist interest for ${interest}. Name: ${name}, Tel: ${phone}, Email: ${email}. Notes: ${notes}`;
-    
+
     // Auto redirect to WhatsApp with form data pre-filled
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(resultMessage)}`;
-    
+
     // Visual indicator
     const feedback = document.getElementById('form-feedback');
     feedback.style.display = 'block';
     feedback.innerText = t('waitlist_success');
     announceToScreenReader(t('waitlist_success'));
-    
+
     setTimeout(() => {
       window.open(whatsappUrl, '_blank');
       document.getElementById('preorder-signup-form').reset();
@@ -5694,7 +5477,7 @@ function renderContact() {
   };
 
   const formattedPhone = `+${CONFIG.WHATSAPP_NUMBER.slice(0,3)} ${CONFIG.WHATSAPP_NUMBER.slice(3,5)} ${CONFIG.WHATSAPP_NUMBER.slice(5,8)} ${CONFIG.WHATSAPP_NUMBER.slice(8)}`;
-  const waLinkDisplay = IS_WHATSAPP_PLACEHOLDER 
+  const waLinkDisplay = IS_WHATSAPP_PLACEHOLDER
     ? `<span style="font-size: 0.95rem; color: var(--gold); border: 1px dashed var(--gold); padding: 0.6rem 1rem; display: inline-block;">${t('whatsapp_prelaunch_note')}</span>`
     : `<a href="https://wa.me/${WHATSAPP_NUMBER}" target="_blank" rel="noopener" style="color: var(--ivory-100); text-decoration: none; font-size: 1.1rem; border: 1px solid var(--border-whisper); padding: 0.6rem 1rem;">${formattedPhone}</a>`;
 
@@ -5708,7 +5491,7 @@ function renderContact() {
               ${state.lang === 'ar' ? 'تواصل مع دار العطور' : 'Connect with the House'}
             </h1>
             <p style="color: var(--taupe); font-weight: 300; line-height: 1.7; margin-bottom: 2.5rem;">
-              ${state.lang === 'ar' ? 
+              ${state.lang === 'ar' ?
                 'بما أننا نعمل بنظام الدفعات الحصرية والصغيرة، فإننا نستقبل الطلبات والاستشارات العطرية مباشرة عبر واتساب لخدمتك بشكل خاص.' :
                 'As we operate entirely in manual small batches, we maintain direct communication with each customer to coordinate custom batch numbering and courier delivery across Saudi Arabia.'}
             </p>
@@ -5730,7 +5513,7 @@ function renderContact() {
           <div style="background-color: var(--charcoal-800); padding: 3rem; border: 1px solid var(--border-whisper);">
             <h3 class="serif-display" style="font-size: 1.8rem; margin-bottom: 0.5rem;">${t('preorder_title')}</h3>
             <p style="font-size: 0.9rem; color: var(--taupe); margin-bottom: 2rem;">${t('preorder_subtitle')}</p>
-            
+
             <div id="form-feedback" class="announcement-banner" aria-live="polite" style="display: none; margin-bottom: 2rem; border: 1px solid var(--gold); text-transform: none;"></div>
 
             <form id="preorder-signup-form" onsubmit="submitPreorderForm(event)" class="preorder-form" novalidate>
@@ -5785,15 +5568,15 @@ function renderIngredients() {
         <h1 class="serif-display" style="font-size: clamp(2rem, 4vw, 3.5rem); margin-bottom: 2rem;">
           ${state.lang === 'ar' ? 'الشفافية العطرية وسلامة البشرة' : 'Transparency & Skin Safety'}
         </h1>
-        
+
         <div style="max-width: 800px; color: var(--taupe); font-weight: 300; line-height: 1.8; margin-bottom: 4rem; font-size: 1.1rem;">
           <p style="margin-bottom: 1.5rem;">
-            ${state.lang === 'ar' ? 
+            ${state.lang === 'ar' ?
               'تلتزم دار عطور أسمر وسَمَر بالشفافية الكاملة حول تركيبات عطورها. جميع مكوناتنا وزيوتنا العطرية الفاخرة مصممة ومصنوعة بتوافق تام مع المعايير واللوائح الإرشادية الصادرة عن الجمعية الدولية للعطور (IFRA).' :
               'At ASMR & SAMR, we believe true luxury lies in absolute transparency. Every extrait de parfum, body spray, and body cream is hand-weighed, filtered, and bottled in small batches, utilizing premium natural absolutes and safe synthetic aroma-molecules.'}
           </p>
           <p>
-            ${state.lang === 'ar' ? 
+            ${state.lang === 'ar' ?
               'بما أننا نستخدم مستخلصات طبيعية وزيوت خام بتركيز عالي، فإننا نوصي بشدة بإجراء اختبار رقعة جلدي بسيط على معصمك قبل الاستخدام الكامل للمرة الأولى لتفادي الحساسية الجلدية.' :
               'Because we formulate at high concentration levels (28% Extrait de Parfum), we use high-density natural raw materials. We strongly advise performing a simple skin patch test on your inner wrist before applying any fragrance fully.'}
           </p>
@@ -5810,7 +5593,7 @@ function renderIngredients() {
               Linalool, Benzyl Salicylate, Alpha-Isomethyl Ionone, Coumarin, Vanillin.
             </p>
             <p style="font-size: 0.8rem; color: var(--taupe); line-height: 1.5; font-style: italic; border-top: 1px solid rgba(196,165,102,0.1); padding-top: 1rem;">
-              ${state.lang === 'ar' ? 
+              ${state.lang === 'ar' ?
                 'قائمة المكونات الكاملة (INCI) موجودة على كل ملصق. توثيق التركيبات قيد المراجعة مع المورد الخاص بنا.' :
                 'Full INCI list on every label. Composed-accord documentation in progress with our supplier.'}
             </p>
@@ -5826,7 +5609,7 @@ function renderIngredients() {
               Linalool, Benzyl Salicylate, Alpha-Isomethyl Ionone, Santalol, Limonene, Geraniol.
             </p>
             <p style="font-size: 0.8rem; color: var(--taupe); line-height: 1.5; font-style: italic; border-top: 1px solid rgba(196,165,102,0.1); padding-top: 1rem;">
-              ${state.lang === 'ar' ? 
+              ${state.lang === 'ar' ?
                 'قائمة المكونات الكاملة (INCI) موجودة على كل ملصق. توثيق التركيبات قيد المراجعة مع المورد الخاص بنا.' :
                 'Full INCI list on every label. Composed-accord documentation in progress with our supplier.'}
             </p>
@@ -5837,7 +5620,7 @@ function renderIngredients() {
         <div style="background-color: var(--charcoal-900); border: 1px solid var(--border-whisper); padding: 3rem; border-radius: 4px; max-width: 800px;">
           <h3 class="serif-display" style="font-size: 2rem; margin-bottom: 1.5rem; color: var(--gold);">${state.lang === 'ar' ? 'كريمات وبخاخات الجسم' : 'Body Sprays & Creams'}</h3>
           <p style="color: var(--taupe); line-height: 1.7; font-weight: 300; margin-bottom: 0;">
-            ${state.lang === 'ar' ? 
+            ${state.lang === 'ar' ?
               'تحتوي بخاخات وكريمات الجسم المعطرة من أسمر وسَمَر على نفس المركبات المسببة للحساسية المذكورة أعلاه ولكن بنسب وتركيزات مخففة وآمنة تماماً للبشرة. بالإضافة إلى ذلك، تحتوي كريمات الجسم على حافظة واسعة المجال (broad-spectrum preservative) لحمايتها من الميكروبات وضمان ثبات التركيبة لأطول فترة ممكنة.' :
               'Our scented body sprays and creams contain the same allergen compounds declared above at lower, skin-safe concentration levels suited for daily body application. Additionally, our rich body creams contain a broad-spectrum preservative to ensure microbiological stability and safety over extended storage.'}
           </p>
@@ -5906,6 +5689,7 @@ function renderFooter() {
 
 // Router Action
 function renderApp() {
+  applyAdminState();
   renderHeader();
   renderCartDrawer();
   updateCartBadge();
@@ -5960,12 +5744,12 @@ function renderApp() {
   }
 }
 
-async function submitNewsletter(e) {
+function submitNewsletter(e) {
   e.preventDefault();
   const emailInput = document.getElementById('newsletter-email');
   const feedback = document.getElementById('newsletter-feedback');
   const errorEl = document.getElementById('newsletter-err-email');
-  
+
   if (!emailInput || !feedback || !errorEl) return;
 
   emailInput.classList.remove('invalid');
@@ -5974,7 +5758,7 @@ async function submitNewsletter(e) {
   feedback.style.display = 'none';
   feedback.innerText = '';
 
-  const email = emailInput.value.trim().toLowerCase();
+  const email = emailInput.value.trim();
   if (!email) {
     emailInput.classList.add('invalid');
     errorEl.innerText = state.lang === 'ar' ? 'يرجى إدخال البريد الإلكتروني' : 'Please enter your email address';
@@ -5994,18 +5778,6 @@ async function submitNewsletter(e) {
   if (!list.includes(email)) {
     list.push(email);
     localStorage.setItem('asmr_samr_newsletter_emails', JSON.stringify(list));
-  }
-
-  try {
-    if (getPublicSupabaseConfig().key) {
-      await publicSupabaseRequest('newsletter_subscribers?on_conflict=email', {
-        method: 'POST', headers: { Prefer: 'resolution=ignore-duplicates,return=minimal' }, body: { email }
-      });
-    }
-  } catch (_) {
-    feedback.innerText = state.lang === 'ar' ? '\u062a\u0639\u0630\u0631 \u0627\u0644\u0627\u062a\u0635\u0627\u0644. \u064a\u0631\u062c\u0649 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.' : 'We could not connect. Please try again.';
-    feedback.style.display = 'block';
-    return;
   }
 
   feedback.innerText = state.lang === 'ar' ? 'شكراً لك! تم تسجيل بريدك الإلكتروني بنجاح.' : 'Thank you! You have joined the first numbered batch.';
@@ -6044,11 +5816,33 @@ window.switchAccountTab = function(e, tab) {
 window.handleAccountLogout = function(e) { e.preventDefault(); clearAccountData(); };
 window.saveNotificationPrefs = saveNotificationPrefs;
 window.saveProfileData = saveProfileData;
+window.adminLogin = adminLogin;
+window.adminLogout = adminLogout;
+window.adminRefreshSupabase = adminRefreshSupabase;
+window.adminPersistProductToSupabase = adminPersistProductToSupabase;
+window.adminPersistOrderStatusToSupabase = adminPersistOrderStatusToSupabase;
+window.adminPersistContentToSupabase = adminPersistContentToSupabase;
+window.adminPersistCouponToSupabase = adminPersistCouponToSupabase;
+window.adminDeleteCouponFromSupabase = adminDeleteCouponFromSupabase;
 window.showToast = showToast;
+window.adminSaveProductRow = adminSaveProductRow;
+window.adminOpenProductEditor = adminOpenProductEditor;
+window.adminCloseProductEditor = adminCloseProductEditor;
+window.adminSaveProductDetails = adminSaveProductDetails;
+window.adminFilterProducts = adminFilterProducts;
+window.adminUpdateOrderStatus = adminUpdateOrderStatus;
+window.adminSaveSettings = adminSaveSettings;
+window.adminAddCoupon = adminAddCoupon;
+window.adminToggleCoupon = adminToggleCoupon;
+window.adminDeleteCoupon = adminDeleteCoupon;
+window.adminCopyEmail = adminCopyEmail;
+window.adminSeedSampleOrder = adminSeedSampleOrder;
+window.adminResetState = adminResetState;
+window.adminExportData = adminExportData;
 
 // Init Event Listeners on Load
 let asmrSamrAppInitialized = false;
-async function initAsmrSamrApp() {
+function initAsmrSamrApp() {
   if (asmrSamrAppInitialized) return;
   asmrSamrAppInitialized = true;
 
@@ -6079,14 +5873,14 @@ async function initAsmrSamrApp() {
       closeMobileNav();
       closePreorderModal();
     }
-    
+
     // Trap focus inside cart drawer when open
     const drawer = document.getElementById('cart-drawer');
     if (drawer && drawer.classList.contains('open') && e.key === 'Tab') {
       const focusables = drawer.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
       const firstFocusable = focusables[0];
       const lastFocusable = focusables[focusables.length - 1];
-      
+
       if (e.shiftKey) { // Shift + Tab
         if (document.activeElement === firstFocusable) {
           lastFocusable.focus();
@@ -6150,14 +5944,6 @@ async function initAsmrSamrApp() {
 
   initRouter();
   renderApp();
-
-  loadPublicCatalogFromSupabase().then((loaded) => {
-    if (!loaded) return;
-    const route = window.location.hash || '#/';
-    if (route === '#/' || route.startsWith('#/shop') || route.startsWith('#/product/') || route === '#/gifting') {
-      renderApp();
-    }
-  });
 }
 
 if (document.readyState === 'loading') {
