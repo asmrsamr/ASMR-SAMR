@@ -2,6 +2,16 @@
 
 The dashboard intentionally has no insecure public bootstrap route. Create the first administrator through Supabase with project-owner access.
 
+## Current Live Admins
+
+As of 2026-07-17, project `thpuomqhqghqskyegpfj` has:
+
+- Primary administrator: `j.zoneng@gmail.com`
+- Recovery administrator: `jooo4444@gmail.com`
+
+The recovery administrator was invited through Supabase Auth and must complete
+the invite/password flow before it can be used for interactive testing.
+
 ## 1. Create Or Invite The User
 
 In Supabase Dashboard, open **Authentication > Users** and invite or create the real administrator email. Have the user complete the normal password or magic-link flow.

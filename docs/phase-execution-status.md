@@ -5,7 +5,7 @@ Branch: `Codex`
 
 ## Phase 1: Security And Access
 
-Status: In progress
+Status: Live access hardening applied; authenticated acceptance pending
 
 Completed:
 
@@ -16,14 +16,16 @@ Completed:
 - Administrator self-lockout and final-administrator removal blocked in PostgreSQL and the user Edge Function.
 - Anonymous and privileged-boundary security tests added.
 - GitHub Actions quality gate added.
+- Supabase migration `20260717131500_phase1_access_hardening.sql` applied to project `thpuomqhqghqskyegpfj`.
+- Primary administrator created/promoted: `j.zoneng@gmail.com`.
+- Recovery administrator invited/promoted: `jooo4444@gmail.com`.
+- Live `admin-users` Edge Function source verified in the Supabase Code view with the secured staff-role implementation.
 
 Pending external access:
 
-- Sign in to the Supabase project-owner dashboard.
-- Apply `20260717131500_phase1_access_hardening.sql`.
-- Redeploy `admin-users`.
-- Create the first named administrator and a recovery administrator.
-- Run the authenticated role matrix.
+- Recovery administrator must accept the Supabase invite and set credentials.
+- Run the authenticated role matrix with a real admin session.
+- If a strict timestamped function redeploy is required, authenticate the Supabase CLI or deploy from an account/API token that can refresh the Edge Function deployment. The live source currently matches the secured implementation.
 
 ## Phase 2: Operational Dashboard QA
 
@@ -43,8 +45,7 @@ Completed:
 
 Pending:
 
-- Deploy the Phase 1 live migration and updated `admin-users` function.
-- Create two named administrator accounts.
+- Recovery administrator invite acceptance.
 - Run the authenticated read matrix for every operational role.
 - Run the transient CRUD and audit cycle with an authorized account.
 - Audit-log verification for sensitive changes.
