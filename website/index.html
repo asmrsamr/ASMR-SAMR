@@ -109,14 +109,14 @@
     (function loadConfigThenApp() {
       function loadApp() {
         var script = document.createElement('script');
-        script.src = 'app.js?v=admin-operations-20260717g';
+        script.src = 'app.js?v=admin-operations-20260717h';
         script.charset = 'utf-8';
         document.body.appendChild(script);
       }
 
       function loadAdminThenApp() {
         var admin = document.createElement('script');
-        admin.src = 'admin-dashboard.js?v=admin-operations-20260717b';
+        admin.src = 'admin-dashboard.js?v=admin-operations-20260717c';
         admin.charset = 'utf-8';
         admin.onload = loadApp;
         admin.onerror = loadApp;

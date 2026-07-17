@@ -3,6 +3,7 @@
 window.ASMR_SAMR_CONFIG = {
   supabaseUrl: 'https://thpuomqhqghqskyegpfj.supabase.co',
   supabaseAnonKey: 'YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY',
-  adminRoles: ['admin'],
+  // Descriptive only; profile roles and Supabase RLS authorize access.
+  adminRoles: ['admin', 'manager', 'finance', 'marketing', 'inventory', 'production', 'support'],
   adminRequireAuth: true
 };

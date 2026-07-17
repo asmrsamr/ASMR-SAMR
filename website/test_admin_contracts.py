@@ -1,0 +1,89 @@
+"""Phase 2 dashboard route, CRUD, and authorization contract gate."""
+
+from __future__ import annotations
+
+import re
+import sys
+from pathlib import Path
+
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parent
+
+admin_js = (HERE / "admin-dashboard.js").read_text(encoding="utf-8")
+app_js = (HERE / "app.js").read_text(encoding="utf-8")
+css = (HERE / "style.css").read_text(encoding="utf-8")
+example_config = (HERE / "config.example.js").read_text(encoding="utf-8")
+sql = "\n".join(
+    path.read_text(encoding="utf-8")
+    for path in sorted((ROOT / "supabase" / "migrations").glob("*.sql"))
+)
+
+passed: list[str] = []
+failed: list[str] = []
+
+
+def check(condition: bool, label: str) -> None:
+    kind = "PASS" if condition else "FAIL"
+    print(f"  {kind:<4}  {label}")
+    (passed if condition else failed).append(label)
+
+
+expected_tabs = {
+    "overview", "orders", "products", "inventory", "customers", "wishlist",
+    "rewards", "gifting", "preorders", "coupons", "content", "marketing",
+    "notifications", "reports", "roles", "settings", "status", "ingredients",
+    "suppliers", "purchase-orders", "formulas", "production", "finance",
+    "costing", "users", "campaigns", "api-keys", "audit",
+}
+
+nav_block = re.search(r"const NAV_ITEMS = \[(.*?)\n  \];", admin_js, re.S)
+nav_tabs = set(re.findall(r"\['([^']+)',\s*'[^']+'\]", nav_block.group(1) if nav_block else ""))
+
+print("\n[1] Navigation and direct routes")
+check(nav_tabs == expected_tabs, "all intended dashboard tabs appear exactly once")
+generic_block = re.search(r"const genericMap = \{(.*?)\n    \};", admin_js, re.S)
+generic_tabs = set(re.findall(r"(?:^|\n)\s*(?:'([^']+)'|([a-z-]+)):\s*CONFIGS", generic_block.group(1) if generic_block else ""))
+generic_tabs = {left or right for left, right in generic_tabs}
+explicit_tabs = set(re.findall(r"if \(tab === '([^']+)'\) return", admin_js))
+check(nav_tabs <= generic_tabs | explicit_tabs, "every sidebar tab dispatches to a connected page")
+check("route === '#/admin' || route.startsWith('#/admin/')" in app_js, "direct admin URLs are routed by the application")
+check("window.addEventListener('hashchange'" in app_js, "browser back and forward navigation re-renders routes")
+check("const TAB_PERMISSION_GROUPS" in admin_js and "tabVisibleForCurrentRole" in admin_js, "sidebar visibility follows permissions")
+check("tab === 'users' || tab === 'api-keys'" in admin_js, "privileged system tabs remain administrator-only")
+
+print("\n[2] CRUD behavior")
+crud_markers = [
+    "openGenericForm", "viewGeneric", "deleteGeneric", "queueSearch", "setFilter",
+    "setSort", "setPage", "required", "loadingState", "emptyState", "errorState",
+    "confirmAction", "canRead(config)", "canWrite(config)",
+]
+for marker in crud_markers:
+    check(marker in admin_js, f"generic CRUD contract includes {marker}")
+check("deleteMode: 'archive'" in admin_js, "important records support soft archival")
+check("archiveField: false" in admin_js, "status-only cancellation does not write nonexistent archive columns")
+check("archiveStatus: { field: 'status', value: 'cancelled' }" in admin_js, "orders and planned production can be cancelled safely")
+check("['profiles', 'products', 'ingredients', 'formulas', 'production_batches', 'orders']" in sql, "database blocks hard deletion of protected business records")
+check("audit_row_change" in sql and "audit_logs" in sql, "sensitive CRUD operations have database audit coverage")
+
+print("\n[3] Session and role consistency")
+staff_roles = {"admin", "manager", "finance", "marketing", "inventory", "production", "support"}
+role_line = re.search(r"const ADMIN_STAFF_ROLES = \[(.*?)\];", app_js)
+app_roles = set(re.findall(r"'([^']+)'", role_line.group(1) if role_line else ""))
+config_roles = set(re.findall(r"'([^']+)'", re.search(r"adminRoles:\s*\[(.*?)\]", example_config).group(1)))
+check(app_roles == staff_roles, "legacy application helpers recognize the canonical staff roles")
+check(config_roles == staff_roles, "browser configuration example documents every operational role")
+check("localStorage.setItem(ADMIN_SESSION_KEY" not in app_js, "fallback admin login never persists tokens in localStorage")
+check("sessionStorage.setItem(ADMIN_SESSION_KEY" in app_js, "fallback admin login uses tab-scoped sessionStorage")
+check("localStorage.setItem(ADMIN_REMOTE_CACHE_KEY" not in app_js, "protected remote cache is not persisted in localStorage")
+check("sessionStorage.setItem(ADMIN_REMOTE_CACHE_KEY" in app_js, "protected remote cache is tab-scoped")
+
+print("\n[4] Responsive sidebar")
+check(".admin-sidebar" in css and "position: fixed" in css, "dashboard sidebar remains fixed")
+check(".admin-nav" in css and "overflow-y: auto" in css, "dashboard navigation scrolls independently")
+check(".admin-sidebar-footer" in css, "profile, settings, and logout remain in the sidebar footer")
+
+print("\n" + "=" * 72)
+print(f"{len(passed)} passed | {len(failed)} failed")
+if failed:
+    sys.exit(1)

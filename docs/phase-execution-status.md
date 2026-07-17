@@ -27,17 +27,26 @@ Pending external access:
 
 ## Phase 2: Operational Dashboard QA
 
-Status: Started where no administrator is required
+Status: In progress; repository implementation complete, live acceptance pending
 
 Completed:
 
 - Role-aware sidebar visibility.
 - Direct-route permission error behavior retained.
 - Public storefront and protected login regression checks.
+- Route-to-page contract coverage for every dashboard navigation item.
+- Canonical staff-role coverage across the dashboard and legacy fallback helpers.
+- Legacy admin tokens and protected remote caches moved out of persistent storage.
+- Safe cancellation actions for orders and planned production records.
+- Authenticated role/RLS acceptance harness with optional transient audited CRUD.
+- Phase 2 contract gate added to GitHub Actions.
 
 Pending:
 
-- Authenticated CRUD matrix for every operational role.
+- Deploy the Phase 1 live migration and updated `admin-users` function.
+- Create two named administrator accounts.
+- Run the authenticated read matrix for every operational role.
+- Run the transient CRUD and audit cycle with an authorized account.
 - Audit-log verification for sensitive changes.
 - Correction of defects found during real-account testing.
 

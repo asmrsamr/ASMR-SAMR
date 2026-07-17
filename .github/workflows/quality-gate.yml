@@ -51,3 +51,6 @@ jobs:
 
       - name: Run Phase 1 security gate
         run: python website/test_security.py
+
+      - name: Run Phase 2 dashboard contracts
+        run: python website/test_admin_contracts.py

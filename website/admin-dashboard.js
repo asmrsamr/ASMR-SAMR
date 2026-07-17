@@ -1312,7 +1312,10 @@
       action: async () => {
         const filter = recordFilter(config, row);
         if (archive) {
-          const payload = { [config.archiveField || 'archived_at']: new Date().toISOString() };
+          const payload = {};
+          if (config.archiveField !== false) {
+            payload[config.archiveField || 'archived_at'] = new Date().toISOString();
+          }
           if (config.archiveStatus) payload[config.archiveStatus.field] = config.archiveStatus.value;
           await db(`${config.table}?${filter}`, {
             method: 'PATCH',
@@ -1435,6 +1438,10 @@
           throw new Error('Order total must equal subtotal plus VAT.');
         }
       },
+      deleteMode: 'archive',
+      archiveField: false,
+      archiveStatus: { field: 'status', value: 'cancelled' },
+      canDelete: (row) => !['delivered', 'cancelled'].includes(row.status),
       rowActions: (_row, index) => `<button type="button" onclick="ASMRSAMRAdmin.openOrderItems(${index})">Items</button>`
     },
     products: {
@@ -1950,6 +1957,10 @@
       createdBy: 'created_by',
       updatedBy: 'updated_by',
       canEdit: (row) => ['planned', 'trial', 'macerating', 'quality_control', 'released'].includes(row.status),
+      deleteMode: 'archive',
+      archiveField: false,
+      archiveStatus: { field: 'status', value: 'cancelled' },
+      canDelete: (row) => ['planned', 'trial'].includes(row.status),
       rowActions: (row, index) => `
         ${['planned', 'trial'].includes(row.status) ? `<button type="button" onclick="ASMRSAMRAdmin.confirmBatch(${index})">Confirm batch</button>` : ''}
         ${['confirmed', 'macerating', 'quality_control'].includes(row.status) ? `<button type="button" class="danger" onclick="ASMRSAMRAdmin.reverseBatch(${index})">Correct / cancel</button>` : ''}

@@ -2245,6 +2245,7 @@ function saveNotificationPrefs(e) {
 const ADMIN_STATE_KEY = 'asmr_samr_admin_state_v1';
 const ADMIN_REMOTE_CACHE_KEY = 'asmr_samr_admin_remote_cache_v1';
 const ADMIN_SESSION_KEY = 'asmr_samr_admin_supabase_session_v1';
+const ADMIN_STAFF_ROLES = ['admin', 'manager', 'finance', 'marketing', 'inventory', 'production', 'support'];
 const ADMIN_TABS = [
   'overview',
   'orders',
@@ -2288,7 +2289,7 @@ const ADMIN_BADGE_OPTIONS = [
 ];
 
 const ADMIN_SUPABASE_DEFAULT_URL = 'https://thpuomqhqghqskyegpfj.supabase.co';
-let adminRemoteCache = readJson(ADMIN_REMOTE_CACHE_KEY, null);
+let adminRemoteCache = readAdminRemoteCache();
 let adminSyncStarted = false;
 let adminSyncError = '';
 
@@ -2297,7 +2298,9 @@ function getAdminSupabaseConfig() {
   return {
     url: (cfg.supabaseUrl || cfg.SUPABASE_URL || ADMIN_SUPABASE_DEFAULT_URL || '').replace(/\/+$/, ''),
     anonKey: cfg.supabaseAnonKey || cfg.SUPABASE_ANON_KEY || cfg.anonKey || '',
-    adminRoles: Array.isArray(cfg.adminRoles) ? cfg.adminRoles : ['admin'],
+    // Browser configuration never defines authorization. Profile roles and
+    // database policies remain authoritative for dashboard operations.
+    adminRoles: [...ADMIN_STAFF_ROLES],
     requireAuth: cfg.adminRequireAuth !== false
   };
 }
@@ -2308,15 +2311,17 @@ function isAdminSupabaseConfigured() {
 }
 
 function getStoredAdminSession() {
-  const ownSession = readJson(ADMIN_SESSION_KEY, null);
+  const ownSession = readSessionJson(ADMIN_SESSION_KEY, null);
   if (ownSession?.access_token) return ownSession;
-  const projectRef = (getAdminSupabaseConfig().url.match(/https:\/\/([^.]+)\.supabase\.co/i) || [])[1];
-  const keys = projectRef ? [`sb-${projectRef}-auth-token`] : [];
-  for (const key of keys) {
-    const session = readJson(key, null);
-    if (session?.access_token) return session;
-    if (session?.currentSession?.access_token) return session.currentSession;
+
+  // Migrate the former dashboard token once, then remove its persistent copy.
+  const legacySession = readJson(ADMIN_SESSION_KEY, null);
+  if (legacySession?.access_token) {
+    sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(legacySession));
+    localStorage.removeItem(ADMIN_SESSION_KEY);
+    return legacySession;
   }
+  localStorage.removeItem(ADMIN_SESSION_KEY);
   return null;
 }
 
@@ -2343,6 +2348,13 @@ async function adminSupabaseRequest(path, options = {}) {
     }
   });
   if (!res.ok) {
+    if (res.status === 401) {
+      adminRemoteCache = null;
+      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+      sessionStorage.removeItem(ADMIN_REMOTE_CACHE_KEY);
+      localStorage.removeItem(ADMIN_SESSION_KEY);
+      localStorage.removeItem(ADMIN_REMOTE_CACHE_KEY);
+    }
     const text = await res.text().catch(() => '');
     throw new Error(text || `Supabase request failed (${res.status})`);
   }
@@ -2450,7 +2462,8 @@ async function adminSyncFromSupabase() {
       newsletter_subscribers: newsletterRemote || [],
       content_settings: contentRemote || []
     };
-    localStorage.setItem(ADMIN_REMOTE_CACHE_KEY, JSON.stringify(adminRemoteCache));
+    sessionStorage.setItem(ADMIN_REMOTE_CACHE_KEY, JSON.stringify(adminRemoteCache));
+    localStorage.removeItem(ADMIN_REMOTE_CACHE_KEY);
     persistAdminState(mapSupabaseCacheToAdminState(adminRemoteCache));
     applyAdminState();
     if ((state.currentRoute || '').startsWith('#/admin')) renderApp();
@@ -2489,6 +2502,25 @@ function readJson(key, fallback) {
   } catch (e) {
     return fallback;
   }
+}
+
+function readSessionJson(key, fallback) {
+  try {
+    const raw = sessionStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch (e) {
+    return fallback;
+  }
+}
+
+function readAdminRemoteCache() {
+  const current = readSessionJson(ADMIN_REMOTE_CACHE_KEY, null);
+  const legacy = readJson(ADMIN_REMOTE_CACHE_KEY, null);
+  if (!current && legacy) {
+    sessionStorage.setItem(ADMIN_REMOTE_CACHE_KEY, JSON.stringify(legacy));
+  }
+  localStorage.removeItem(ADMIN_REMOTE_CACHE_KEY);
+  return current || legacy;
 }
 
 function getPreorders() {
@@ -4009,7 +4041,8 @@ async function adminLogin(event) {
       method: 'POST',
       body: JSON.stringify({ email, password })
     });
-    localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(data));
+    sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(data));
+    localStorage.removeItem(ADMIN_SESSION_KEY);
     adminSyncStarted = false;
     adminSyncError = '';
     await adminSyncFromSupabase();
@@ -4027,6 +4060,8 @@ async function adminLogin(event) {
 }
 
 function adminLogout() {
+  sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  sessionStorage.removeItem(ADMIN_REMOTE_CACHE_KEY);
   localStorage.removeItem(ADMIN_SESSION_KEY);
   adminRemoteCache = null;
   adminSyncStarted = false;

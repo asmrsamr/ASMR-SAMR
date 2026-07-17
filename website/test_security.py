@@ -43,6 +43,7 @@ def read(path: Path) -> str:
 
 
 admin_js = read(HERE / "admin-dashboard.js")
+app_js = read(HERE / "app.js")
 edge_users = read(ROOT / "supabase" / "functions" / "admin-users" / "index.ts")
 sql_files = sorted(MIGRATIONS.glob("*.sql"))
 sql = "\n".join(read(path) for path in sql_files)
@@ -77,6 +78,8 @@ if secret_hits:
 
 check("sessionStorage.setItem(SESSION_KEY" in admin_js, "admin tokens use tab-scoped sessionStorage")
 check("localStorage.setItem(SESSION_KEY" not in admin_js, "admin tokens are not persisted to localStorage")
+check("localStorage.setItem(ADMIN_SESSION_KEY" not in app_js, "fallback admin tokens are not persisted to localStorage")
+check("localStorage.setItem(ADMIN_REMOTE_CACHE_KEY" not in app_js, "protected admin cache is not persisted to localStorage")
 check("ADMIN_IDLE_TIMEOUT_MS = 30 * 60 * 1000" in admin_js, "30-minute admin inactivity timeout is enforced")
 check("ADMIN_MAX_SESSION_MS = 8 * 60 * 60 * 1000" in admin_js, "eight-hour admin session ceiling is enforced")
 check("response.status === 401" in admin_js and "clearSession()" in admin_js, "unauthorized responses clear the admin session")
