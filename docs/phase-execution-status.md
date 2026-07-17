@@ -129,8 +129,27 @@ Pending:
 - Replace the founder metadata placeholder with the approved public name.
 - Run the real checkout smoke test after the launch number is live.
 
+## Phase 8: Static Deployment Package
+
+Status: Repository implementation complete; production upload pending
+
+Completed:
+
+- Added `scripts/build_static_site.py` to produce a clean static `dist/` package from `website/`.
+- The package builder excludes developer-local `website/config.local.js` and writes a generated browser-safe runtime config from deployment environment variables.
+- Added `website/test_deploy_package.py` to verify required package files, generated launch config values, and absence of developer-local config leakage.
+- Added the deployment package build/test to the GitHub quality gate.
+- Added `docs/deployment-package.md` with build commands, required public environment variables, and verification steps.
+- Added `dist/` to `.gitignore`.
+
+Pending:
+
+- Provide final production values for WhatsApp, domain, founder metadata, and publishable Supabase key at deployment time.
+- Upload or deploy the generated `dist/` directory to the selected hosting provider.
+- Run final production smoke tests after deployment.
+
 ## Later Phases
 
-Phase 8 remains gated by authenticated acceptance, approved checkout
-path, real business data, launch content, production configuration, and
-stakeholder acceptance.
+Future phases remain gated by authenticated acceptance, approved checkout path,
+real business data, launch content, production configuration, and stakeholder
+acceptance.

@@ -54,3 +54,8 @@ jobs:
 
       - name: Run Phase 2 dashboard contracts
         run: python website/test_admin_contracts.py
+
+      - name: Build deployment package
+        run: |
+          python scripts/build_static_site.py --output dist
+          python website/test_deploy_package.py
