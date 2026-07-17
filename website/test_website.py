@@ -45,6 +45,7 @@ def read(name):
 html = read("index.html")
 js = read("app.js")
 admin_js = read("admin-dashboard.js")
+config_example = read("config.example.js")
 all_js = js + "\n" + admin_js
 css = read("style.css") if os.path.exists(os.path.join(HERE, "style.css")) else ""
 
@@ -128,6 +129,8 @@ print("\n[7] Launch blockers / placeholders")
 (warn if "unsplash.com" in html else ok)("og:image is an Unsplash hotlink — replace with own hero image")
 (warn if "asmrsamr.com" in html else ok)("JSON-LD url is a placeholder domain — set the real domain")
 (warn if "Artisan Perfumer & Founder" in html else ok)("founder name placeholder in JSON-LD")
+(ok if "PUBLIC_CONFIG" in js and "whatsappNumber" in config_example and "siteDomain" in config_example and "founderName" in config_example else fail)("public launch config can override WhatsApp, domain, and founder metadata")
+(ok if "getLaunchReadinessChecks" in js and "Production domain" in js and "Founder metadata" in js else fail)("admin status reports launch readiness for merchant config")
 
 # ---- 8 · customer dashboard ---------------------------------------------------
 print("\n[8] Customer dashboard (#/account)")

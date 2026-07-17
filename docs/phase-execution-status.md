@@ -109,8 +109,28 @@ Pending:
 
 - Run one real checkout/order test after the launch WhatsApp number is configured.
 
+## Phase 7: Launch Configuration Readiness
+
+Status: Repository implementation complete; production values pending
+
+Completed:
+
+- Public merchant launch values now merge from `window.ASMR_SAMR_CONFIG` before the storefront initializes.
+- Deployment config can override WhatsApp number, site domain, founder metadata, Instagram URL, production city labels, and reserved batch count without editing `app.js`.
+- Admin status now separates launch readiness checks for WhatsApp checkout, production domain, and founder structured-data metadata.
+- Added `website/config.example.js` launch keys for the real go-live values.
+- Added `docs/launch-configuration.md` with the exact public config fields and verification steps.
+- Added regression checks to ensure merchant launch config remains externally configurable and visible in admin readiness.
+
+Pending:
+
+- Set the real merchant WhatsApp number in deployment config.
+- Confirm the final production domain and set `siteDomain`.
+- Replace the founder metadata placeholder with the approved public name.
+- Run the real checkout smoke test after the launch number is live.
+
 ## Later Phases
 
-Phases 7 through 8 remain gated by authenticated acceptance, approved checkout
+Phase 8 remains gated by authenticated acceptance, approved checkout
 path, real business data, launch content, production configuration, and
 stakeholder acceptance.

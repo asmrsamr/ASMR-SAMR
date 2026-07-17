@@ -3,7 +3,24 @@
 // ==========================================
 // BRAND & MERCHANT CONFIGURATION
 // ==========================================
-const CONFIG = {
+const PUBLIC_CONFIG = window.ASMR_SAMR_CONFIG || window.ASMR_SAMR_SUPABASE || {};
+const PLACEHOLDER_WHATSAPP_NUMBER = '966500000000';
+const PLACEHOLDER_SITE_DOMAIN = 'https://asmrsamr.com';
+const PLACEHOLDER_FOUNDER_NAME = 'Artisan Perfumer & Founder';
+
+function firstConfigValue(...values) {
+  return values.find(value => value !== undefined && value !== null && String(value).trim() !== '');
+}
+
+function normalizePhoneNumber(value) {
+  return String(value || '').replace(/[^\d]/g, '');
+}
+
+function normalizeSiteDomain(value) {
+  return String(value || '').replace(/\/+$/, '');
+}
+
+const CONFIG_DEFAULTS = {
   WHATSAPP_NUMBER: '966500000000', // Target WhatsApp phone number (with country code, no +)
   INSTAGRAM_URL: 'https://instagram.com/asmr.samr.perfumes', // Instagram profile link
   SITE_DOMAIN: 'https://asmrsamr.com', // Production site domain (without trailing slash)
@@ -13,12 +30,50 @@ const CONFIG = {
   RESERVED_COUNT: 42 // Number of bottles reserved from B.077 (used in Stage 2)
 };
 
+const CONFIG = {
+  WHATSAPP_NUMBER: normalizePhoneNumber(firstConfigValue(PUBLIC_CONFIG.whatsappNumber, PUBLIC_CONFIG.WHATSAPP_NUMBER, CONFIG_DEFAULTS.WHATSAPP_NUMBER)),
+  INSTAGRAM_URL: firstConfigValue(PUBLIC_CONFIG.instagramUrl, PUBLIC_CONFIG.INSTAGRAM_URL, CONFIG_DEFAULTS.INSTAGRAM_URL),
+  SITE_DOMAIN: normalizeSiteDomain(firstConfigValue(PUBLIC_CONFIG.siteDomain, PUBLIC_CONFIG.SITE_DOMAIN, CONFIG_DEFAULTS.SITE_DOMAIN)),
+  FOUNDER_NAME: firstConfigValue(PUBLIC_CONFIG.founderName, PUBLIC_CONFIG.FOUNDER_NAME, CONFIG_DEFAULTS.FOUNDER_NAME),
+  PRODUCTION_CITY_EN: firstConfigValue(PUBLIC_CONFIG.productionCityEn, PUBLIC_CONFIG.PRODUCTION_CITY_EN, CONFIG_DEFAULTS.PRODUCTION_CITY_EN),
+  PRODUCTION_CITY_AR: firstConfigValue(PUBLIC_CONFIG.productionCityAr, PUBLIC_CONFIG.PRODUCTION_CITY_AR, CONFIG_DEFAULTS.PRODUCTION_CITY_AR),
+  RESERVED_COUNT: Math.max(0, Number(firstConfigValue(PUBLIC_CONFIG.reservedCount, PUBLIC_CONFIG.RESERVED_COUNT, CONFIG_DEFAULTS.RESERVED_COUNT)) || 0)
+};
+
 // Pre-launch checks to handle placeholder numbers gracefully
-const IS_WHATSAPP_PLACEHOLDER = (CONFIG.WHATSAPP_NUMBER === '966500000000');
+const IS_WHATSAPP_PLACEHOLDER = (CONFIG.WHATSAPP_NUMBER === PLACEHOLDER_WHATSAPP_NUMBER);
+const IS_DOMAIN_PLACEHOLDER = (CONFIG.SITE_DOMAIN === PLACEHOLDER_SITE_DOMAIN);
+const IS_FOUNDER_PLACEHOLDER = (CONFIG.FOUNDER_NAME === PLACEHOLDER_FOUNDER_NAME);
 
 // Configuration Aliases to preserve existing references without massive refactoring
 const WHATSAPP_NUMBER = CONFIG.WHATSAPP_NUMBER;
 const INSTAGRAM_URL = CONFIG.INSTAGRAM_URL;
+
+function getLaunchReadinessChecks() {
+  return [
+    {
+      key: 'whatsapp',
+      label: 'WhatsApp checkout',
+      value: IS_WHATSAPP_PLACEHOLDER ? 'Needs number' : 'Ready',
+      detail: IS_WHATSAPP_PLACEHOLDER ? 'Set whatsappNumber in the public deployment config before accepting live orders.' : `Sending to +${WHATSAPP_NUMBER}.`,
+      ok: !IS_WHATSAPP_PLACEHOLDER
+    },
+    {
+      key: 'domain',
+      label: 'Production domain',
+      value: IS_DOMAIN_PLACEHOLDER ? 'Confirm domain' : 'Ready',
+      detail: IS_DOMAIN_PLACEHOLDER ? 'Set siteDomain to the final storefront URL so metadata, images, and structured data are canonical.' : CONFIG.SITE_DOMAIN,
+      ok: !IS_DOMAIN_PLACEHOLDER
+    },
+    {
+      key: 'founder',
+      label: 'Founder metadata',
+      value: IS_FOUNDER_PLACEHOLDER ? 'Needs name' : 'Ready',
+      detail: IS_FOUNDER_PLACEHOLDER ? 'Set founderName before launch so JSON-LD does not publish placeholder identity data.' : CONFIG.FOUNDER_NAME,
+      ok: !IS_FOUNDER_PLACEHOLDER
+    }
+  ];
+}
 
 // Batch motif variables
 const BATCH_MOTIF_EN = `Batch No. 077 / ${CONFIG.PRODUCTION_CITY_EN} Maceration / 28% Extrait`;
@@ -3754,7 +3809,7 @@ function renderAdminStatus(analytics) {
   const checks = [
     { label: 'Storefront route', value: 'Ready', detail: 'Home, shop, product, cart, and admin routes are client-side hash routes.', ok: true },
     { label: 'Product images', value: `${Object.keys(productImages).length} WebP assets`, detail: 'The catalog uses WebP first and PNG fallback.', ok: Object.keys(productImages).length === products.length },
-    { label: 'WhatsApp checkout', value: IS_WHATSAPP_PLACEHOLDER ? 'Needs number' : 'Ready', detail: IS_WHATSAPP_PLACEHOLDER ? 'Replace the placeholder merchant number before launch.' : `Sending to ${WHATSAPP_NUMBER}.`, ok: !IS_WHATSAPP_PLACEHOLDER },
+    ...getLaunchReadinessChecks(),
     { label: 'Batch mode', value: settings.launchMode, detail: `${analytics.reservedCount} reservations tracked out of ${analytics.batchSize}.`, ok: true },
     { label: 'Inventory alerts', value: analytics.lowStockProducts ? `${analytics.lowStockProducts} alerts` : 'Clear', detail: `${analytics.totalStock} total stock units across the catalog.`, ok: !analytics.lowStockProducts }
   ];
