@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+website/config.local.js
 
 # Dependency folders
 node_modules/

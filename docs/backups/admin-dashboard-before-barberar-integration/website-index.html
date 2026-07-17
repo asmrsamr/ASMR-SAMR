@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=admin-dashboard-20260717">
+  <link rel="stylesheet" href="style.css?v=admin-tabs-20260716">
   
   <!-- Structured Schema Data (JSON-LD) -->
   <script type="application/ld+json">
@@ -104,24 +104,7 @@
   <!-- Cart Backdrop Overlay -->
   <div class="drawer-backdrop" id="drawer-backdrop"></div>
 
-  <!-- Optional local config loader, then application engine. -->
-  <script>
-    (function loadConfigThenApp() {
-      function loadApp() {
-        var script = document.createElement('script');
-        script.src = 'app.js?v=admin-dashboard-20260717';
-        script.charset = 'utf-8';
-        document.body.appendChild(script);
-      }
-
-      fetch('config.local.js', { cache: 'no-store' })
-        .then(function(response) { return response.ok ? response.text() : ''; })
-        .then(function(code) {
-          if (code) (0, eval)(code);
-        })
-        .catch(function() {})
-        .finally(loadApp);
-    })();
-  </script>
+  <!-- Application Engine Script (UTF-8 forced) -->
+  <script src="app.js?v=admin-tabs-20260716" charset="utf-8"></script>
 </body>
 </html>

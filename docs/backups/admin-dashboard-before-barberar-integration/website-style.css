@@ -3795,21 +3795,6 @@ body:has(.admin-dashboard-wrapper) .discovery-banner {
   margin: 0;
 }
 
-.admin-muted-note {
-  color: #766D63;
-  line-height: 1.6;
-  font-size: 0.88rem;
-  margin: 0;
-}
-
-.admin-muted-note code {
-  color: #2F2924;
-  background: rgba(196, 165, 102, 0.14);
-  border: 1px solid rgba(196, 165, 102, 0.24);
-  border-radius: 3px;
-  padding: 0.08rem 0.28rem;
-}
-
 .admin-eyebrow {
   color: #9C7B3C;
   text-transform: uppercase;
@@ -4590,17 +4575,6 @@ body:has(.account-dashboard-wrapper) header .cart-badge {
   font-size: 0.72rem; padding: 0.3rem 0.7rem; cursor: pointer;
   border: 1px solid rgba(166, 138, 86, 0.4); background: transparent;
   color: var(--gold-deep, #8E7445); border-radius: 3px; transition: all 0.2s;
-}
-.admin-table-row a {
-  color: var(--gold-deep, #8E7445);
-  text-decoration: none;
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.admin-table-row a:hover,
-.admin-table-row a:focus-visible {
-  text-decoration: underline;
 }
 .admin-row-actions button:hover, .admin-table-row button:hover { background: rgba(166, 138, 86, 0.1); }
 .admin-row-actions button.danger { color: #B0564B; border-color: rgba(176, 86, 75, 0.4); }

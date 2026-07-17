@@ -2059,27 +2059,7 @@ function saveNotificationPrefs(e) {
 // ADMIN DASHBOARD / CONTROL PLANE
 // ==========================================
 const ADMIN_STATE_KEY = 'asmr_samr_admin_state_v1';
-const ADMIN_REMOTE_CACHE_KEY = 'asmr_samr_admin_remote_cache_v1';
-const ADMIN_SESSION_KEY = 'asmr_samr_admin_supabase_session_v1';
-const ADMIN_TABS = [
-  'overview',
-  'orders',
-  'products',
-  'inventory',
-  'customers',
-  'wishlist',
-  'rewards',
-  'gifting',
-  'preorders',
-  'coupons',
-  'content',
-  'marketing',
-  'notifications',
-  'reports',
-  'roles',
-  'settings',
-  'status'
-];
+const ADMIN_TABS = ['overview', 'orders', 'products', 'customers', 'coupons', 'content', 'marketing', 'reports', 'status'];
 const ADMIN_STATUS_OPTIONS = ['new', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled'];
 const ADMIN_BADGE_OPTIONS = [
   'For Her',
@@ -2091,184 +2071,6 @@ const ADMIN_BADGE_OPTIONS = [
   'Layering',
   'Limited Batch'
 ];
-
-const ADMIN_SUPABASE_DEFAULT_URL = 'https://thpuomqhqghqskyegpfj.supabase.co';
-let adminRemoteCache = readJson(ADMIN_REMOTE_CACHE_KEY, null);
-let adminSyncStarted = false;
-let adminSyncError = '';
-
-function getAdminSupabaseConfig() {
-  const cfg = window.ASMR_SAMR_CONFIG || window.ASMR_SAMR_SUPABASE || {};
-  return {
-    url: (cfg.supabaseUrl || cfg.SUPABASE_URL || ADMIN_SUPABASE_DEFAULT_URL || '').replace(/\/+$/, ''),
-    anonKey: cfg.supabaseAnonKey || cfg.SUPABASE_ANON_KEY || cfg.anonKey || '',
-    adminRoles: Array.isArray(cfg.adminRoles) ? cfg.adminRoles : ['admin'],
-    requireAuth: cfg.adminRequireAuth !== false
-  };
-}
-
-function isAdminSupabaseConfigured() {
-  const cfg = getAdminSupabaseConfig();
-  return !!(cfg.url && cfg.anonKey);
-}
-
-function getStoredAdminSession() {
-  const ownSession = readJson(ADMIN_SESSION_KEY, null);
-  if (ownSession?.access_token) return ownSession;
-  const projectRef = (getAdminSupabaseConfig().url.match(/https:\/\/([^.]+)\.supabase\.co/i) || [])[1];
-  const keys = projectRef ? [`sb-${projectRef}-auth-token`] : [];
-  for (const key of keys) {
-    const session = readJson(key, null);
-    if (session?.access_token) return session;
-    if (session?.currentSession?.access_token) return session.currentSession;
-  }
-  return null;
-}
-
-function isAdminAuthorized(profile) {
-  const role = profile?.role || getStoredAdminSession()?.user?.app_metadata?.role;
-  return getAdminSupabaseConfig().adminRoles.includes(role);
-}
-
-async function adminSupabaseRequest(path, options = {}) {
-  const cfg = getAdminSupabaseConfig();
-  if (!cfg.url || !cfg.anonKey) throw new Error('Supabase frontend config is missing.');
-  const session = getStoredAdminSession();
-  const token = session?.access_token || cfg.anonKey;
-  const endpoint = path.startsWith('/auth/')
-    ? `${cfg.url}${path}`
-    : `${cfg.url}/rest/v1/${path.replace(/^\/+/, '')}`;
-  const res = await fetch(endpoint, {
-    ...options,
-    headers: {
-      apikey: cfg.anonKey,
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      ...(options.headers || {})
-    }
-  });
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(text || `Supabase request failed (${res.status})`);
-  }
-  if (res.status === 204) return null;
-  const text = await res.text();
-  return text ? JSON.parse(text) : null;
-}
-
-async function adminLoadProfileForSession() {
-  const session = getStoredAdminSession();
-  const userId = session?.user?.id;
-  if (!userId || !isAdminSupabaseConfigured()) return null;
-  const rows = await adminSupabaseRequest(`profiles?id=eq.${encodeURIComponent(userId)}&select=id,full_name,email,role,points`);
-  return Array.isArray(rows) ? rows[0] : null;
-}
-
-function mapSupabaseCacheToAdminState(cache) {
-  const stateCopy = getAdminState();
-  if (!cache) return stateCopy;
-  (cache.products || []).forEach(product => {
-    const local = stateCopy.products[product.id] || {};
-    const priceRows = (cache.product_prices || []).filter(price => price.product_id === product.id);
-    const inventory = (cache.product_inventory || []).find(row => row.product_id === product.id) || {};
-    stateCopy.products[product.id] = {
-      ...local,
-      nameEn: product.name_en || local.nameEn,
-      familyEn: product.family_en || local.familyEn,
-      descEn: product.desc_en || local.descEn,
-      badge: product.badge_en || local.badge,
-      heroSize: product.hero_size || local.heroSize,
-      isActive: product.is_active !== false,
-      featuredOnHome: !!product.featured_on_home,
-      sortOrder: product.sort_order || local.sortOrder,
-      stock: Number(inventory.stock ?? local.stock ?? 0),
-      lowStockAt: Number(inventory.low_stock_at ?? local.lowStockAt ?? 0),
-      prices: priceRows.reduce((acc, row) => {
-        acc[row.size] = Number(row.price) || 0;
-        return acc;
-      }, { ...(local.prices || {}) })
-    };
-  });
-  if (Array.isArray(cache.coupons)) {
-    stateCopy.coupons = cache.coupons.map(c => ({
-      code: c.code,
-      kind: c.kind,
-      value: Number(c.value) || 0,
-      active: c.is_active !== false,
-      minTotal: Number(c.min_total) || 0,
-      expiresAt: c.expires_at || ''
-    }));
-  }
-  (cache.content_settings || []).forEach(row => {
-    if (row.key === 'announcement_banner') {
-      stateCopy.settings.bannerEn = row.value_en || stateCopy.settings.bannerEn;
-      stateCopy.settings.bannerAr = row.value_ar || stateCopy.settings.bannerAr;
-    }
-  });
-  return stateCopy;
-}
-
-async function adminSyncFromSupabase() {
-  if (adminSyncStarted || !isAdminSupabaseConfigured()) return;
-  adminSyncStarted = true;
-  try {
-    const cfg = getAdminSupabaseConfig();
-    let profile = null;
-    if (cfg.requireAuth) {
-      profile = await adminLoadProfileForSession();
-      if (!isAdminAuthorized(profile)) {
-        adminSyncError = 'Sign in with an admin account to sync protected dashboard data.';
-        return;
-      }
-    }
-    const [
-      productsRemote,
-      pricesRemote,
-      inventoryRemote,
-      couponsRemote,
-      ordersRemote,
-      orderItemsRemote,
-      profilesRemote,
-      newsletterRemote,
-      contentRemote
-    ] = await Promise.all([
-      adminSupabaseRequest('products?select=*&order=sort_order.asc'),
-      adminSupabaseRequest('product_prices?select=*'),
-      adminSupabaseRequest('product_inventory?select=*'),
-      adminSupabaseRequest('coupons?select=*'),
-      adminSupabaseRequest('orders?select=*&order=created_at.desc&limit=100'),
-      adminSupabaseRequest('order_items?select=*'),
-      adminSupabaseRequest('profiles?select=id,full_name,phone,email,role,points,created_at&order=created_at.desc&limit=200'),
-      adminSupabaseRequest('newsletter_subscribers?select=*&order=created_at.desc&limit=500'),
-      adminSupabaseRequest('content_settings?select=*')
-    ]);
-    adminRemoteCache = {
-      syncedAt: new Date().toISOString(),
-      profile,
-      products: productsRemote || [],
-      product_prices: pricesRemote || [],
-      product_inventory: inventoryRemote || [],
-      coupons: couponsRemote || [],
-      orders: ordersRemote || [],
-      order_items: orderItemsRemote || [],
-      profiles: profilesRemote || [],
-      newsletter_subscribers: newsletterRemote || [],
-      content_settings: contentRemote || []
-    };
-    localStorage.setItem(ADMIN_REMOTE_CACHE_KEY, JSON.stringify(adminRemoteCache));
-    persistAdminState(mapSupabaseCacheToAdminState(adminRemoteCache));
-    applyAdminState();
-    if ((state.currentRoute || '').startsWith('#/admin')) renderApp();
-  } catch (error) {
-    adminSyncError = error?.message || 'Supabase sync failed.';
-  }
-}
-
-function ensureAdminSync() {
-  if (isAdminSupabaseConfigured()) {
-    adminSyncFromSupabase();
-  }
-}
 
 const BASE_PRODUCT_SNAPSHOT = products.reduce((acc, product, index) => {
   acc[product.id] = {
@@ -2535,7 +2337,7 @@ function getTopAdminProducts(orders, preorders) {
     .slice(0, 5);
 }
 
-// ---- richer admin analytics, based on real device-local and optional Supabase data ----
+// ---- richer analytics (modeled on the Barberar dashboard, real device-local data) ----
 function productTypeOf(id) {
   const p = products.find(pr => pr.id === id);
   return (p && p.type) || 'set';
@@ -2593,51 +2395,11 @@ function getAdminCoupons() {
 
 function getAdminAnalytics() {
   const adminState = getAdminState();
-  const remoteOrders = (adminRemoteCache?.orders || []).map(order => ({
-    id: order.order_no || order.id,
-    ts: order.created_at,
-    type: order.type || order.channel || 'supabase',
-    total: Number(order.total) || 0,
-    status: order.status,
-    items: (adminRemoteCache?.order_items || [])
-      .filter(item => item.order_id === order.id)
-      .map(item => ({
-        id: item.product_id,
-        name: item.name_en,
-        size: item.size,
-        qty: item.qty,
-        price: Number(item.unit_price) || 0
-      })),
-    customerName: order.customer_name,
-    customerPhone: order.customer_phone
-  }));
-  const orders = [...remoteOrders, ...getOrders()];
+  const orders = getOrders();
   const preorders = getPreorders();
-  const remoteNewsletter = (adminRemoteCache?.newsletter_subscribers || []).map(row => row.email).filter(Boolean);
-  const newsletter = Array.from(new Set([...remoteNewsletter, ...getNewsletterSubscribers()]));
+  const newsletter = getNewsletterSubscribers();
   const productRows = getAdminProductRows();
-  const remoteCustomers = (adminRemoteCache?.profiles || [])
-    .filter(row => row.role === 'customer')
-    .map(row => ({
-      name: row.full_name || row.email || 'Customer',
-      phone: row.phone || row.email || '',
-      count: 0,
-      value: 0,
-      points: Number(row.points) || 0,
-      role: row.role,
-      lastTs: row.created_at
-    }));
-  const customerByKey = {};
-  [...remoteCustomers, ...getAdminCustomers()].forEach(customer => {
-    const key = customer.phone || customer.name;
-    if (!customerByKey[key]) customerByKey[key] = { ...customer };
-    else {
-      customerByKey[key].count += Number(customer.count) || 0;
-      customerByKey[key].value += Number(customer.value) || 0;
-      customerByKey[key].points = Math.max(Number(customerByKey[key].points) || 0, Number(customer.points) || 0);
-    }
-  });
-  const customers = Object.values(customerByKey).sort((a, b) => b.value - a.value);
+  const customers = getAdminCustomers();
   const repeatCustomers = customers.filter(c => c.count > 1).length;
   const orderRevenue = orders.reduce((sum, order) => sum + (Number(order.total) || 0), 0);
   const preorderValue = preorders.reduce((sum, lead) => sum + (Number(lead.price) || 0), 0);
@@ -2669,12 +2431,6 @@ function getAdminAnalytics() {
     revenueByCategory: getRevenueByCategory(orders, preorders),
     orderChannels: getOrderChannels(orders, preorders),
     coupons: getAdminCoupons(),
-    remote: adminRemoteCache,
-    sync: {
-      configured: isAdminSupabaseConfigured(),
-      syncedAt: adminRemoteCache?.syncedAt || '',
-      error: adminSyncError
-    },
     insights: {
       totalCustomers: customers.length,
       repeatRate: customers.length ? Math.round((repeatCustomers / customers.length) * 100) : 0,
@@ -2689,19 +2445,11 @@ function renderAdminNav(activeTab) {
     overview: 'Overview',
     orders: 'Orders',
     products: 'Products',
-    inventory: 'Inventory',
     customers: 'Customers',
-    wishlist: 'Wishlist',
-    rewards: 'Rewards',
-    gifting: 'Gifting',
-    preorders: 'Pre-orders',
     coupons: 'Coupons',
     content: 'Content',
     marketing: 'Marketing',
-    notifications: 'Notifications',
     reports: 'Reports',
-    roles: 'Roles',
-    settings: 'Settings',
     status: 'Status'
   };
 
@@ -2724,7 +2472,6 @@ function renderAdminKpi(label, value, helper, tone = '') {
 
 function renderAdmin(activeTab = 'overview') {
   applyAdminState();
-  ensureAdminSync();
   const tab = ADMIN_TABS.includes(activeTab) ? activeTab : 'overview';
   const analytics = getAdminAnalytics();
   const tabLabel = tab.charAt(0).toUpperCase() + tab.slice(1);
@@ -2732,21 +2479,13 @@ function renderAdmin(activeTab = 'overview') {
   const content = {
     overview: renderAdminOverview,
     products: renderAdminProducts,
-    inventory: renderAdminInventory,
     orders: renderAdminOrders,
     customers: renderAdminCustomers,
-    wishlist: renderAdminWishlist,
-    rewards: renderAdminRewards,
-    gifting: renderAdminGifting,
-    preorders: renderAdminPreorders,
     coupons: renderAdminCoupons,
     content: renderAdminContent,
     marketing: renderAdminMarketing,
-    notifications: renderAdminNotifications,
     status: renderAdminStatus,
-    reports: renderAdminReports,
-    roles: renderAdminRoles,
-    settings: renderAdminSettings
+    reports: renderAdminReports
   }[tab](analytics);
 
   return `
@@ -2760,9 +2499,9 @@ function renderAdmin(activeTab = 'overview') {
           ${renderAdminNav(tab)}
         </nav>
         <div class="admin-sidebar-note">
-          <span>${isAdminSupabaseConfigured() ? 'Supabase linked' : 'Local studio mode'}</span>
+          <span>Live storefront</span>
           <strong>${analytics.activeProducts} active products</strong>
-          <small>${analytics.lowStockProducts} low-stock alerts${adminSyncError ? ' / sync attention' : ''}</small>
+          <small>${analytics.lowStockProducts} low-stock alerts</small>
         </div>
       </aside>
 
@@ -2776,7 +2515,6 @@ function renderAdmin(activeTab = 'overview') {
           <div class="admin-topbar-actions">
             <span class="admin-updated">Updated ${formatAdminDate(analytics.adminState.updatedAt)}</span>
             <a href="#/" class="admin-secondary-btn">View site</a>
-            <button type="button" class="admin-secondary-btn" onclick="adminRefreshSupabase()">Sync</button>
             <button type="button" class="admin-primary-btn" onclick="adminExportData()">Export data</button>
           </div>
         </header>
@@ -3415,212 +3153,6 @@ function renderAdminReports(analytics) {
   `;
 }
 
-function renderAdminInventory(analytics) {
-  const rows = analytics.productRows.map(({ product, admin }) => {
-    const stock = Number(admin.stock) || 0;
-    const low = stock <= Number(admin.lowStockAt || 0);
-    return `
-      <div class="admin-table-row">
-        <span class="admin-cell-strong">${esc(product.nameEn)}</span>
-        <span>${esc(product.brand)} / ${esc(product.type)}</span>
-        <span>${stock} units</span>
-        <span>${Number(admin.lowStockAt) || 0} alert</span>
-        <span><em class="admin-chip ${low ? 'off' : 'ok'}">${low ? 'Low stock' : 'Ready'}</em></span>
-      </div>
-    `;
-  }).join('');
-  return `
-    <section class="admin-kpi-grid">
-      ${renderAdminKpi('Total stock', analytics.totalStock, 'sellable units across catalog', 'gold')}
-      ${renderAdminKpi('Low-stock alerts', analytics.lowStockProducts, 'needs refill attention', analytics.lowStockProducts ? 'danger' : 'green')}
-      ${renderAdminKpi('Active products', analytics.activeProducts, 'visible on storefront', 'sand')}
-      ${renderAdminKpi('Image coverage', Object.keys(productImages).length, 'WebP product assets', 'stone')}
-    </section>
-    <section class="admin-panel">
-      <div class="admin-panel-heading"><div><span class="admin-eyebrow">Inventory</span><h2>Stock and thresholds</h2></div><a href="#/admin/products">Edit products</a></div>
-      <div class="admin-table">
-        <div class="admin-table-row admin-table-head"><span>Product</span><span>Group</span><span>Stock</span><span>Low at</span><span>Status</span></div>
-        ${rows}
-      </div>
-    </section>
-  `;
-}
-
-function renderAdminWishlist(analytics) {
-  const savedIds = getWishlist();
-  const rows = savedIds.length ? savedIds.map((id, index) => {
-    const product = getProductById(id, { includeInactive: true });
-    return `
-      <div class="admin-table-row">
-        <span class="admin-cell-strong">${String(index + 1).padStart(2, '0')}</span>
-        <span>${esc(product?.nameEn || id)}</span>
-        <span>${esc(product?.brand || 'ASMR & SAMR')}</span>
-        <span>${product ? formatSar(getProductStartPrice(product)) : '-'}</span>
-        <span><a href="#/product/${esc(id)}">View</a></span>
-      </div>
-    `;
-  }).join('') : `<p class="admin-muted-note" style="padding:1.5rem;">No wishlist activity yet.</p>`;
-  return `
-    <section class="admin-kpi-grid">
-      ${renderAdminKpi('Saved items', savedIds.length, 'wishlist entries on this browser', 'gold')}
-      ${renderAdminKpi('Most saved', savedIds[0] || 'None', 'wishlist demand signal', 'sand')}
-      ${renderAdminKpi('Discovery path', 'Shop', 'wishlist links stay connected', 'stone')}
-    </section>
-    <section class="admin-panel">
-      <div class="admin-panel-heading"><div><span class="admin-eyebrow">Wishlist</span><h2>Saved product demand</h2></div></div>
-      <div class="admin-table">
-        <div class="admin-table-row admin-table-head"><span>No.</span><span>Product</span><span>Brand</span><span>Price</span><span>Link</span></div>
-        ${rows}
-      </div>
-    </section>
-  `;
-}
-
-function renderAdminRewards(analytics) {
-  const customers = analytics.customers.length ? analytics.customers : [{ name: 'No customers yet', points: 0, value: 0, count: 0 }];
-  const rows = customers.slice(0, 12).map(customer => {
-    const points = Number(customer.points) || Math.round(Number(customer.value) || 0);
-    const tier = points >= 2500 ? 'Signature' : points >= 1000 ? 'Amber' : 'Ivory';
-    return `
-      <div class="admin-table-row">
-        <span class="admin-cell-strong">${esc(customer.name)}</span>
-        <span>${tier}</span>
-        <span>${points.toLocaleString('en-US')} pts</span>
-        <span>${customer.count || 0} orders</span>
-        <span>${formatSar(customer.value || 0)}</span>
-      </div>
-    `;
-  }).join('');
-  return `
-    <section class="admin-kpi-grid">
-      ${renderAdminKpi('Members', analytics.customers.length, 'customer profiles and buyers', 'gold')}
-      ${renderAdminKpi('Repeat rate', `${analytics.insights.repeatRate}%`, 'returning customers', 'sand')}
-      ${renderAdminKpi('Top tier', 'Signature', 'premium membership ceiling', 'stone')}
-    </section>
-    <section class="admin-panel">
-      <div class="admin-panel-heading"><div><span class="admin-eyebrow">Rewards</span><h2>Membership tiers</h2></div></div>
-      <div class="admin-table">
-        <div class="admin-table-row admin-table-head"><span>Customer</span><span>Tier</span><span>Points</span><span>Orders</span><span>Value</span></div>
-        ${rows}
-      </div>
-    </section>
-  `;
-}
-
-function renderAdminGifting(analytics) {
-  const giftRows = analytics.productRows
-    .filter(({ product }) => product.id === 'duo-box' || product.id.includes('trio') || product.id === 'discovery-set')
-    .map(({ product, admin }) => `
-      <div class="admin-product-row" style="grid-template-columns:minmax(220px,1.2fr) 1fr 110px 120px;">
-        <div class="admin-product-identity">
-          <div class="admin-product-thumb">${renderProductPhoto(product)}</div>
-          <div class="admin-product-info"><strong>${esc(product.nameEn)}</strong><small>${esc(admin.badge || getDefaultBadge(product))}</small></div>
-        </div>
-        <span>${esc(admin.leadTime || 'Gift-ready in 2-3 days')}</span>
-        <strong>${Number(admin.stock) || 0} units</strong>
-        <a href="#/product/${product.id}" class="admin-secondary-btn">View</a>
-      </div>
-    `).join('');
-  return `
-    <section class="admin-kpi-grid">
-      ${renderAdminKpi('Gift sets', 4, 'duo, discovery, and trio rituals', 'gold')}
-      ${renderAdminKpi('Gift stock', analytics.productRows.filter(r => r.product.id === 'duo-box' || r.product.id.includes('trio')).reduce((s, r) => s + (Number(r.admin.stock) || 0), 0), 'premium packaging units', 'sand')}
-      ${renderAdminKpi('Primary hero', 'Duo Box', 'main gifting conversion path', 'stone')}
-    </section>
-    <section class="admin-panel admin-table-panel">
-      <div class="admin-panel-heading"><div><span class="admin-eyebrow">Gifting</span><h2>Gift boxes and ritual sets</h2></div><a href="#/gifting">Open gifting page</a></div>
-      <div class="admin-product-list">${giftRows}</div>
-    </section>
-  `;
-}
-
-function renderAdminPreorders(analytics) {
-  return `
-    <section class="admin-kpi-grid">
-      ${renderAdminKpi('Pre-orders', analytics.preorders.length, 'reservation form leads', 'gold')}
-      ${renderAdminKpi('Reserved value', formatSar(analytics.preorderValue), 'estimated lead revenue', 'sand')}
-      ${renderAdminKpi('Batch progress', `${analytics.batchProgress}%`, `${analytics.reservedCount} of ${analytics.batchSize}`, 'stone')}
-    </section>
-    <section class="admin-panel">
-      <div class="admin-panel-heading"><div><span class="admin-eyebrow">Pre-orders</span><h2>Reservation leads</h2></div><a href="#/contact">Open form</a></div>
-      <div class="admin-lead-list">
-        ${analytics.preorders.length ? analytics.preorders.map(renderAdminLeadRow).join('') : '<p class="admin-empty">No pre-order leads yet.</p>'}
-      </div>
-    </section>
-  `;
-}
-
-function renderAdminNotifications(analytics) {
-  const activity = analytics.adminState.activity || [];
-  return `
-    <section class="admin-dashboard-grid">
-      <article class="admin-panel">
-        <div class="admin-panel-heading"><div><span class="admin-eyebrow">Notifications</span><h2>Operational alerts</h2></div></div>
-        <div class="admin-status-list">
-          <div class="admin-status-row"><span class="status-dot ${analytics.lowStockProducts ? 'warn' : 'ok'}"></span><strong>Inventory</strong><small>${analytics.lowStockProducts ? `${analytics.lowStockProducts} low-stock products` : 'No stock alerts'}</small></div>
-          <div class="admin-status-row"><span class="status-dot ${adminSyncError ? 'warn' : 'ok'}"></span><strong>Supabase sync</strong><small>${adminSyncError || (analytics.sync.syncedAt ? `Last synced ${formatAdminDate(analytics.sync.syncedAt)}` : 'Local mode ready')}</small></div>
-          <div class="admin-status-row"><span class="status-dot ${IS_WHATSAPP_PLACEHOLDER ? 'warn' : 'ok'}"></span><strong>WhatsApp</strong><small>${IS_WHATSAPP_PLACEHOLDER ? 'Merchant number required' : 'Order CTA ready'}</small></div>
-        </div>
-      </article>
-      <article class="admin-panel">
-        <div class="admin-panel-heading"><div><span class="admin-eyebrow">Activity</span><h2>Recent changes</h2></div></div>
-        <div class="admin-activity-list">
-          ${activity.length ? activity.slice(0, 10).map(item => `<div class="admin-activity-row"><span>${esc(item.type || 'log')}</span><div><strong>${esc(item.message)}</strong><small>${formatAdminDate(item.ts)}</small></div></div>`).join('') : '<p class="admin-empty">No admin notifications yet.</p>'}
-        </div>
-      </article>
-    </section>
-  `;
-}
-
-function renderAdminRoles(analytics) {
-  const profiles = adminRemoteCache?.profiles || [];
-  const rows = profiles.length ? profiles.map(profile => `
-    <div class="admin-table-row">
-      <span class="admin-cell-strong">${esc(profile.full_name || profile.email || profile.id)}</span>
-      <span>${esc(profile.email || '-')}</span>
-      <span>${esc(profile.role || 'customer')}</span>
-      <span>${Number(profile.points) || 0} pts</span>
-      <span>${formatAdminDate(profile.created_at)}</span>
-    </div>
-  `).join('') : `<p class="admin-muted-note" style="padding:1.5rem;">Connect Supabase and sign in as an admin to review role assignments.</p>`;
-  return `
-    <section class="admin-panel">
-      <div class="admin-panel-heading"><div><span class="admin-eyebrow">Roles and permissions</span><h2>User access</h2></div></div>
-      <p class="admin-muted-note">Admin access follows the existing Supabase <code>profiles.role</code> value. This screen never uses service-role credentials.</p>
-      <div class="admin-table">
-        <div class="admin-table-row admin-table-head"><span>Name</span><span>Email</span><span>Role</span><span>Points</span><span>Created</span></div>
-        ${rows}
-      </div>
-    </section>
-  `;
-}
-
-function renderAdminSettings(analytics) {
-  const profile = adminRemoteCache?.profile;
-  return `
-    <section class="admin-dashboard-grid">
-      <article class="admin-panel">
-        <div class="admin-panel-heading"><div><span class="admin-eyebrow">Settings</span><h2>Admin profile and data source</h2></div></div>
-        <div class="admin-status-list">
-          <div class="admin-status-row"><span class="status-dot ${analytics.sync.configured ? 'ok' : 'warn'}"></span><strong>Supabase frontend config</strong><small>${analytics.sync.configured ? 'Configured' : 'Missing publishable key config'}</small></div>
-          <div class="admin-status-row"><span class="status-dot ${profile ? 'ok' : 'warn'}"></span><strong>Admin session</strong><small>${profile ? `${esc(profile.full_name || profile.email || 'Admin')} / ${esc(profile.role)}` : 'No verified admin session in this browser'}</small></div>
-          <div class="admin-status-row"><span class="status-dot ok"></span><strong>RLS posture</strong><small>Existing inspected tables have RLS enabled.</small></div>
-        </div>
-        ${analytics.sync.error ? `<p class="admin-muted-note" style="margin-top:1rem;">${esc(analytics.sync.error)}</p>` : ''}
-      </article>
-      <article class="admin-panel">
-        <div class="admin-panel-heading"><div><span class="admin-eyebrow">Secure sign in</span><h2>Admin Supabase login</h2></div></div>
-        <form class="admin-form" onsubmit="adminLogin(event)">
-          <label>Email<input id="admin-login-email" type="email" autocomplete="email" required></label>
-          <label>Password<input id="admin-login-password" type="password" autocomplete="current-password" required></label>
-          <button type="submit" class="admin-primary-btn">Sign in and sync</button>
-          <button type="button" class="admin-secondary-btn" onclick="adminLogout()">Sign out</button>
-        </form>
-      </article>
-    </section>
-  `;
-}
-
 function adminReadProductRow(productId) {
   const adminState = getAdminState();
   const product = getProductById(productId, { includeInactive: true });
@@ -3656,7 +3188,6 @@ function adminSaveProductRow(event, productId) {
   ];
   persistAdminState(adminState);
   applyAdminState();
-  adminPersistProductToSupabase(productId, next);
   showToast('Product updated');
   renderApp();
 }
@@ -3696,7 +3227,6 @@ function adminSaveProductDetails(event, productId) {
   persistAdminState(adminState);
   applyAdminState();
   adminCloseProductEditor();
-  adminPersistProductToSupabase(productId, adminState.products[productId]);
   showToast('Product details saved');
   renderApp();
 }
@@ -3721,7 +3251,6 @@ function adminUpdateOrderStatus(orderId, status) {
     ...(adminState.activity || [])
   ];
   persistAdminState(adminState);
-  adminPersistOrderStatusToSupabase(orderId, status);
   showToast('Order status updated');
 }
 
@@ -3745,7 +3274,6 @@ function adminSaveSettings(event) {
   ];
   persistAdminState(adminState);
   applyAdminState();
-  adminPersistContentToSupabase(adminState.settings);
   showToast('Content settings saved');
   renderApp();
 }
@@ -3781,7 +3309,6 @@ function adminAddCoupon(event) {
   st.coupons = getAdminCoupons().filter(c => c.code !== code);
   st.coupons.unshift({ code, kind, value, minTotal, active: true });
   persistAdminState(st);
-  adminPersistCouponToSupabase({ code, kind, value, minTotal, active: true });
   recordAdminActivity(`Coupon ${code} created`, 'coupon');
   showToast(`Coupon ${code} added`);
   renderApp();
@@ -3791,8 +3318,6 @@ function adminToggleCoupon(code) {
   const st = getAdminState();
   st.coupons = getAdminCoupons().map(c => c.code === code ? { ...c, active: !c.active } : c);
   persistAdminState(st);
-  const coupon = st.coupons.find(c => c.code === code);
-  if (coupon) adminPersistCouponToSupabase(coupon);
   renderApp();
 }
 
@@ -3801,7 +3326,6 @@ function adminDeleteCoupon(code) {
   const st = getAdminState();
   st.coupons = getAdminCoupons().filter(c => c.code !== code);
   persistAdminState(st);
-  adminDeleteCouponFromSupabase(code);
   showToast(`Coupon ${code} deleted`);
   renderApp();
 }
@@ -3809,157 +3333,6 @@ function adminDeleteCoupon(code) {
 function adminCopyEmail(email) {
   if (navigator.clipboard) navigator.clipboard.writeText(email).then(() => showToast('Email copied'));
   else showToast(email);
-}
-
-async function adminLogin(event) {
-  if (event) event.preventDefault();
-  if (!isAdminSupabaseConfigured()) {
-    showToast('Add website/config.local.js with the Supabase publishable key first');
-    return;
-  }
-  const email = (document.getElementById('admin-login-email')?.value || '').trim();
-  const password = document.getElementById('admin-login-password')?.value || '';
-  try {
-    const data = await adminSupabaseRequest('/auth/v1/token?grant_type=password', {
-      method: 'POST',
-      body: JSON.stringify({ email, password })
-    });
-    localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(data));
-    adminSyncStarted = false;
-    adminSyncError = '';
-    await adminSyncFromSupabase();
-    const profile = await adminLoadProfileForSession();
-    if (!isAdminAuthorized(profile)) {
-      adminLogout();
-      showToast('This account is not authorized for admin access');
-      return;
-    }
-    showToast('Admin signed in');
-    renderApp();
-  } catch (error) {
-    showToast('Admin sign in failed');
-  }
-}
-
-function adminLogout() {
-  localStorage.removeItem(ADMIN_SESSION_KEY);
-  adminRemoteCache = null;
-  adminSyncStarted = false;
-  localStorage.removeItem(ADMIN_REMOTE_CACHE_KEY);
-  showToast('Admin signed out');
-  renderApp();
-}
-
-function adminRefreshSupabase() {
-  adminSyncStarted = false;
-  adminSyncError = '';
-  adminSyncFromSupabase().then(() => {
-    showToast(isAdminSupabaseConfigured() ? 'Sync complete' : 'Local admin mode active');
-  }).catch(() => showToast('Sync failed'));
-}
-
-async function adminPersistProductToSupabase(productId, adminProduct) {
-  if (!isAdminSupabaseConfigured()) return;
-  try {
-    await adminSupabaseRequest(`products?id=eq.${encodeURIComponent(productId)}`, {
-      method: 'PATCH',
-      headers: { Prefer: 'return=minimal' },
-      body: JSON.stringify({
-        name_en: adminProduct.nameEn,
-        family_en: adminProduct.familyEn,
-        desc_en: adminProduct.descEn,
-        hero_size: adminProduct.heroSize,
-        is_active: adminProduct.isActive !== false,
-        featured_on_home: !!adminProduct.featuredOnHome,
-        sort_order: Number(adminProduct.sortOrder) || 1,
-        badge_en: adminProduct.badge,
-        updated_at: new Date().toISOString()
-      })
-    });
-    await adminSupabaseRequest('product_inventory?on_conflict=product_id', {
-      method: 'POST',
-      headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
-      body: JSON.stringify({
-        product_id: productId,
-        stock: Number(adminProduct.stock) || 0,
-        low_stock_at: Number(adminProduct.lowStockAt) || 0
-      })
-    });
-    const priceRows = Object.entries(adminProduct.prices || {}).map(([size, price]) => ({
-      product_id: productId,
-      size,
-      price: Number(price) || 0
-    }));
-    if (priceRows.length) {
-      await adminSupabaseRequest('product_prices?on_conflict=product_id,size', {
-        method: 'POST',
-        headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
-        body: JSON.stringify(priceRows)
-      });
-    }
-  } catch (error) {
-    adminSyncError = error?.message || 'Could not save product to Supabase.';
-  }
-}
-
-async function adminPersistOrderStatusToSupabase(orderId, status) {
-  if (!isAdminSupabaseConfigured()) return;
-  try {
-    await adminSupabaseRequest(`orders?or=(order_no.eq.${encodeURIComponent(orderId)},id.eq.${encodeURIComponent(orderId)})`, {
-      method: 'PATCH',
-      headers: { Prefer: 'return=minimal' },
-      body: JSON.stringify({ status })
-    });
-  } catch (error) {
-    adminSyncError = error?.message || 'Could not save order status to Supabase.';
-  }
-}
-
-async function adminPersistContentToSupabase(settings) {
-  if (!isAdminSupabaseConfigured()) return;
-  try {
-    await adminSupabaseRequest('content_settings?on_conflict=key', {
-      method: 'POST',
-      headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
-      body: JSON.stringify({
-        key: 'announcement_banner',
-        value_en: settings.bannerEn || '',
-        value_ar: settings.bannerAr || '',
-        updated_at: new Date().toISOString()
-      })
-    });
-  } catch (error) {
-    adminSyncError = error?.message || 'Could not save content settings to Supabase.';
-  }
-}
-
-async function adminPersistCouponToSupabase(coupon) {
-  if (!isAdminSupabaseConfigured()) return;
-  try {
-    await adminSupabaseRequest('coupons?on_conflict=code', {
-      method: 'POST',
-      headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
-      body: JSON.stringify({
-        code: coupon.code,
-        kind: coupon.kind,
-        value: Number(coupon.value) || 0,
-        is_active: coupon.active !== false,
-        min_total: Number(coupon.minTotal) || 0,
-        expires_at: coupon.expiresAt || null
-      })
-    });
-  } catch (error) {
-    adminSyncError = error?.message || 'Could not save coupon to Supabase.';
-  }
-}
-
-async function adminDeleteCouponFromSupabase(code) {
-  if (!isAdminSupabaseConfigured()) return;
-  try {
-    await adminSupabaseRequest(`coupons?code=eq.${encodeURIComponent(code)}`, { method: 'DELETE', headers: { Prefer: 'return=minimal' } });
-  } catch (error) {
-    adminSyncError = error?.message || 'Could not delete coupon from Supabase.';
-  }
 }
 
 function adminExportData() {
@@ -5816,14 +5189,6 @@ window.switchAccountTab = function(e, tab) {
 window.handleAccountLogout = function(e) { e.preventDefault(); clearAccountData(); };
 window.saveNotificationPrefs = saveNotificationPrefs;
 window.saveProfileData = saveProfileData;
-window.adminLogin = adminLogin;
-window.adminLogout = adminLogout;
-window.adminRefreshSupabase = adminRefreshSupabase;
-window.adminPersistProductToSupabase = adminPersistProductToSupabase;
-window.adminPersistOrderStatusToSupabase = adminPersistOrderStatusToSupabase;
-window.adminPersistContentToSupabase = adminPersistContentToSupabase;
-window.adminPersistCouponToSupabase = adminPersistCouponToSupabase;
-window.adminDeleteCouponFromSupabase = adminDeleteCouponFromSupabase;
 window.showToast = showToast;
 window.adminSaveProductRow = adminSaveProductRow;
 window.adminOpenProductEditor = adminOpenProductEditor;
@@ -5841,15 +5206,10 @@ window.adminResetState = adminResetState;
 window.adminExportData = adminExportData;
 
 // Init Event Listeners on Load
-let asmrSamrAppInitialized = false;
-function initAsmrSamrApp() {
-  if (asmrSamrAppInitialized) return;
-  asmrSamrAppInitialized = true;
-
+document.addEventListener('DOMContentLoaded', () => {
   // Sticky header transition
   window.addEventListener('scroll', () => {
     const header = document.querySelector('header');
-    if (!header) return;
     if (window.scrollY > 50) {
       header.classList.add('scrolled');
     } else {
@@ -5858,13 +5218,13 @@ function initAsmrSamrApp() {
   });
 
   // Setup backdrop close
-  document.getElementById('drawer-backdrop')?.addEventListener('click', () => {
+  document.getElementById('drawer-backdrop').addEventListener('click', () => {
     closeCartDrawer();
     closeMobileNav();
     closePreorderModal();
   });
-  document.getElementById('cart-close-btn')?.addEventListener('click', closeCartDrawer);
-  document.getElementById('cart-checkout-btn')?.addEventListener('click', checkoutToWhatsApp);
+  document.getElementById('cart-close-btn').addEventListener('click', closeCartDrawer);
+  document.getElementById('cart-checkout-btn').addEventListener('click', checkoutToWhatsApp);
 
   // Keyboard accessibility listeners (Trap focus and Escape close)
   document.addEventListener('keydown', (e) => {
@@ -5944,10 +5304,4 @@ function initAsmrSamrApp() {
 
   initRouter();
   renderApp();
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initAsmrSamrApp);
-} else {
-  initAsmrSamrApp();
-}
+});
