@@ -89,8 +89,28 @@ Pending:
 - Run an end-to-end checkout against live Supabase after the real WhatsApp number is configured.
 - Decide whether to add public inventory availability to the storefront RPC before launch.
 
+## Phase 6: Storefront Inventory Availability
+
+Status: Live storefront inventory availability applied and verified
+
+Completed:
+
+- Added migration `20260717171531_phase6_storefront_inventory_availability.sql` to extend `get_storefront_catalog` with safe public availability fields: stock status, checkout eligibility, and capped max order quantity.
+- Updated both storefront order RPC signatures to reject out-of-stock products and requested quantities above available stock before creating an order.
+- Storefront product cards and product detail pages now show subtle stock status labels using the existing luxury design language.
+- Add-to-cart, cart quantity controls, checkout sync, and buy-now now honor live availability and max quantity data from the public catalog.
+- Fixed direct buy-now order reference creation before Supabase persistence.
+- Added regression tests for safe catalog availability fields, inventory validation, stock-aware cart behavior, and buy-now order references.
+- Applied the Phase 6 migration to project `thpuomqhqghqskyegpfj`.
+- Live public RPC verification confirmed products now return `stock_status`, `can_checkout`, and `max_order_quantity`.
+- Local browser smoke test confirmed the shop loads from Supabase, renders stock labels, and reports no console errors.
+
+Pending:
+
+- Run one real checkout/order test after the launch WhatsApp number is configured.
+
 ## Later Phases
 
-Phases 6 through 8 remain gated by authenticated acceptance, approved checkout
+Phases 7 through 8 remain gated by authenticated acceptance, approved checkout
 path, real business data, launch content, production configuration, and
 stakeholder acceptance.

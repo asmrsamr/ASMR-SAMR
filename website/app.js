@@ -783,6 +783,35 @@ function isProductPublic(product) {
   return product && product.admin?.isActive !== false;
 }
 
+function getProductStockStatus(product) {
+  const status = String(product?.stockStatus || product?.availability || 'in_stock').toLowerCase();
+  if (['out_of_stock', 'discontinued'].includes(status)) return 'out_of_stock';
+  if (status === 'low_stock') return 'low_stock';
+  if (status === 'preorder') return 'preorder';
+  return 'in_stock';
+}
+
+function getProductMaxOrderQuantity(product) {
+  if (!product) return 0;
+  if (product.maxOrderQuantity === undefined || product.maxOrderQuantity === null) return 12;
+  return Math.max(0, Math.floor(Number(product.maxOrderQuantity) || 0));
+}
+
+function canCheckoutProduct(product) {
+  return Boolean(product)
+    && product.canCheckout !== false
+    && !['out_of_stock', 'discontinued'].includes(getProductStockStatus(product))
+    && getProductMaxOrderQuantity(product) > 0;
+}
+
+function getStockStatusLabel(product) {
+  const status = getProductStockStatus(product);
+  if (status === 'out_of_stock') return state.lang === 'ar' ? 'غير متاح حالياً' : 'Out of stock';
+  if (status === 'low_stock') return state.lang === 'ar' ? 'كمية محدودة' : 'Limited stock';
+  if (status === 'preorder') return state.lang === 'ar' ? 'حجز مسبق' : 'Pre-order';
+  return state.lang === 'ar' ? 'متوفر' : 'In stock';
+}
+
 function getPublicProducts() {
   return products
     .filter(isProductPublic)
@@ -942,6 +971,10 @@ async function loadPublicCatalogFromSupabase() {
         wearAr: fallback.wearAr || row.how_to_wear || '',
         badgeEn: row.badge_en || fallback.badgeEn || '',
         badgeAr: row.badge_ar || row.badge_en || fallback.badgeAr || '',
+        stockStatus: row.stock_status || row.availability || fallback.stockStatus || 'in_stock',
+        availability: row.availability || fallback.availability || 'in_stock',
+        canCheckout: row.can_checkout !== false,
+        maxOrderQuantity: Math.max(0, Number(row.max_order_quantity ?? fallback.maxOrderQuantity ?? 12) || 0),
         admin: { isActive: true, featuredOnHome: Boolean(row.featured_on_home), sortOrder: Number(row.sort_order) || 0 }
       };
     }).filter((product) => product.sizes.length && Object.keys(product.prices).length);
@@ -1253,9 +1286,12 @@ function renderShopProductCard(product) {
   const startSize = getProductStartSize(product);
   const startPrice = getProductStartPrice(product);
   const priceLead = product.sizes.length > 1 ? uiText('from') : '';
+  const canCheckout = canCheckoutProduct(product);
+  const stockStatus = getProductStockStatus(product);
+  const stockLabel = getStockStatusLabel(product);
 
   return `
-    <article class="product-card shop-product-card">
+    <article class="product-card shop-product-card ${canCheckout ? '' : 'is-unavailable'}">
       ${renderLuxuryBadges(product, 'shop-card-badges')}
       <a href="#/product/${product.id}" class="product-card-main" aria-label="${name} - ${state.lang === 'ar' ? 'View product details' : 'View product details'}">
         <div class="product-card-visual shop-card-visual">
@@ -1265,6 +1301,7 @@ function renderShopProductCard(product) {
           <span class="brand-tag">${product.brand} / ${getProductFamily(product)}</span>
           <h3 class="product-name">${name}</h3>
           <p class="product-desc">${getMerchCopy(product, 'profile')}</p>
+          <span class="stock-status stock-status-${stockStatus}">${stockLabel}</span>
           <div class="shop-card-facts">
             ${facts.map(fact => `<span>${fact}</span>`).join('')}
           </div>
@@ -1276,7 +1313,7 @@ function renderShopProductCard(product) {
           <small>/ ${startSize}</small>
         </div>
         <div class="shop-card-buttons">
-          <button type="button" class="card-cart-btn" onclick="addToCart('${product.id}', '${startSize}', ${startPrice})">${t('add_to_cart')}</button>
+          <button type="button" class="card-cart-btn" ${canCheckout ? `onclick="addToCart('${product.id}', '${startSize}', ${startPrice})"` : 'disabled aria-disabled="true"'}>${canCheckout ? t('add_to_cart') : stockLabel}</button>
           <a href="#/product/${product.id}" class="card-detail-link">${uiText('details')}</a>
         </div>
       </div>
@@ -1425,6 +1462,9 @@ function renderUpgradedProductDetail(productId) {
 
   const activeSize = state.selectedSize[productId];
   const price = product.prices[activeSize];
+  const canCheckout = canCheckoutProduct(product);
+  const stockStatus = getProductStockStatus(product);
+  const stockLabel = getStockStatusLabel(product);
   const sizePillsHtml = product.sizes.map(size => `
     <button class="size-pill ${size === activeSize ? 'active' : ''}" aria-label="Select size ${size}" onclick="selectProductSize('${productId}', '${size}')">
       ${size}
@@ -1447,6 +1487,7 @@ function renderUpgradedProductDetail(productId) {
               <span class="badge badge-preorder" style="border: 1px solid var(--gold); color: var(--gold); padding: 0.2rem 0.5rem; font-size: 0.7rem; font-family: var(--font-sans); letter-spacing: 0.05em; font-weight: 500; text-transform: uppercase;">
                 ${state.lang === 'ar' ? 'حجز مسبق' : 'PRE-ORDER'}
               </span>
+              <span class="stock-status stock-status-${stockStatus}">${stockLabel}</span>
               ${renderLuxuryBadges(product, 'detail-badges')}
             </div>
 
@@ -1484,8 +1525,8 @@ function renderUpgradedProductDetail(productId) {
                 <p>${uiText('reserveCopy')}</p>
               </div>
               <div class="detail-cta-actions">
-                <button class="btn btn-primary" onclick="addToCart('${product.id}', '${activeSize}', ${price})">
-                  ${t('add_to_cart')}
+                <button class="btn btn-primary" ${canCheckout ? `onclick="addToCart('${product.id}', '${activeSize}', ${price})"` : 'disabled aria-disabled="true"'}>
+                  ${canCheckout ? t('add_to_cart') : stockLabel}
                 </button>
                 <button type="button" class="btn btn-outline account-wish-toggle ${getWishlist().includes(product.id) ? 'is-saved' : ''}" onclick="toggleWishlist('${product.id}')" aria-pressed="${getWishlist().includes(product.id)}">
                   ${getWishlist().includes(product.id) ? t('wishlist_saved') : t('wishlist_add')}
@@ -1786,15 +1827,18 @@ function syncCartWithCatalog() {
     .map(item => {
       const product = getProductById(item.id);
       if (!product || !product.sizes.includes(item.size)) return null;
+      if (!canCheckoutProduct(product)) return null;
       const currentPrice = Number(product.prices[item.size] || item.price || 0);
       if (!currentPrice) return null;
+      const maxOrderQuantity = getProductMaxOrderQuantity(product);
+      if (maxOrderQuantity < 1) return null;
       return {
         ...item,
         nameEn: product.nameEn,
         nameAr: product.nameAr,
         brand: product.brand,
         price: currentPrice,
-        quantity: Math.max(1, Number(item.quantity) || 1)
+        quantity: Math.min(maxOrderQuantity, Math.max(1, Number(item.quantity) || 1))
       };
     })
     .filter(Boolean);
@@ -1807,16 +1851,23 @@ function syncCartWithCatalog() {
 function getSellableProductSelection(productId, size) {
   const product = getProductById(productId);
   if (!product || !isProductPublic(product)) return null;
+  if (!canCheckoutProduct(product)) return null;
   const validSize = product.sizes.includes(size) ? size : product.heroSize || product.sizes[0];
   const currentPrice = Number(product.prices[validSize] || 0);
   if (!validSize || !currentPrice) return null;
-  return { product, size: validSize, price: currentPrice };
+  return { product, size: validSize, price: currentPrice, maxOrderQuantity: getProductMaxOrderQuantity(product) };
 }
 
 function showUnavailableProductNotice() {
   showToast(state.lang === 'ar'
     ? 'هذا المنتج غير متاح حالياً'
     : 'This product is not available right now');
+}
+
+function showStockLimitNotice() {
+  showToast(state.lang === 'ar'
+    ? 'Ù„Ø§ ÙŠÙ…ÙƒÙ† Ø¥Ø¶Ø§ÙØ© ÙƒÙ…ÙŠØ© Ø£ÙƒØ¨Ø± Ù…Ù† Ø§Ù„Ù…ØªØ§Ø­ Ø­Ø§Ù„ÙŠØ§Ù‹'
+    : 'That is the maximum available quantity for this product');
 }
 
 function openWhatsAppUrl(whatsappUrl, pendingWindow) {
@@ -1837,11 +1888,16 @@ async function addToCart(productId, size) {
   }
   const { product, price: currentPrice } = selection;
   size = selection.size;
-  const orderNo = createStorefrontOrderNo();
 
   const cartIndex = state.cart.findIndex(item => item.id === productId && item.size === size);
 
   if (cartIndex > -1) {
+    if (state.cart[cartIndex].quantity >= selection.maxOrderQuantity) {
+      showStockLimitNotice();
+      renderCartDrawer();
+      openCartDrawer();
+      return;
+    }
     state.cart[cartIndex].quantity += 1;
   } else {
     state.cart.push({
@@ -1871,6 +1927,11 @@ function updateCartQty(id, size, change) {
     return;
   }
   if (item) {
+    if (change > 0 && item.quantity >= selection.maxOrderQuantity) {
+      showStockLimitNotice();
+      renderCartDrawer();
+      return;
+    }
     item.quantity += change;
     item.price = selection.price;
     item.nameEn = selection.product.nameEn;
@@ -4880,6 +4941,7 @@ async function buyNowWhatsApp(productId, size) {
   }
   const { product, price: currentPrice } = selection;
   size = selection.size;
+  const orderNo = createStorefrontOrderNo();
 
   const total = currentPrice + Math.round(currentPrice * 0.15);
   let message = '';
@@ -5041,6 +5103,8 @@ function renderCartDrawer() {
     const totalItemVal = item.price * item.quantity;
     subtotal += totalItemVal;
     const name = state.lang === 'ar' ? item.nameAr : item.nameEn;
+    const product = getProductById(item.id);
+    const atQuantityLimit = product ? item.quantity >= getProductMaxOrderQuantity(product) : false;
 
     itemsHtml += `
       <div class="cart-item">
@@ -5051,7 +5115,7 @@ function renderCartDrawer() {
             <div style="display: flex; align-items: center; border: 1px solid var(--border-whisper);">
               <button class="qty-btn" onclick="updateCartQty('${item.id}', '${item.size}', -1)" aria-label="Decrease quantity">-</button>
               <span class="qty-val" aria-live="polite">${item.quantity}</span>
-              <button class="qty-btn" onclick="updateCartQty('${item.id}', '${item.size}', 1)" aria-label="Increase quantity">+</button>
+              <button class="qty-btn" onclick="updateCartQty('${item.id}', '${item.size}', 1)" aria-label="Increase quantity" ${atQuantityLimit ? 'disabled aria-disabled="true"' : ''}>+</button>
             </div>
             <button class="cart-item-remove" onclick="removeFromCart('${item.id}', '${item.size}')">${state.lang === 'ar' ? 'إزالة' : 'Remove'}</button>
           </div>

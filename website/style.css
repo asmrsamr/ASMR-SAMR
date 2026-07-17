@@ -1585,6 +1585,39 @@ body:has(.campaign-brand-hero) header:not(.scrolled) .mobile-nav-toggle span {
   padding-right: 0.75rem;
 }
 
+.stock-status {
+  align-self: flex-start;
+  border: 1px solid rgba(230, 223, 211, 0.16);
+  color: var(--sand);
+  display: inline-flex;
+  font-family: var(--font-sans);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  margin: 0.15rem 0 1rem;
+  padding: 0.42rem 0.58rem;
+  text-transform: uppercase;
+}
+
+.stock-status-in_stock {
+  background: rgba(152, 139, 101, 0.12);
+  border-color: rgba(166, 138, 86, 0.3);
+  color: var(--gold-light);
+}
+
+.stock-status-low_stock,
+.stock-status-preorder {
+  background: rgba(166, 138, 86, 0.13);
+  border-color: rgba(166, 138, 86, 0.42);
+}
+
+.stock-status-out_of_stock {
+  background: rgba(91, 76, 67, 0.18);
+  border-color: rgba(230, 223, 211, 0.14);
+  color: var(--taupe);
+}
+
 .shop-card-action-row {
   align-items: flex-end;
   border-top: 1px solid var(--border-whisper);
@@ -1632,6 +1665,17 @@ body:has(.campaign-brand-hero) header:not(.scrolled) .mobile-nav-toggle span {
 
 .card-detail-link:hover {
   color: var(--gold-light);
+}
+
+.card-cart-btn:disabled,
+.btn:disabled,
+.qty-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.46;
+}
+
+.shop-product-card.is-unavailable .product-card-visual {
+  opacity: 0.68;
 }
 
 /* Upgraded product detail */
