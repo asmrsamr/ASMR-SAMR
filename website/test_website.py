@@ -283,11 +283,14 @@ for function_name in ("admin-api-keys", "verify-api-key", "admin-users", "admin-
 print("\n[14] Excel workbook pricing import")
 pricing_manifest_path = os.path.join(HERE, "..", "data", "product-pricing-latest.json")
 pricing_sql_path = os.path.join(HERE, "..", "supabase", "imports", "product-pricing-latest.sql")
-if os.path.exists(pricing_manifest_path) and os.path.exists(pricing_sql_path):
+pricing_price_only_sql_path = os.path.join(HERE, "..", "supabase", "imports", "product-pricing-prices-only.sql")
+if os.path.exists(pricing_manifest_path) and os.path.exists(pricing_sql_path) and os.path.exists(pricing_price_only_sql_path):
     with open(pricing_manifest_path, encoding="utf-8") as f:
         pricing_manifest = json.load(f)
     with open(pricing_sql_path, encoding="utf-8") as f:
         pricing_sql = f.read()
+    with open(pricing_price_only_sql_path, encoding="utf-8") as f:
+        price_only_sql = f.read()
     records_by_id = {row["product_id"]: row for row in pricing_manifest.get("records", [])}
     for pid, size, price in (
         ("asmr-extrait", "50 ml", 320),
@@ -308,10 +311,16 @@ if os.path.exists(pricing_manifest_path) and os.path.exists(pricing_sql_path):
      else fail)("pricing import updates cost components with allocation methods")
     (ok if "product_inventory" not in pricing_sql.lower() else fail)(
         "pricing import does not mutate inventory quantities")
+    (ok if "other_cost" not in pricing_sql.lower() else fail)(
+        "pricing import matches the current product_cost_snapshots schema")
+    (ok if "set is_default = false" in pricing_sql.lower() else fail)(
+        "pricing import clears variant defaults before assigning new defaults")
+    (ok if "insert into public.product_prices" in price_only_sql.lower() and "product_cost_snapshots" not in price_only_sql.lower()
+     else fail)("price-only import is available for storefront price recovery")
     (ok if "Duo Box Duo" not in pricing_sql and "Trio Set Trio" not in pricing_sql else fail)(
         "derived set variant names are not duplicated")
 else:
-    fail("Excel pricing manifest and Supabase import SQL are present")
+    fail("Excel pricing manifest and Supabase import SQL files are present")
 
 # ---- summary -----------------------------------------------------------------
 print("\n" + "=" * 70)

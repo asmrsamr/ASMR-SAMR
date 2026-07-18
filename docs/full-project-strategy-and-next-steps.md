@@ -39,6 +39,7 @@ Generated artifacts:
 
 - `data/product-pricing-latest.json`
 - `supabase/imports/product-pricing-latest.sql`
+- `supabase/imports/product-pricing-prices-only.sql`
 - `scripts/extract_excel_product_pricing.py`
 - `scripts/verify_live_launch_pricing.py`
 
@@ -94,6 +95,8 @@ Steps:
 5. Upload final product images to Supabase Storage if the live database does not already reference the optimized WebP assets.
 6. Confirm every product has status, availability, primary image, price, SKU, and public description.
 7. Confirm archived or unavailable products do not appear as buyable.
+
+If the full import fails and the immediate launch blocker is storefront price correctness, apply `supabase/imports/product-pricing-prices-only.sql` first, then rerun `python scripts/verify_live_launch_pricing.py`.
 
 Acceptance:
 

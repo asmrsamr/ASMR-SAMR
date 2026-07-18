@@ -1,5 +1,5 @@
 -- ASMR & SAMR product pricing import
--- Generated from latest Excel workbook revisions on 2026-07-18T11:58:09.
+-- Generated from latest Excel workbook revisions on 2026-07-18T13:01:42.
 -- Source: asmr-extrait: ASMR/ASMR 008/ASMR Perfume 008.xlsx
 -- Source: samr-extrait: SAMR/SAMR 011/SAMR Perfume 011.xlsx
 -- Source: asmr-spray: ASMR/Perfume 007/ASMR Body Spray 007.xlsx
@@ -57,6 +57,12 @@ from (values
   ('discovery-set', 12)
 ) as v(product_id, cost)
 where p.id = v.product_id;
+
+update public.product_variants
+set is_default = false,
+    updated_at = now()
+where product_id in ('asmr-cream', 'asmr-extrait', 'asmr-spray', 'asmr-trio', 'discovery-set', 'duo-box', 'samr-cream', 'samr-extrait', 'samr-spray', 'samr-trio')
+  and archived_at is null;
 
 update public.product_variants pv
 set price = v.price,
@@ -145,19 +151,19 @@ values
   ('discovery-set', 'packaging', 'Excel launch import: packaging', 8, 'per_unit', date '2026-07-18');
 
 insert into public.product_cost_snapshots (
-  product_id, ingredient_cost, packaging_cost, labor_cost, other_cost,
+  product_id, ingredient_cost, packaging_cost, labor_cost,
   total_cost, cost_per_unit, selling_price, gross_profit, recommended_price
 )
 values
-  ('asmr-extrait', 56.03, 40, 0, 0, 96.03, 96.03, 320, 223.97, 320),
-  ('samr-extrait', 27.32, 40, 0, 0, 67.32, 67.32, 230, 162.68, 230),
-  ('asmr-spray', 41.14, 0, 0, 0, 41.14, 41.14, 99, 57.86, 99),
-  ('samr-spray', 30.34, 0, 0, 0, 30.34, 30.34, 79, 48.66, 79),
-  ('asmr-cream', 8.19, 0, 0, 0, 8.19, 8.19, 79, 70.81, 79),
-  ('samr-cream', 6.03, 0, 0, 0, 6.03, 6.03, 69, 62.97, 69),
-  ('duo-box', 0, 0, 0, 163.35, 163.35, 163.35, 499, 335.65, 499),
-  ('asmr-trio', 0, 0, 0, 145.36, 145.36, 145.36, 499, 353.64, 499),
-  ('samr-trio', 0, 0, 0, 103.69, 103.69, 103.69, 379, 275.31, 379),
-  ('discovery-set', 4, 8, 0, 0, 12, 12, 60, 48, 60);
+  ('asmr-extrait', 56.03, 40, 0, 96.03, 96.03, 320, 223.97, 320),
+  ('samr-extrait', 27.32, 40, 0, 67.32, 67.32, 230, 162.68, 230),
+  ('asmr-spray', 41.14, 0, 0, 41.14, 41.14, 99, 57.86, 99),
+  ('samr-spray', 30.34, 0, 0, 30.34, 30.34, 79, 48.66, 79),
+  ('asmr-cream', 8.19, 0, 0, 8.19, 8.19, 79, 70.81, 79),
+  ('samr-cream', 6.03, 0, 0, 6.03, 6.03, 69, 62.97, 69),
+  ('duo-box', 0, 0, 0, 163.35, 163.35, 499, 335.65, 499),
+  ('asmr-trio', 0, 0, 0, 145.36, 145.36, 499, 353.64, 499),
+  ('samr-trio', 0, 0, 0, 103.69, 103.69, 379, 275.31, 379),
+  ('discovery-set', 4, 8, 0, 12, 12, 60, 48, 60);
 
 commit;
