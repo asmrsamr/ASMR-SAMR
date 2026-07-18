@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=launch-phases-20260718a">
+  <link rel="stylesheet" href="style.css?v=dev">
   
   <!-- Structured Schema Data (JSON-LD) -->
   <script type="application/ld+json">
@@ -109,14 +109,14 @@
     (function loadConfigThenApp() {
       function loadApp() {
         var script = document.createElement('script');
-        script.src = 'app.js?v=launch-phases-20260718a';
+        script.src = 'app.js?v=dev';
         script.charset = 'utf-8';
         document.body.appendChild(script);
       }
 
       function loadAdminThenApp() {
         var admin = document.createElement('script');
-        admin.src = 'admin-dashboard.js?v=admin-operations-20260717c';
+        admin.src = 'admin-dashboard.js?v=dev';
         admin.charset = 'utf-8';
         admin.onload = loadApp;
         admin.onerror = loadApp;
@@ -124,7 +124,7 @@
       }
 
       var config = document.createElement('script');
-      config.src = 'config.local.js?v=admin-operations-20260717c';
+      config.src = 'config.local.js?v=dev';
       config.charset = 'utf-8';
       config.onload = loadAdminThenApp;
       config.onerror = loadAdminThenApp;

@@ -12,7 +12,9 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
+import subprocess
 from pathlib import Path
 
 
@@ -42,6 +44,11 @@ PUBLIC_CONFIG_FIELDS = {
     "productionCityEn": ("ASMR_SAMR_PRODUCTION_CITY_EN", "Riyadh"),
     "productionCityAr": ("ASMR_SAMR_PRODUCTION_CITY_AR", "الرياض"),
 }
+
+ASSET_VERSION_PATTERN = re.compile(
+    r"((?:(?:href|src)|(?:script|admin|config)\.src)\s*=\s*['\"]"
+    r"(?:style\.css|app\.js|admin-dashboard\.js|config\.local\.js))\?v=[^'\"]+"
+)
 
 
 def should_copy(path: Path) -> bool:
@@ -93,6 +100,32 @@ def write_runtime_config(output: Path) -> None:
     )
 
 
+def cache_version() -> str:
+    explicit = os.environ.get("ASMR_SAMR_ASSET_VERSION", "").strip()
+    if explicit:
+        return re.sub(r"[^A-Za-z0-9._-]+", "-", explicit).strip("-") or "local"
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            timeout=10,
+            check=True,
+        )
+        return result.stdout.strip() or "local"
+    except (OSError, subprocess.SubprocessError):
+        return "local"
+
+
+def rewrite_asset_versions(output: Path) -> None:
+    index = output / "index.html"
+    source = index.read_text(encoding="utf-8")
+    version = cache_version()
+    rewritten = ASSET_VERSION_PATTERN.sub(lambda match: f"{match.group(1)}?v={version}", source)
+    index.write_text(rewritten, encoding="utf-8")
+
+
 def validate_output(output: Path) -> None:
     required = [
         output / "index.html",
@@ -111,6 +144,11 @@ def validate_output(output: Path) -> None:
     if local_source and built_config == local_source:
         raise SystemExit("Deployment config matches developer-local config; refusing to package.")
 
+    index = (output / "index.html").read_text(encoding="utf-8")
+    versions = set(re.findall(r"\?v=([^'\"]+)", index))
+    if len(versions) != 1:
+        raise SystemExit("Deployment assets must share one cache-busting version.")
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Build the ASMR & SAMR static deployment package.")
@@ -120,6 +158,7 @@ def main() -> int:
     output = Path(args.output).resolve()
     copy_source(output)
     write_runtime_config(output)
+    rewrite_asset_versions(output)
     validate_output(output)
     print(f"Built static website package: {output}")
     return 0

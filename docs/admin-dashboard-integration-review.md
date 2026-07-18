@@ -88,6 +88,8 @@ Frontend config is loaded from `website/config.local.js` when present. The file 
 
 Use `website/config.example.js` as the template. The dashboard never needs or accepts a service-role key in browser code.
 
+2026-07-18 update: production admin routes now render through `admin-dashboard.js` only. The older localStorage admin renderer remains in `website/app.js` only as migration-history fallback behind an explicit development flag and is not the normal `#/admin` route.
+
 When configured and signed in:
 
 - Product edits sync to `products`, `product_prices`, and `product_inventory`.
@@ -98,7 +100,8 @@ When configured and signed in:
 
 When not configured:
 
-- The admin works in local studio mode using the existing local data model.
+- The production admin route shows a secure configuration/login state from the Supabase dashboard bridge.
+- The legacy local studio can be enabled only through the explicit development fallback flag during migration recovery.
 - Public storefront behavior is unchanged.
 
 ## Conflicts Identified

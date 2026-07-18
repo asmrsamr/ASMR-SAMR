@@ -198,7 +198,7 @@ print("\n[10] Dashboard routing + header controls")
 
 # ---- 11 · live admin operations dashboard ------------------------------------
 print("\n[11] Live admin operations dashboard")
-(ok if "route.startsWith('#/admin/')" in js else fail)("admin routes wired (#/admin, #/admin/<tab>)")
+(ok if "route.startsWith('#/admin/')" in js and "renderSupabaseAdminRoute(sub)" in js else fail)("admin routes wired to the Supabase dashboard (#/admin, #/admin/<tab>)")
 (ok if "admin-dashboard.js" in html else fail)("Supabase admin application is loaded")
 for fn in ("renderOverview", "renderProducts", "renderOrders", "renderInventory",
            "renderIngredients", "renderFinance", "renderContent",
@@ -217,8 +217,10 @@ for handler in ("openGenericForm", "saveGeneric", "deleteGeneric", "exportCurren
 (ok if "rpc/get_storefront_catalog" in js else fail)("public catalog uses the safe server-side projection")
 (ok if "website_content?select=content_type" in js and "storefrontContent" in js else fail)("published homepage content is loaded from Supabase")
 (ok if "function renderApp() {\n  applyAdminState();" not in js else fail)("legacy local admin state cannot overwrite the storefront catalog")
+(ok if "mainRoot.innerHTML = renderAdmin(sub)" not in js and "enableLegacyAdminFallback === true" in js else fail)("legacy local admin is quarantined behind an explicit development flag")
 (ok if "WELCOME10" not in js and "DUO50" not in js else fail)("legacy seeded coupons are absent")
 (ok if "(0, eval)" not in html and "config.local.js" in html else fail)("browser config loads without eval or CSP bypasses")
+(ok if len(set(re.findall(r"\\?v=([^'\\\"]+)", html))) == 1 else fail)("source HTML uses one shared asset cache version")
 (ok if "loadPublicCatalogFromSupabase().then" in js else fail)("storefront renders before the live catalog refresh completes")
 (ok if "Number.parseFloat(left)" in js else fail)("dynamic product sizes remain in numeric order")
 (ok if "persistStorefrontOrder" in js and "rpc/submit_storefront_order" in js else fail)("storefront orders use a transactional Supabase RPC")
