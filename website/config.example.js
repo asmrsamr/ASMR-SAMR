@@ -5,8 +5,8 @@ window.ASMR_SAMR_CONFIG = {
   supabaseAnonKey: 'YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY',
   // Public launch configuration. These are browser-visible values, not secrets.
   whatsappNumber: '966560505651',
-  siteDomain: 'https://your-production-domain.com',
-  founderName: 'Founder Name',
+  siteDomain: 'https://asmr-samr.pages.dev',
+  founderName: 'ASMR & SAMR Fragrances',
   instagramUrl: 'https://instagram.com/asmr.samr.perfumes',
   productionCityEn: 'Riyadh',
   productionCityAr: 'الرياض',

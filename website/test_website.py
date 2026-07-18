@@ -67,9 +67,29 @@ else:
 
 # ---- 2 · routes -------------------------------------------------------------
 print("\n[2] Routes")
-want = ["#/", "#/samr", "#/asmr", "#/shop", "#/product", "#/gifting", "#/story", "#/contact"]
-for r_ in want:
-    (ok if f"'{r_}'" in js or f'"{r_}"' in js else fail)(f"route registered: {r_}")
+want = [
+    ("#/", "route === '#/'"),
+    ("#/samr", "route === '#/samr'"),
+    ("#/asmr", "route === '#/asmr'"),
+    ("#/shop", "route === '#/shop'"),
+    ("#/product", "route.startsWith('#/product/')"),
+    ("#/gifting", "route === '#/gifting'"),
+    ("#/story", "route === '#/story'"),
+    ("#/contact", "route === '#/contact'"),
+    ("#/ingredients", "route === '#/ingredients'"),
+    ("#/delivery", "route === '#/delivery'"),
+    ("#/returns", "route === '#/returns'"),
+    ("#/privacy", "route === '#/privacy'"),
+    ("#/faq", "route === '#/faq'"),
+]
+for label, marker in want:
+    (ok if marker in js else fail)(f"route registered: {label}")
+(ok if "function renderLaunchPolicyPage" in js and "LAUNCH_POLICY_PAGES" in js else fail)(
+    "delivery, returns, and privacy use the launch policy renderer")
+(ok if "function renderFAQ" in js and "LAUNCH_FAQ_ITEMS" in js else fail)(
+    "FAQ page renderer is implemented")
+(ok if all(f'href="#/{slug}"' in js for slug in ("delivery", "returns", "privacy", "faq")) else fail)(
+    "footer links expose delivery, returns, privacy, and FAQ without changing header navigation")
 
 # ---- 3 · catalog prices match the approved Selling Strategy ----------------
 print("\n[3] Catalog prices vs approved strategy (SAR)")
@@ -124,10 +144,10 @@ mq = len(re.findall(r"@media", css))
 
 # ---- 7 · launch blockers (placeholders that MUST change before go-live) -----
 print("\n[7] Launch blockers / placeholders")
-(warn if "966500000000" in js or "IS_WHATSAPP_PLACEHOLDER = true" in js.replace("  ", " ")
- else ok)("WhatsApp number still a placeholder — set the real number before launch")
-(warn if "unsplash.com" in html else ok)("og:image is an Unsplash hotlink — replace with own hero image")
-(warn if "asmrsamr.com" in html else ok)("JSON-LD url is a placeholder domain — set the real domain")
+(warn if re.search(r"WHATSAPP_NUMBER:\s*'966500000000'", js) or "IS_WHATSAPP_PLACEHOLDER = true" in js.replace("  ", " ")
+ else ok)("WhatsApp number still a placeholder - set the real number before launch")
+(warn if "unsplash.com" in html else ok)("og:image is an Unsplash hotlink - replace with own hero image")
+(warn if '"url": "https://asmrsamr.com"' in html or 'content="https://asmrsamr.com' in html else ok)("JSON-LD url is a placeholder domain - set the real domain")
 (warn if "Artisan Perfumer & Founder" in html else ok)("founder name placeholder in JSON-LD")
 (ok if "PUBLIC_CONFIG" in js and "whatsappNumber" in config_example and "siteDomain" in config_example and "founderName" in config_example else fail)("public launch config can override WhatsApp, domain, and founder metadata")
 (ok if "getLaunchReadinessChecks" in js and "Production domain" in js and "Founder metadata" in js else fail)("admin status reports launch readiness for merchant config")

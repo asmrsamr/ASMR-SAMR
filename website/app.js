@@ -21,10 +21,10 @@ function normalizeSiteDomain(value) {
 }
 
 const CONFIG_DEFAULTS = {
-  WHATSAPP_NUMBER: '966500000000', // Target WhatsApp phone number (with country code, no +)
+  WHATSAPP_NUMBER: '966560505651', // Target WhatsApp phone number (with country code, no +)
   INSTAGRAM_URL: 'https://instagram.com/asmr.samr.perfumes', // Instagram profile link
-  SITE_DOMAIN: 'https://asmrsamr.com', // Production site domain (without trailing slash)
-  FOUNDER_NAME: 'Artisan Perfumer & Founder', // Brand founder name
+  SITE_DOMAIN: 'https://asmr-samr.pages.dev', // Production site domain (without trailing slash)
+  FOUNDER_NAME: 'ASMR & SAMR Fragrances', // Public brand/founder metadata
   PRODUCTION_CITY_EN: 'Riyadh', // Production city in English
   PRODUCTION_CITY_AR: 'الرياض', // Production city in Arabic
   RESERVED_COUNT: 42 // Number of bottles reserved from B.077 (used in Stage 2)
@@ -6081,6 +6081,209 @@ function renderContact() {
   `;
 }
 
+const LAUNCH_POLICY_PAGES = {
+  delivery: {
+    eyebrowEn: 'Order Care',
+    eyebrowAr: '\u062e\u062f\u0645\u0629 \u0627\u0644\u0637\u0644\u0628\u0627\u062a',
+    titleEn: 'Delivery Policy',
+    titleAr: '\u0633\u064a\u0627\u0633\u0629 \u0627\u0644\u062a\u0648\u0635\u064a\u0644',
+    introEn: 'Delivery is coordinated personally so every bottle, ritual set, and gift box arrives with the right handling and clear confirmation.',
+    introAr: '\u0646\u0646\u0633\u0642 \u0627\u0644\u062a\u0648\u0635\u064a\u0644 \u0628\u0634\u0643\u0644 \u0645\u0628\u0627\u0634\u0631 \u0644\u064a\u0635\u0644 \u0643\u0644 \u0639\u0637\u0631 \u0648\u0645\u062c\u0645\u0648\u0639\u0629 \u0625\u0647\u062f\u0627\u0621 \u0628\u0639\u0646\u0627\u064a\u0629 \u0648\u062a\u0623\u0643\u064a\u062f \u0648\u0627\u0636\u062d.',
+    sections: [
+      {
+        headingEn: 'Coverage',
+        headingAr: '\u0646\u0637\u0627\u0642 \u0627\u0644\u062a\u0648\u0635\u064a\u0644',
+        bodyEn: 'Launch delivery is available inside Saudi Arabia. City coverage, timing, and courier options are confirmed on WhatsApp before the order is finalized.',
+        bodyAr: '\u0627\u0644\u062a\u0648\u0635\u064a\u0644 \u0645\u062a\u0627\u062d \u062f\u0627\u062e\u0644 \u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629 \u0641\u064a \u0641\u062a\u0631\u0629 \u0627\u0644\u0625\u0637\u0644\u0627\u0642. \u064a\u062a\u0645 \u062a\u0623\u0643\u064a\u062f \u0627\u0644\u0645\u062f\u064a\u0646\u0629 \u0648\u0645\u062f\u0629 \u0627\u0644\u062a\u0648\u0635\u064a\u0644 \u0648\u062e\u064a\u0627\u0631 \u0627\u0644\u0634\u062d\u0646 \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628 \u0642\u0628\u0644 \u0625\u0643\u0645\u0627\u0644 \u0627\u0644\u0637\u0644\u0628.'
+      },
+      {
+        headingEn: 'Timing',
+        headingAr: '\u0648\u0642\u062a \u0627\u0644\u062a\u0648\u0635\u064a\u0644',
+        bodyEn: 'In-stock orders are usually prepared within 1 business day after confirmation. Same-city delivery may take 1 to 3 business days; other cities may take 2 to 6 business days depending on courier availability.',
+        bodyAr: '\u0639\u0627\u062f\u0629 \u062a\u062c\u0647\u0632 \u0627\u0644\u0637\u0644\u0628\u0627\u062a \u0627\u0644\u0645\u062a\u0648\u0641\u0631\u0629 \u062e\u0644\u0627\u0644 \u064a\u0648\u0645 \u0639\u0645\u0644 \u0628\u0639\u062f \u0627\u0644\u062a\u0623\u0643\u064a\u062f. \u0642\u062f \u064a\u0633\u062a\u063a\u0631\u0642 \u0627\u0644\u062a\u0648\u0635\u064a\u0644 \u062f\u0627\u062e\u0644 \u0627\u0644\u0645\u062f\u064a\u0646\u0629 \u0645\u0646 1 \u0625\u0644\u0649 3 \u0623\u064a\u0627\u0645 \u0639\u0645\u0644\u060c \u0648\u0628\u064a\u0646 \u0627\u0644\u0645\u062f\u0646 \u0645\u0646 2 \u0625\u0644\u0649 6 \u0623\u064a\u0627\u0645 \u0639\u0645\u0644 \u062d\u0633\u0628 \u062a\u0648\u0641\u0631 \u0627\u0644\u0646\u0627\u0642\u0644.'
+      },
+      {
+        headingEn: 'Fees And Confirmation',
+        headingAr: '\u0627\u0644\u0631\u0633\u0648\u0645 \u0648\u0627\u0644\u062a\u0623\u0643\u064a\u062f',
+        bodyEn: 'Delivery cost is confirmed before checkout is accepted. We do not ask customers to complete payment until the item, address, total, and delivery method are confirmed.',
+        bodyAr: '\u064a\u062a\u0645 \u062a\u0623\u0643\u064a\u062f \u062a\u0643\u0644\u0641\u0629 \u0627\u0644\u062a\u0648\u0635\u064a\u0644 \u0642\u0628\u0644 \u0627\u0639\u062a\u0645\u0627\u062f \u0627\u0644\u0637\u0644\u0628. \u0644\u0627 \u0646\u0637\u0644\u0628 \u0625\u062a\u0645\u0627\u0645 \u0627\u0644\u062f\u0641\u0639 \u0642\u0628\u0644 \u062a\u0623\u0643\u064a\u062f \u0627\u0644\u0645\u0646\u062a\u062c \u0648\u0627\u0644\u0639\u0646\u0648\u0627\u0646 \u0648\u0627\u0644\u0625\u062c\u0645\u0627\u0644\u064a \u0648\u0637\u0631\u064a\u0642\u0629 \u0627\u0644\u062a\u0648\u0635\u064a\u0644.'
+      },
+      {
+        headingEn: 'Gift Handling',
+        headingAr: '\u0639\u0646\u0627\u064a\u0629 \u0627\u0644\u0647\u062f\u0627\u064a\u0627',
+        bodyEn: 'Gift-ready orders are packed carefully and can include a short gift message when provided during WhatsApp confirmation.',
+        bodyAr: '\u062a\u062c\u0647\u0632 \u0637\u0644\u0628\u0627\u062a \u0627\u0644\u0625\u0647\u062f\u0627\u0621 \u0628\u0639\u0646\u0627\u064a\u0629\u060c \u0648\u064a\u0645\u0643\u0646 \u0625\u0636\u0627\u0641\u0629 \u0631\u0633\u0627\u0644\u0629 \u0647\u062f\u064a\u0629 \u0642\u0635\u064a\u0631\u0629 \u0639\u0646\u062f \u062a\u0632\u0648\u064a\u062f\u0646\u0627 \u0628\u0647\u0627 \u0623\u062b\u0646\u0627\u0621 \u062a\u0623\u0643\u064a\u062f \u0627\u0644\u0637\u0644\u0628 \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628.'
+      }
+    ]
+  },
+  returns: {
+    eyebrowEn: 'After Purchase',
+    eyebrowAr: '\u0645\u0627 \u0628\u0639\u062f \u0627\u0644\u0634\u0631\u0627\u0621',
+    titleEn: 'Return And Exchange Policy',
+    titleAr: '\u0633\u064a\u0627\u0633\u0629 \u0627\u0644\u0625\u0631\u062c\u0627\u0639 \u0648\u0627\u0644\u0627\u0633\u062a\u0628\u062f\u0627\u0644',
+    introEn: 'Because fragrance and body products are intimate goods, returns are handled with product safety and customer care in balance.',
+    introAr: '\u0644\u0623\u0646 \u0627\u0644\u0639\u0637\u0648\u0631 \u0648\u0645\u0646\u062a\u062c\u0627\u062a \u0627\u0644\u062c\u0633\u0645 \u0645\u0646\u062a\u062c\u0627\u062a \u0634\u062e\u0635\u064a\u0629\u060c \u0646\u062a\u0639\u0627\u0645\u0644 \u0645\u0639 \u0627\u0644\u0625\u0631\u062c\u0627\u0639 \u0628\u0645\u0648\u0627\u0632\u0646\u0629 \u0628\u064a\u0646 \u0633\u0644\u0627\u0645\u0629 \u0627\u0644\u0645\u0646\u062a\u062c \u0648\u0631\u0639\u0627\u064a\u0629 \u0627\u0644\u0639\u0645\u064a\u0644.',
+    sections: [
+      {
+        headingEn: 'Eligible Cases',
+        headingAr: '\u0627\u0644\u062d\u0627\u0644\u0627\u062a \u0627\u0644\u0645\u0642\u0628\u0648\u0644\u0629',
+        bodyEn: 'We review exchange or return requests for damaged items, incorrect items, missing items, or confirmed fulfillment errors reported within 24 hours of delivery.',
+        bodyAr: '\u0646\u0631\u0627\u062c\u0639 \u0637\u0644\u0628\u0627\u062a \u0627\u0644\u0627\u0633\u062a\u0628\u062f\u0627\u0644 \u0623\u0648 \u0627\u0644\u0625\u0631\u062c\u0627\u0639 \u0644\u0644\u0645\u0646\u062a\u062c\u0627\u062a \u0627\u0644\u062a\u0627\u0644\u0641\u0629\u060c \u0623\u0648 \u0627\u0644\u062e\u0627\u0637\u0626\u0629\u060c \u0623\u0648 \u0627\u0644\u0646\u0627\u0642\u0635\u0629\u060c \u0623\u0648 \u0623\u062e\u0637\u0627\u0621 \u0627\u0644\u062a\u062c\u0647\u064a\u0632 \u0627\u0644\u0645\u0624\u0643\u062f\u0629 \u0625\u0630\u0627 \u062a\u0645 \u0625\u0628\u0644\u0627\u063a\u0646\u0627 \u062e\u0644\u0627\u0644 24 \u0633\u0627\u0639\u0629 \u0645\u0646 \u0627\u0644\u0627\u0633\u062a\u0644\u0627\u0645.'
+      },
+      {
+        headingEn: 'Product Safety',
+        headingAr: '\u0633\u0644\u0627\u0645\u0629 \u0627\u0644\u0645\u0646\u062a\u062c',
+        bodyEn: 'Opened, sprayed, used, engraved, personalized, or visibly handled fragrance and body-care items cannot be returned for hygiene and authenticity reasons.',
+        bodyAr: '\u0644\u0623\u0633\u0628\u0627\u0628 \u0627\u0644\u0635\u062d\u0629 \u0648\u0627\u0644\u0623\u0635\u0627\u0644\u0629\u060c \u0644\u0627 \u064a\u0645\u0643\u0646 \u0625\u0631\u062c\u0627\u0639 \u0627\u0644\u0639\u0637\u0648\u0631 \u0623\u0648 \u0645\u0646\u062a\u062c\u0627\u062a \u0627\u0644\u0639\u0646\u0627\u064a\u0629 \u0627\u0644\u062a\u064a \u062a\u0645 \u0641\u062a\u062d\u0647\u0627 \u0623\u0648 \u0631\u0634\u0647\u0627 \u0623\u0648 \u0627\u0633\u062a\u062e\u062f\u0627\u0645\u0647\u0627 \u0623\u0648 \u062a\u062e\u0635\u064a\u0635\u0647\u0627 \u0623\u0648 \u0627\u0644\u062a\u0639\u0627\u0645\u0644 \u0645\u0639\u0647\u0627 \u0628\u0634\u0643\u0644 \u0638\u0627\u0647\u0631.'
+      },
+      {
+        headingEn: 'How To Request',
+        headingAr: '\u0637\u0631\u064a\u0642\u0629 \u0627\u0644\u0637\u0644\u0628',
+        bodyEn: 'Send the order reference, delivery photo if relevant, and a short description through WhatsApp. We will confirm the next step after review.',
+        bodyAr: '\u0623\u0631\u0633\u0644 \u0631\u0642\u0645 \u0645\u0631\u062c\u0639 \u0627\u0644\u0637\u0644\u0628\u060c \u0648\u0635\u0648\u0631\u0629 \u0627\u0644\u0627\u0633\u062a\u0644\u0627\u0645 \u0625\u0646 \u0644\u0632\u0645\u060c \u0648\u0648\u0635\u0641\u0627 \u0642\u0635\u064a\u0631\u0627 \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628. \u0633\u0646\u0624\u0643\u062f \u0627\u0644\u062e\u0637\u0648\u0629 \u0627\u0644\u062a\u0627\u0644\u064a\u0629 \u0628\u0639\u062f \u0627\u0644\u0645\u0631\u0627\u062c\u0639\u0629.'
+      },
+      {
+        headingEn: 'Refunds',
+        headingAr: '\u0627\u0644\u0645\u0628\u0627\u0644\u063a \u0627\u0644\u0645\u0633\u062a\u0631\u062c\u0639\u0629',
+        bodyEn: 'Approved refunds are processed to the agreed payment method after the case is confirmed. Processing timing depends on the payment method and provider.',
+        bodyAr: '\u062a\u062a\u0645 \u0627\u0644\u0645\u0628\u0627\u0644\u063a \u0627\u0644\u0645\u0633\u062a\u0631\u062c\u0639\u0629 \u0627\u0644\u0645\u0639\u062a\u0645\u062f\u0629 \u0625\u0644\u0649 \u0637\u0631\u064a\u0642\u0629 \u0627\u0644\u062f\u0641\u0639 \u0627\u0644\u0645\u062a\u0641\u0642 \u0639\u0644\u064a\u0647\u0627 \u0628\u0639\u062f \u062a\u0623\u0643\u064a\u062f \u0627\u0644\u062d\u0627\u0644\u0629. \u062a\u062e\u062a\u0644\u0641 \u0645\u062f\u0629 \u0627\u0644\u0645\u0639\u0627\u0644\u062c\u0629 \u062d\u0633\u0628 \u0637\u0631\u064a\u0642\u0629 \u0627\u0644\u062f\u0641\u0639 \u0648\u0645\u0632\u0648\u062f \u0627\u0644\u062e\u062f\u0645\u0629.'
+      }
+    ]
+  },
+  privacy: {
+    eyebrowEn: 'Privacy',
+    eyebrowAr: '\u0627\u0644\u062e\u0635\u0648\u0635\u064a\u0629',
+    titleEn: 'Privacy Policy',
+    titleAr: '\u0633\u064a\u0627\u0633\u0629 \u0627\u0644\u062e\u0635\u0648\u0635\u064a\u0629',
+    introEn: 'We collect only what is needed to answer inquiries, prepare orders, coordinate delivery, and improve the fragrance experience.',
+    introAr: '\u0646\u062c\u0645\u0639 \u0641\u0642\u0637 \u0645\u0627 \u0646\u062d\u062a\u0627\u062c\u0647 \u0644\u0644\u0631\u062f \u0639\u0644\u0649 \u0627\u0644\u0627\u0633\u062a\u0641\u0633\u0627\u0631\u0627\u062a\u060c \u0648\u062a\u062c\u0647\u064a\u0632 \u0627\u0644\u0637\u0644\u0628\u0627\u062a\u060c \u0648\u062a\u0646\u0633\u064a\u0642 \u0627\u0644\u062a\u0648\u0635\u064a\u0644\u060c \u0648\u062a\u062d\u0633\u064a\u0646 \u062a\u062c\u0631\u0628\u0629 \u0627\u0644\u0639\u0637\u0631.',
+    sections: [
+      {
+        headingEn: 'Information We Collect',
+        headingAr: '\u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u062a\u064a \u0646\u062c\u0645\u0639\u0647\u0627',
+        bodyEn: 'We may collect name, phone, email, city, delivery details, fragrance preferences, cart/order details, newsletter signups, and consultation notes submitted by the customer.',
+        bodyAr: '\u0642\u062f \u0646\u062c\u0645\u0639 \u0627\u0644\u0627\u0633\u0645\u060c \u0627\u0644\u0647\u0627\u062a\u0641\u060c \u0627\u0644\u0628\u0631\u064a\u062f\u060c \u0627\u0644\u0645\u062f\u064a\u0646\u0629\u060c \u062a\u0641\u0627\u0635\u064a\u0644 \u0627\u0644\u062a\u0648\u0635\u064a\u0644\u060c \u062a\u0641\u0636\u064a\u0644\u0627\u062a \u0627\u0644\u0639\u0637\u0631\u060c \u062a\u0641\u0627\u0635\u064a\u0644 \u0627\u0644\u0633\u0644\u0629 \u0648\u0627\u0644\u0637\u0644\u0628\u060c \u0627\u0634\u062a\u0631\u0627\u0643\u0627\u062a \u0627\u0644\u0646\u0634\u0631\u0629\u060c \u0648\u0645\u0644\u0627\u062d\u0638\u0627\u062a \u0627\u0644\u0627\u0633\u062a\u0634\u0627\u0631\u0629 \u0627\u0644\u062a\u064a \u064a\u0631\u0633\u0644\u0647\u0627 \u0627\u0644\u0639\u0645\u064a\u0644.'
+      },
+      {
+        headingEn: 'How We Use It',
+        headingAr: '\u0643\u064a\u0641 \u0646\u0633\u062a\u062e\u062f\u0645\u0647\u0627',
+        bodyEn: 'We use customer information to confirm orders, prepare WhatsApp follow-up, coordinate delivery, manage customer support, prevent duplicate submissions, and understand product interest.',
+        bodyAr: '\u0646\u0633\u062a\u062e\u062f\u0645 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0639\u0645\u0644\u0627\u0621 \u0644\u062a\u0623\u0643\u064a\u062f \u0627\u0644\u0637\u0644\u0628\u0627\u062a\u060c \u0648\u062a\u062c\u0647\u064a\u0632 \u0627\u0644\u0645\u062a\u0627\u0628\u0639\u0629 \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628\u060c \u0648\u062a\u0646\u0633\u064a\u0642 \u0627\u0644\u062a\u0648\u0635\u064a\u0644\u060c \u0648\u0625\u062f\u0627\u0631\u0629 \u0627\u0644\u062f\u0639\u0645\u060c \u0648\u0645\u0646\u0639 \u0627\u0644\u062a\u0643\u0631\u0627\u0631\u060c \u0648\u0641\u0647\u0645 \u0627\u0644\u0627\u0647\u062a\u0645\u0627\u0645 \u0628\u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a.'
+      },
+      {
+        headingEn: 'Storage And Access',
+        headingAr: '\u0627\u0644\u062a\u062e\u0632\u064a\u0646 \u0648\u0627\u0644\u0648\u0635\u0648\u0644',
+        bodyEn: 'Customer data is stored in the project database and visible only to authorized team members through protected admin access. We do not publish customer information or sell customer lists.',
+        bodyAr: '\u062a\u062d\u0641\u0638 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0639\u0645\u0644\u0627\u0621 \u0641\u064a \u0642\u0627\u0639\u062f\u0629 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0645\u0634\u0631\u0648\u0639 \u0648\u0644\u0627 \u062a\u0638\u0647\u0631 \u0625\u0644\u0627 \u0644\u0623\u0639\u0636\u0627\u0621 \u0627\u0644\u0641\u0631\u064a\u0642 \u0627\u0644\u0645\u0635\u0631\u062d \u0644\u0647\u0645 \u0639\u0628\u0631 \u062f\u062e\u0648\u0644 \u0625\u062f\u0627\u0631\u064a \u0645\u062d\u0645\u064a. \u0644\u0627 \u0646\u0646\u0634\u0631 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0639\u0645\u0644\u0627\u0621 \u0648\u0644\u0627 \u0646\u0628\u064a\u0639 \u0642\u0648\u0627\u0626\u0645 \u0627\u0644\u0639\u0645\u0644\u0627\u0621.'
+      },
+      {
+        headingEn: 'Customer Choices',
+        headingAr: '\u062e\u064a\u0627\u0631\u0627\u062a \u0627\u0644\u0639\u0645\u064a\u0644',
+        bodyEn: 'Customers can ask us on WhatsApp to correct contact details, stop marketing contact, or review information connected to a recent order.',
+        bodyAr: '\u064a\u0645\u0643\u0646 \u0644\u0644\u0639\u0645\u0644\u0627\u0621 \u0637\u0644\u0628 \u062a\u0635\u062d\u064a\u062d \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u062a\u0648\u0627\u0635\u0644\u060c \u0623\u0648 \u0625\u064a\u0642\u0627\u0641 \u0627\u0644\u0631\u0633\u0627\u0626\u0644 \u0627\u0644\u062a\u0633\u0648\u064a\u0642\u064a\u0629\u060c \u0623\u0648 \u0645\u0631\u0627\u062c\u0639\u0629 \u0628\u064a\u0627\u0646\u0627\u062a \u0645\u0631\u062a\u0628\u0637\u0629 \u0628\u0637\u0644\u0628 \u062d\u062f\u064a\u062b \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628.'
+      }
+    ]
+  }
+};
+
+const LAUNCH_FAQ_ITEMS = [
+  {
+    qEn: 'How do I place an order?',
+    qAr: '\u0643\u064a\u0641 \u0623\u0637\u0644\u0628\u061f',
+    aEn: 'Add products to the cart, submit checkout, then confirm the generated order reference on WhatsApp. Payment and delivery details are finalized there during launch.',
+    aAr: '\u0623\u0636\u0641 \u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a \u0625\u0644\u0649 \u0627\u0644\u0633\u0644\u0629\u060c \u062b\u0645 \u0623\u0631\u0633\u0644 \u0627\u0644\u0637\u0644\u0628 \u0648\u0623\u0643\u062f \u0631\u0642\u0645 \u0627\u0644\u0645\u0631\u062c\u0639 \u0627\u0644\u0630\u064a \u064a\u0638\u0647\u0631 \u0644\u0643 \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628. \u064a\u062a\u0645 \u0625\u0643\u0645\u0627\u0644 \u0627\u0644\u062f\u0641\u0639 \u0648\u0627\u0644\u062a\u0648\u0635\u064a\u0644 \u0647\u0646\u0627\u0643 \u0641\u064a \u0641\u062a\u0631\u0629 \u0627\u0644\u0625\u0637\u0644\u0627\u0642.'
+  },
+  {
+    qEn: 'Are ASMR and SAMR different scents?',
+    qAr: '\u0647\u0644 \u0623\u0633\u0645\u0631 \u0648\u0633\u0645\u0631 \u0631\u0627\u0626\u062d\u062a\u0627\u0646 \u0645\u062e\u062a\u0644\u0641\u062a\u0627\u0646\u061f',
+    aEn: 'Yes. ASMR is darker, warmer, and built around quiet confidence. SAMR is softer, blush-toned, and designed to linger with elegance.',
+    aAr: '\u0646\u0639\u0645. \u0623\u0633\u0645\u0631 \u0623\u0639\u0645\u0642 \u0648\u0623\u062f\u0641\u0623 \u0648\u0645\u0628\u0646\u064a \u0639\u0644\u0649 \u062d\u0636\u0648\u0631 \u0647\u0627\u062f\u0626 \u0648\u0648\u0627\u062b\u0642. \u0633\u0645\u0631 \u0623\u0646\u0639\u0645 \u0648\u0623\u0643\u062b\u0631 \u0631\u0642\u0629 \u0648\u0645\u0635\u0645\u0645 \u0644\u064a\u0628\u0642\u0649 \u0628\u0623\u0646\u0627\u0642\u0629.'
+  },
+  {
+    qEn: 'What does Extrait de Parfum mean?',
+    qAr: '\u0645\u0627 \u0645\u0639\u0646\u0649 \u0645\u0633\u062a\u062e\u0644\u0635 \u0627\u0644\u0639\u0637\u0631\u061f',
+    aEn: 'It is a high-concentration perfume format. The ASMR and SAMR extraits are positioned as close, long-wearing skin scents for special and daily moments.',
+    aAr: '\u0647\u0648 \u0635\u064a\u063a\u0629 \u0639\u0637\u0631 \u0639\u0627\u0644\u064a\u0629 \u0627\u0644\u062a\u0631\u0643\u064a\u0632. \u0645\u0633\u062a\u062e\u0644\u0635\u0627\u062a \u0623\u0633\u0645\u0631 \u0648\u0633\u0645\u0631 \u0645\u0635\u0645\u0645\u0629 \u0643\u0631\u0627\u0626\u062d\u0629 \u0642\u0631\u064a\u0628\u0629 \u0645\u0646 \u0627\u0644\u0628\u0634\u0631\u0629 \u0648\u062a\u062f\u0648\u0645 \u0644\u0644\u0645\u0646\u0627\u0633\u0628\u0627\u062a \u0648\u0627\u0644\u0644\u062d\u0638\u0627\u062a \u0627\u0644\u064a\u0648\u0645\u064a\u0629.'
+  },
+  {
+    qEn: 'Can I buy the duo box as a gift?',
+    qAr: '\u0647\u0644 \u064a\u0645\u0643\u0646 \u0634\u0631\u0627\u0621 \u0635\u0646\u062f\u0648\u0642 \u0627\u0644\u062b\u0646\u0627\u0626\u064a \u0643\u0647\u062f\u064a\u0629\u061f',
+    aEn: 'Yes. The duo box is the main gift-ready offer and can be coordinated with a gift note during WhatsApp confirmation.',
+    aAr: '\u0646\u0639\u0645. \u0635\u0646\u062f\u0648\u0642 \u0627\u0644\u062b\u0646\u0627\u0626\u064a \u0647\u0648 \u0627\u0644\u062e\u064a\u0627\u0631 \u0627\u0644\u0623\u0633\u0627\u0633\u064a \u0644\u0644\u0625\u0647\u062f\u0627\u0621\u060c \u0648\u064a\u0645\u0643\u0646 \u062a\u0646\u0633\u064a\u0642 \u0631\u0633\u0627\u0644\u0629 \u0647\u062f\u064a\u0629 \u0639\u0646\u062f \u0627\u0644\u062a\u0623\u0643\u064a\u062f \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628.'
+  },
+  {
+    qEn: 'Do you keep my payment details?',
+    qAr: '\u0647\u0644 \u062a\u062d\u062a\u0641\u0638\u0648\u0646 \u0628\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u062f\u0641\u0639\u061f',
+    aEn: 'No card details are stored in the website. During the free launch setup, checkout is coordinated manually through WhatsApp until a paid gateway is added later.',
+    aAr: '\u0644\u0627 \u064a\u062a\u0645 \u062d\u0641\u0638 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0628\u0637\u0627\u0642\u0627\u062a \u0641\u064a \u0627\u0644\u0645\u0648\u0642\u0639. \u0641\u064a \u0625\u0639\u062f\u0627\u062f \u0627\u0644\u0625\u0637\u0644\u0627\u0642 \u0627\u0644\u0645\u062c\u0627\u0646\u064a\u060c \u064a\u062a\u0645 \u062a\u0646\u0633\u064a\u0642 \u0627\u0644\u062f\u0641\u0639 \u064a\u062f\u0648\u064a\u0627 \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628 \u062d\u062a\u0649 \u0625\u0636\u0627\u0641\u0629 \u0628\u0648\u0627\u0628\u0629 \u062f\u0641\u0639 \u0644\u0627\u062d\u0642\u0627.'
+  },
+  {
+    qEn: 'How do I contact support?',
+    qAr: '\u0643\u064a\u0641 \u0623\u062a\u0648\u0627\u0635\u0644 \u0645\u0639 \u0627\u0644\u062f\u0639\u0645\u061f',
+    aEn: `Use WhatsApp at +${CONFIG.WHATSAPP_NUMBER}. Include your order reference when asking about an existing order.`,
+    aAr: `\u062a\u0648\u0627\u0635\u0644 \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628 \u0639\u0644\u0649 +${CONFIG.WHATSAPP_NUMBER}. \u064a\u0631\u062c\u0649 \u0625\u0631\u0633\u0627\u0644 \u0631\u0642\u0645 \u0645\u0631\u062c\u0639 \u0627\u0644\u0637\u0644\u0628 \u0639\u0646\u062f \u0627\u0644\u0627\u0633\u062a\u0641\u0633\u0627\u0631 \u0639\u0646 \u0637\u0644\u0628 \u0642\u0627\u0626\u0645.`
+  }
+];
+
+function renderLaunchPolicyPage(type) {
+  const page = LAUNCH_POLICY_PAGES[type];
+  if (!page) {
+    return `<div class="brand-page-container"><section class="container-custom section-padding">Page not found.</section></div>`;
+  }
+  const ar = state.lang === 'ar';
+  const sections = page.sections.map(section => `
+    <article class="launch-policy-card">
+      <h2>${ar ? section.headingAr : section.headingEn}</h2>
+      <p>${ar ? section.bodyAr : section.bodyEn}</p>
+    </article>
+  `).join('');
+
+  return `
+    <div class="brand-page-container launch-policy-page">
+      <section class="container-custom section-padding" aria-label="${ar ? page.titleAr : page.titleEn}">
+        <div class="launch-policy-hero">
+          <span class="editorial-sub">${ar ? page.eyebrowAr : page.eyebrowEn}</span>
+          <h1 class="serif-display">${ar ? page.titleAr : page.titleEn}</h1>
+          <p>${ar ? page.introAr : page.introEn}</p>
+          <span class="launch-policy-updated">${ar ? '\u0622\u062e\u0631 \u062a\u062d\u062f\u064a\u062b: 18 \u064a\u0648\u0644\u064a\u0648 2026' : 'Last updated: July 18, 2026'}</span>
+        </div>
+        <div class="launch-policy-grid">
+          ${sections}
+        </div>
+        <div class="launch-policy-note">
+          <span>${ar ? '\u0644\u0644\u062d\u0627\u0644\u0627\u062a \u0627\u0644\u062e\u0627\u0635\u0629\u060c \u0631\u0627\u0633\u0644\u0646\u0627 \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628.' : 'For exceptional cases, contact us directly on WhatsApp.'}</span>
+          <a href="https://wa.me/${WHATSAPP_NUMBER}" target="_blank" rel="noopener">${t('whatsapp_us')}</a>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
+function renderFAQ() {
+  const ar = state.lang === 'ar';
+  const items = LAUNCH_FAQ_ITEMS.map(item => `
+    <article class="launch-faq-item">
+      <h2>${ar ? item.qAr : item.qEn}</h2>
+      <p>${ar ? item.aAr : item.aEn}</p>
+    </article>
+  `).join('');
+
+  return `
+    <div class="brand-page-container launch-policy-page">
+      <section class="container-custom section-padding" aria-label="${ar ? '\u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629' : 'Frequently Asked Questions'}">
+        <div class="launch-policy-hero">
+          <span class="editorial-sub">${ar ? '\u062f\u0644\u064a\u0644 \u0627\u0644\u0625\u0637\u0644\u0627\u0642' : 'Launch Guide'}</span>
+          <h1 class="serif-display">${ar ? '\u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629' : 'Frequently Asked Questions'}</h1>
+          <p>${ar ? '\u0625\u062c\u0627\u0628\u0627\u062a \u0645\u062e\u062a\u0635\u0631\u0629 \u0644\u0623\u0647\u0645 \u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0637\u0644\u0628\u060c \u0627\u0644\u0639\u0637\u0648\u0631\u060c \u0627\u0644\u0647\u062f\u0627\u064a\u0627\u060c \u0648\u0627\u0644\u062a\u0648\u0635\u064a\u0644.' : 'Simple answers for ordering, fragrance choice, gifting, delivery, and launch checkout.'}</p>
+        </div>
+        <div class="launch-faq-list">
+          ${items}
+        </div>
+      </section>
+    </div>
+  `;
+}
+
 function renderIngredients() {
   const name = state.lang === 'ar' ? 'المكونات وسلامة البشرة' : 'Ingredients & Safety';
   return `
@@ -6192,6 +6395,15 @@ function renderFooter() {
           </ul>
         </div>
         <div class="footer-col">
+          <h4 class="wordmark" style="font-size: 0.75rem; color: var(--gold); margin-bottom: 1.2rem;">${state.lang === 'ar' ? '\u0627\u0644\u062f\u0639\u0645' : 'Support'}</h4>
+          <ul style="list-style: none; padding: 0;">
+            <li style="margin-bottom: 0.6rem;"><a href="#/delivery" style="text-decoration: none; color: var(--taupe); font-size: 0.9rem; transition: color var(--transition-smooth);">${state.lang === 'ar' ? '\u0627\u0644\u062a\u0648\u0635\u064a\u0644' : 'Delivery'}</a></li>
+            <li style="margin-bottom: 0.6rem;"><a href="#/returns" style="text-decoration: none; color: var(--taupe); font-size: 0.9rem; transition: color var(--transition-smooth);">${state.lang === 'ar' ? '\u0627\u0644\u0625\u0631\u062c\u0627\u0639 \u0648\u0627\u0644\u0627\u0633\u062a\u0628\u062f\u0627\u0644' : 'Returns & Exchange'}</a></li>
+            <li style="margin-bottom: 0.6rem;"><a href="#/privacy" style="text-decoration: none; color: var(--taupe); font-size: 0.9rem; transition: color var(--transition-smooth);">${state.lang === 'ar' ? '\u0627\u0644\u062e\u0635\u0648\u0635\u064a\u0629' : 'Privacy'}</a></li>
+            <li style="margin-bottom: 0.6rem;"><a href="#/faq" style="text-decoration: none; color: var(--taupe); font-size: 0.9rem; transition: color var(--transition-smooth);">${state.lang === 'ar' ? '\u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629' : 'FAQ'}</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
           <h4 class="wordmark" style="font-size: 0.75rem; color: var(--gold); margin-bottom: 1.2rem;">${t('contact_us')}</h4>
           <ul style="list-style: none; padding: 0;">
             <li style="margin-bottom: 0.6rem;">${waFooterLink}</li>
@@ -6248,6 +6460,14 @@ function renderApp() {
     mainRoot.innerHTML = renderContact();
   } else if (route === '#/ingredients') {
     mainRoot.innerHTML = renderIngredients();
+  } else if (route === '#/delivery') {
+    mainRoot.innerHTML = renderLaunchPolicyPage('delivery');
+  } else if (route === '#/returns') {
+    mainRoot.innerHTML = renderLaunchPolicyPage('returns');
+  } else if (route === '#/privacy') {
+    mainRoot.innerHTML = renderLaunchPolicyPage('privacy');
+  } else if (route === '#/faq') {
+    mainRoot.innerHTML = renderFAQ();
   } else if (route === '#/admin' || route.startsWith('#/admin/')) {
     const sub = route.startsWith('#/admin/') ? route.substring('#/admin/'.length).replace(/\/+$/, '') : 'overview';
     mainRoot.innerHTML = renderAdmin(sub);

@@ -3,6 +3,29 @@
 Date: 2026-07-17
 Branch: `Codex`
 
+## 2026-07-18 Phase 1-6 Execution Update
+
+Completed in this pass:
+
+- Added public launch policy routes for delivery, returns/exchange, privacy, and FAQ.
+- Added footer access to those launch pages without changing the existing header/menu navigation.
+- Updated static launch metadata to the free Cloudflare Pages URL and real WhatsApp number.
+- Updated the public fallback config to use `https://asmr-samr.pages.dev`, `966560505651`, and `ASMR & SAMR Fragrances`.
+- Added live QA, admin acceptance, free operations, and marketing launch runbooks:
+  - `docs/phase-1-6-launch-execution-plan.md`
+  - `docs/live-launch-qa-checklist.md`
+  - `docs/admin-operations-acceptance-checklist.md`
+  - `docs/free-launch-operations.md`
+  - `docs/marketing-launch-plan.md`
+
+Still requires owner action:
+
+- Rotate or delete any Cloudflare API token pasted into chat.
+- Accept the recovery admin invite for `jooo4444@gmail.com`.
+- Confirm whether founder metadata should remain the brand entity or a public person name.
+- Run the real WhatsApp checkout smoke without sending the message.
+- Enter final live inventory, product costs, and order operations data in admin.
+
 ## Phase 1: Security And Access
 
 Status: Live access hardening applied; authenticated acceptance pending
