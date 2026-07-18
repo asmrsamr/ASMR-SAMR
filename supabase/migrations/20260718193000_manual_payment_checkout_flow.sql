@@ -217,3 +217,5 @@ select
   (select coalesce(sum(amount) filter (where type in ('income', 'customer_payment')), 0) - coalesce(sum(amount) filter (where type = 'cogs'), 0) from public.finance_transactions where status = 'posted') as gross_profit;
 
 grant select on public.admin_business_overview to authenticated;
+
+notify pgrst, 'reload schema';
