@@ -40,6 +40,7 @@ Generated artifacts:
 - `data/product-pricing-latest.json`
 - `supabase/imports/product-pricing-latest.sql`
 - `supabase/imports/product-pricing-prices-only.sql`
+- `supabase/imports/product-pricing-update-existing.sql`
 - `scripts/extract_excel_product_pricing.py`
 - `scripts/verify_live_launch_pricing.py`
 
@@ -97,6 +98,8 @@ Steps:
 7. Confirm archived or unavailable products do not appear as buyable.
 
 If the full import fails and the immediate launch blocker is storefront price correctness, apply `supabase/imports/product-pricing-prices-only.sql` first, then rerun `python scripts/verify_live_launch_pricing.py`.
+
+If Supabase reports that `ON CONFLICT` cannot run because there is no matching unique constraint, apply `supabase/imports/product-pricing-update-existing.sql`. That file updates the already-existing live price rows only and then returns the changed prices for review.
 
 Acceptance:
 
