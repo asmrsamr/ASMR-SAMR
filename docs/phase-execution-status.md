@@ -85,13 +85,16 @@ Completed:
 - Cart items are resynced against current product records whenever the cart is rendered or checkout starts.
 - Add-to-cart, buy-now, and preorder flows now validate the current sellable product/size selection instead of trusting rendered button prices.
 - WhatsApp checkout and buy-now refresh the public catalog before generating the order message.
-- Local browser smoke test confirmed `#/product/samr-extrait` loads from Supabase and adds the current `50 ml` / `270 SAR` catalog price to the cart.
+- Local browser smoke test confirmed `#/product/samr-extrait` loads from Supabase and adds the current `50 ml` product selection to the cart.
+- Added an Excel-backed pricing extraction workflow using the latest ASMR and SAMR workbook revisions. The current launch prices are `SAMR 50 ml = 230 SAR`, `ASMR 50 ml = 320 SAR`, and `Duo Box = 499 SAR`.
 
 Pending:
 
+- Apply `supabase/imports/product-pricing-latest.sql` to the live Supabase project after admin/Supabase authentication is available.
+- Adjust real product stock through the admin dashboard or stock RPCs so movement history and audit logs remain accurate.
 - Add public inventory quantity/availability to the storefront catalog RPC if real-time out-of-stock blocking is required before checkout.
-- Replace placeholder launch configuration values: WhatsApp number, production domain, and founder name.
-- Complete authenticated CRUD/RLS acceptance once an admin password is entered locally.
+- Replace the placeholder founder name after the final public identity is approved.
+- Complete authenticated CRUD/RLS acceptance once a working admin login is available locally.
 
 ## Phase 5: Checkout And Orders
 

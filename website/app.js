@@ -518,11 +518,11 @@ const products = [
     descAr: 'الرائحة التي لا يستطيع نسيانها. الفواكه الدافئة المشمسة تفسح المجال للزهور البيضاء مع حرارة الجسد، ثم تستقر في قاعدة من الفانيليا المزدوجة، التونكا والمسك الجلدي التي تدوم لساعات.',
     sizes: ['10 ml', '30 ml', '50 ml', '70 ml', '100 ml'],
     prices: {
-      '10 ml': 70,
-      '30 ml': 190,
-      '50 ml': 270,
-      '70 ml': 360,
-      '100 ml': 460
+      '10 ml': 60,
+      '30 ml': 160,
+      '50 ml': 230,
+      '70 ml': 290,
+      '100 ml': 370
     },
     heroSize: '50 ml',
     pyramid: {
@@ -552,11 +552,11 @@ const products = [
     descAr: 'حضورٌ يبقى. افتتاحية من الحمضيات المتألقة تتبعها نبضات من الياسمين المشرق، تستقر في نهاية المطاف في العنبر، خشب الصندل، وأثر مميز من خمسة أنواع مسك تبدو كطبقة ثانية للجلد.',
     sizes: ['10 ml', '30 ml', '50 ml', '70 ml', '100 ml'],
     prices: {
-      '10 ml': 90,
-      '30 ml': 250,
-      '50 ml': 380,
-      '70 ml': 510,
-      '100 ml': 680
+      '10 ml': 80,
+      '30 ml': 210,
+      '50 ml': 320,
+      '70 ml': 420,
+      '100 ml': 560
     },
     heroSize: '50 ml',
     pyramid: {
@@ -725,7 +725,7 @@ const products = [
     descEn: 'The ultimate expression of the house. A handcrafted coffret containing the complete pair: ASMR 50 ml and SAMR 50 ml Extraits. (A saving of 51 SAR compared to separate purchases).',
     descAr: 'التعبير الأسمى لدار العطور. صندوق مصنوع يدوياً يحتوي على الثنائي الكامل: مستخلص عطر أسمر ٥٠ مل وسَمَر ٥٠ مل. (توفير ٥١ ريال مقارنة بالشراء الفردي).',
     sizes: ['Duo Box (2x 50 ml)'],
-    prices: { 'Duo Box (2x 50 ml)': 599 },
+    prices: { 'Duo Box (2x 50 ml)': 499 },
     heroSize: 'Duo Box (2x 50 ml)',
     pyramid: {
       topEn: 'Combined Citrus, Pink Pepper & Fruits',
@@ -5331,7 +5331,7 @@ function renderHome() {
               ${t('duo_box_offer')} ${state.lang === 'ar' ? 'صُممت لتجتمع معاً في صندوق خشبي أنيق للمناسبات الخاصة والذكرى السنوية.' : 'Curated for shared intimacy, beautifully layered or worn as custom signatures.'}
             </p>
             <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-              <span class="serif-display" style="font-size: 1.8rem; color: var(--gold); margin-right: 1.5rem;">599 ${t('sar')} <span style="font-size: 1rem; color: var(--taupe); text-decoration: line-through;">650 ${t('sar')}</span></span>
+              <span class="serif-display" style="font-size: 1.8rem; color: var(--gold); margin-right: 1.5rem;">499 ${t('sar')} <span style="font-size: 1rem; color: var(--taupe); text-decoration: line-through;">550 ${t('sar')}</span></span>
               <a href="#/product/duo-box" class="btn btn-primary">${state.lang === 'ar' ? 'عرض علبة الثنائي' : 'Explore Duo Box'}</a>
             </div>
           </div>
@@ -5814,7 +5814,7 @@ function renderGifting() {
               <h3 class="product-name" style="font-size: 1.8rem;">${state.lang === 'ar' ? 'صندوق الثنائي (له ولها)' : 'His & Hers Duo Box'}</h3>
               <p class="product-desc">${t('duo_box_offer')}</p>
               <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem;">
-                <span class="serif-display" style="font-size: 1.4rem; color: var(--gold-light);">599 ${t('sar')} <span style="font-size: 0.9rem; text-decoration: line-through; color: var(--taupe);">650 ${t('sar')}</span></span>
+                <span class="serif-display" style="font-size: 1.4rem; color: var(--gold-light);">499 ${t('sar')} <span style="font-size: 0.9rem; text-decoration: line-through; color: var(--taupe);">550 ${t('sar')}</span></span>
                 <span class="text-gold" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.15em;">${state.lang === 'ar' ? 'حجز الصندوق ←' : 'Order Coffret →'}</span>
               </div>
             </div>
@@ -6057,9 +6057,9 @@ function renderContact() {
               <div class="form-group-full">
                 <label class="form-label" for="form-interest">${t('label_interest')}</label>
                 <select id="form-interest" name="interest" class="form-select" required>
-                  <option value="SAMR Extrait 50ml">SAMR Extrait de Parfum (50 ml) — 270 SAR</option>
-                  <option value="ASMR Extrait 50ml">ASMR Extrait de Parfum (50 ml) — 380 SAR</option>
-                  <option value="His & Hers Duo Box">His & Hers Duo Box — 599 SAR</option>
+                  <option value="SAMR Extrait 50ml">SAMR Extrait de Parfum (50 ml) — 230 SAR</option>
+                  <option value="ASMR Extrait 50ml">ASMR Extrait de Parfum (50 ml) — 320 SAR</option>
+                  <option value="His & Hers Duo Box">His & Hers Duo Box — 499 SAR</option>
                   <option value="Discovery Set">Discovery Set (2x 2ml) — 60 SAR</option>
                   <option value="SAMR Trio Set">SAMR Trio Set — 379 SAR</option>
                   <option value="ASMR Trio Set">ASMR Trio Set — 499 SAR</option>

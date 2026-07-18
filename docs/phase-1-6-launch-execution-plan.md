@@ -27,8 +27,8 @@ Completed in the repo and database:
 
 Owner actions still required:
 
-- Rotate or delete any Cloudflare API token that was pasted into chat.
-- Accept the recovery admin invite for `jooo4444@gmail.com`.
+- Cloudflare API token has been deleted by the owner. Create a fresh limited token only when deployment access is needed again.
+- Resend or manually create the recovery admin access for `jooo4444@gmail.com`; the first invite was not received.
 - Test primary admin login with `j.zoneng@gmail.com`.
 - Confirm non-admin users cannot open direct dashboard URLs.
 
@@ -64,7 +64,9 @@ Owner review still required:
 
 Required live setup:
 
-- Add or verify all real products, prices, sizes, SKUs, stock, and product photos.
+- Apply `supabase/imports/product-pricing-latest.sql` so real product prices and costs match the latest Excel revisions.
+- Add or verify all real products, sizes, SKUs, stock, and product photos.
+- Enter real stock through the admin dashboard or stock RPCs, not through direct SQL quantity edits.
 - Confirm product publish status for every item shown on the public site.
 - Create at least one test order through WhatsApp checkout and confirm it appears in Supabase/admin.
 - Test inventory adjustment, low-stock behavior, customer records, newsletter signups, preorder forms, reports, and exports.
@@ -105,9 +107,8 @@ Launch sequence:
 Go live when:
 
 - Security token rotation is complete.
-- Recovery admin login is accepted.
+- Recovery admin login works.
 - Live checkout creates an order reference and opens WhatsApp correctly.
 - Admin can see the submitted order.
 - All public pages pass mobile QA.
 - Product data, prices, and stock are confirmed by the owner.
-

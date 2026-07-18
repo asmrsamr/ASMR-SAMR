@@ -94,10 +94,10 @@ for label, marker in want:
 # ---- 3 · catalog prices match the approved Selling Strategy ----------------
 print("\n[3] Catalog prices vs approved strategy (SAR)")
 expected = {
-    "samr-extrait": 270, "asmr-extrait": 380,
+    "samr-extrait": 230, "asmr-extrait": 320,
     "samr-spray": 79, "asmr-spray": 99,
     "samr-cream": 69, "asmr-cream": 79,
-    "discovery-set": 60, "duo-box": 599,
+    "discovery-set": 60, "duo-box": 499,
     "samr-trio": 379, "asmr-trio": 499,
 }
 for pid, price in expected.items():
@@ -112,7 +112,7 @@ for pid, price in expected.items():
     else:
         fail(f"{pid}: expected {price} SAR, found {prices[:6]}")
 # extrait size-ladder spot checks (10/30/70/100 ml from Selling Strategy tabs)
-for ladder_price in ("70", "190", "360", "460", "90", "250", "510", "680"):
+for ladder_price in ("60", "160", "230", "290", "370", "80", "210", "320", "420", "560"):
     (ok if re.search(rf"[\"':\s]{ladder_price}\b", js) else warn)(f"ladder price {ladder_price} SAR present somewhere in catalog")
 
 # ---- 4 · SEO & structured data ---------------------------------------------
@@ -278,6 +278,40 @@ function_sources = "\n".join(
 for function_name in ("admin-api-keys", "verify-api-key", "admin-users", "admin-gift-cards"):
     (ok if os.path.isdir(os.path.join(function_dir, function_name)) else fail)(f"Edge Function source: {function_name}")
 (ok if "crypto.subtle.digest" in function_sources and "key_hash" in function_sources else fail)("API keys use server-side cryptographic hashing")
+
+# ---- 14 · Excel workbook pricing import -------------------------------------
+print("\n[14] Excel workbook pricing import")
+pricing_manifest_path = os.path.join(HERE, "..", "data", "product-pricing-latest.json")
+pricing_sql_path = os.path.join(HERE, "..", "supabase", "imports", "product-pricing-latest.sql")
+if os.path.exists(pricing_manifest_path) and os.path.exists(pricing_sql_path):
+    with open(pricing_manifest_path, encoding="utf-8") as f:
+        pricing_manifest = json.load(f)
+    with open(pricing_sql_path, encoding="utf-8") as f:
+        pricing_sql = f.read()
+    records_by_id = {row["product_id"]: row for row in pricing_manifest.get("records", [])}
+    for pid, size, price in (
+        ("asmr-extrait", "50 ml", 320),
+        ("samr-extrait", "50 ml", 230),
+        ("asmr-extrait", "100 ml", 560),
+        ("samr-extrait", "100 ml", 370),
+        ("duo-box", "Duo Box (2x 50 ml)", 499),
+    ):
+        actual = records_by_id.get(pid, {}).get("prices", {}).get(size)
+        (ok if actual == price else fail)(f"{pid} {size}: Excel-backed import price is {price} SAR")
+    (ok if pricing_manifest.get("currency") == "SAR" and pricing_manifest.get("vat_rate") == 0.15 else fail)(
+        "pricing manifest declares SAR and 15% VAT")
+    (ok if "ASMR/ASMR 008/ASMR Perfume 008.xlsx" in pricing_sql and "SAMR/SAMR 011/SAMR Perfume 011.xlsx" in pricing_sql
+     else fail)("pricing import records the latest ASMR and SAMR workbook sources")
+    (ok if "insert into public.product_prices" in pricing_sql.lower() else fail)(
+        "pricing import updates product_prices")
+    (ok if "product_cost_components" in pricing_sql and "allocation_method" in pricing_sql and "'per_unit'" in pricing_sql
+     else fail)("pricing import updates cost components with allocation methods")
+    (ok if "product_inventory" not in pricing_sql.lower() else fail)(
+        "pricing import does not mutate inventory quantities")
+    (ok if "Duo Box Duo" not in pricing_sql and "Trio Set Trio" not in pricing_sql else fail)(
+        "derived set variant names are not duplicated")
+else:
+    fail("Excel pricing manifest and Supabase import SQL are present")
 
 # ---- summary -----------------------------------------------------------------
 print("\n" + "=" * 70)

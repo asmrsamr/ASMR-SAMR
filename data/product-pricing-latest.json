@@ -1,0 +1,343 @@
+{
+  "generated_at": "2026-07-18T11:58:09",
+  "effective_date": "2026-07-18",
+  "currency": "SAR",
+  "vat_rate": 0.15,
+  "records": [
+    {
+      "product_id": "asmr-extrait",
+      "name": "ASMR Extrait de Parfum",
+      "source": "ASMR/ASMR 008/ASMR Perfume 008.xlsx",
+      "source_modified_at": "2026-07-12T20:13:30",
+      "source_kind": "perfume",
+      "default_size": "50 ml",
+      "prices": {
+        "10 ml": 80.0,
+        "30 ml": 210.0,
+        "50 ml": 320.0,
+        "70 ml": 420.0,
+        "100 ml": 560.0
+      },
+      "costs": {
+        "10 ml": {
+          "ingredient_cost": 11.21,
+          "packaging_cost": 12.0,
+          "labor_cost": 0.0,
+          "total_cost": 23.21
+        },
+        "30 ml": {
+          "ingredient_cost": 33.62,
+          "packaging_cost": 30.0,
+          "labor_cost": 0.0,
+          "total_cost": 63.62
+        },
+        "50 ml": {
+          "ingredient_cost": 56.03,
+          "packaging_cost": 40.0,
+          "labor_cost": 0.0,
+          "total_cost": 96.03
+        },
+        "70 ml": {
+          "ingredient_cost": 78.44,
+          "packaging_cost": 48.0,
+          "labor_cost": 0.0,
+          "total_cost": 126.44
+        },
+        "100 ml": {
+          "ingredient_cost": 112.06,
+          "packaging_cost": 55.0,
+          "labor_cost": 0.0,
+          "total_cost": 167.06
+        }
+      },
+      "capacity": {
+        "10 ml": {
+          "bottles_by_concentrate": 35.294,
+          "bottles_by_alcohol": 119.118,
+          "inventory_capacity_units": 35,
+          "cost_per_bottle": 11.21,
+          "limiting_factor": "concentrate (Iso E Super)"
+        },
+        "30 ml": {
+          "bottles_by_concentrate": 11.765,
+          "bottles_by_alcohol": 39.706,
+          "inventory_capacity_units": 11,
+          "cost_per_bottle": 33.62,
+          "limiting_factor": "concentrate (Iso E Super)"
+        },
+        "50 ml": {
+          "bottles_by_concentrate": 7.059,
+          "bottles_by_alcohol": 23.824,
+          "inventory_capacity_units": 7,
+          "cost_per_bottle": 56.03,
+          "limiting_factor": "concentrate (Iso E Super)"
+        },
+        "70 ml": {
+          "bottles_by_concentrate": 5.042,
+          "bottles_by_alcohol": 17.017,
+          "inventory_capacity_units": 5,
+          "cost_per_bottle": 78.44,
+          "limiting_factor": "concentrate (Iso E Super)"
+        },
+        "100 ml": {
+          "bottles_by_concentrate": 3.529,
+          "bottles_by_alcohol": 11.912,
+          "inventory_capacity_units": 3,
+          "cost_per_bottle": 112.06,
+          "limiting_factor": "concentrate (Iso E Super)"
+        }
+      },
+      "notes": "Prices use the Selling Strategy launch-price column; costs use Pricing & Sales."
+    },
+    {
+      "product_id": "samr-extrait",
+      "name": "SAMR Extrait de Parfum",
+      "source": "SAMR/SAMR 011/SAMR Perfume 011.xlsx",
+      "source_modified_at": "2026-07-14T20:56:22",
+      "source_kind": "perfume",
+      "default_size": "50 ml",
+      "prices": {
+        "10 ml": 60.0,
+        "30 ml": 160.0,
+        "50 ml": 230.0,
+        "70 ml": 290.0,
+        "100 ml": 370.0
+      },
+      "costs": {
+        "10 ml": {
+          "ingredient_cost": 5.46,
+          "packaging_cost": 12.0,
+          "labor_cost": 0.0,
+          "total_cost": 17.46
+        },
+        "30 ml": {
+          "ingredient_cost": 16.39,
+          "packaging_cost": 30.0,
+          "labor_cost": 0.0,
+          "total_cost": 46.39
+        },
+        "50 ml": {
+          "ingredient_cost": 27.32,
+          "packaging_cost": 40.0,
+          "labor_cost": 0.0,
+          "total_cost": 67.32
+        },
+        "70 ml": {
+          "ingredient_cost": 38.25,
+          "packaging_cost": 48.0,
+          "labor_cost": 0.0,
+          "total_cost": 86.25
+        },
+        "100 ml": {
+          "ingredient_cost": 54.64,
+          "packaging_cost": 55.0,
+          "labor_cost": 0.0,
+          "total_cost": 109.64
+        }
+      },
+      "capacity": {
+        "10 ml": {
+          "bottles_by_concentrate": 156.863,
+          "bottles_by_alcohol": 595.588,
+          "inventory_capacity_units": 156,
+          "cost_per_bottle": 5.46,
+          "limiting_factor": "concentrate (Ambroxan)"
+        },
+        "30 ml": {
+          "bottles_by_concentrate": 52.288,
+          "bottles_by_alcohol": 198.529,
+          "inventory_capacity_units": 52,
+          "cost_per_bottle": 16.39,
+          "limiting_factor": "concentrate (Ambroxan)"
+        },
+        "50 ml": {
+          "bottles_by_concentrate": 31.373,
+          "bottles_by_alcohol": 119.118,
+          "inventory_capacity_units": 31,
+          "cost_per_bottle": 27.32,
+          "limiting_factor": "concentrate (Ambroxan)"
+        },
+        "70 ml": {
+          "bottles_by_concentrate": 22.409,
+          "bottles_by_alcohol": 85.084,
+          "inventory_capacity_units": 22,
+          "cost_per_bottle": 38.25,
+          "limiting_factor": "concentrate (Ambroxan)"
+        },
+        "100 ml": {
+          "bottles_by_concentrate": 15.686,
+          "bottles_by_alcohol": 59.559,
+          "inventory_capacity_units": 15,
+          "cost_per_bottle": 54.64,
+          "limiting_factor": "concentrate (Ambroxan)"
+        }
+      },
+      "notes": "Prices use the Selling Strategy launch-price column; costs use Pricing & Sales."
+    },
+    {
+      "product_id": "asmr-spray",
+      "name": "ASMR Body Spray",
+      "source": "ASMR/Perfume 007/ASMR Body Spray 007.xlsx",
+      "source_modified_at": "2026-07-12T23:22:10",
+      "source_kind": "body_spray",
+      "default_size": "100 ml",
+      "prices": {
+        "100 ml": 99.0
+      },
+      "costs": {
+        "100 ml": {
+          "ingredient_cost": 41.14,
+          "packaging_cost": 0,
+          "labor_cost": 0,
+          "total_cost": 41.14
+        }
+      },
+      "capacity": {},
+      "notes": "Retail price retained from storefront; workbook supplies material cost assumptions only."
+    },
+    {
+      "product_id": "samr-spray",
+      "name": "SAMR Body Spray",
+      "source": "SAMR/SAMR 008/SAMR Body Spray 008.xlsx",
+      "source_modified_at": "2026-07-12T23:22:11",
+      "source_kind": "body_spray",
+      "default_size": "100 ml",
+      "prices": {
+        "100 ml": 79.0
+      },
+      "costs": {
+        "100 ml": {
+          "ingredient_cost": 30.34,
+          "packaging_cost": 0,
+          "labor_cost": 0,
+          "total_cost": 30.34
+        }
+      },
+      "capacity": {},
+      "notes": "Retail price retained from storefront; workbook supplies material cost assumptions only."
+    },
+    {
+      "product_id": "asmr-cream",
+      "name": "ASMR Body Cream",
+      "source": "ASMR/Perfume 007/ASMR Cream 007.xlsx",
+      "source_modified_at": "2026-07-12T23:22:11",
+      "source_kind": "cream",
+      "default_size": "100 g",
+      "prices": {
+        "100 g": 79.0
+      },
+      "costs": {
+        "100 g": {
+          "ingredient_cost": 8.19,
+          "packaging_cost": 0,
+          "labor_cost": 0,
+          "total_cost": 8.19
+        }
+      },
+      "capacity": {},
+      "notes": "Retail price retained from storefront; workbook supplies material cost assumptions only."
+    },
+    {
+      "product_id": "samr-cream",
+      "name": "SAMR Body Cream",
+      "source": "SAMR/SAMR 008/SAMR Cream 008.xlsx",
+      "source_modified_at": "2026-07-12T23:22:11",
+      "source_kind": "cream",
+      "default_size": "100 g",
+      "prices": {
+        "100 g": 69.0
+      },
+      "costs": {
+        "100 g": {
+          "ingredient_cost": 6.03,
+          "packaging_cost": 0,
+          "labor_cost": 0,
+          "total_cost": 6.03
+        }
+      },
+      "capacity": {},
+      "notes": "Retail price retained from storefront; workbook supplies material cost assumptions only."
+    },
+    {
+      "product_id": "duo-box",
+      "name": "His & Hers Duo Box",
+      "source": "Derived from ASMR 50 ml + SAMR 50 ml latest launch prices",
+      "source_kind": "derived_set",
+      "default_size": "Duo Box (2x 50 ml)",
+      "prices": {
+        "Duo Box (2x 50 ml)": 499
+      },
+      "costs": {
+        "Duo Box (2x 50 ml)": {
+          "ingredient_cost": 0,
+          "packaging_cost": 0,
+          "labor_cost": 0,
+          "other_cost": 163.35,
+          "total_cost": 163.35
+        }
+      },
+      "notes": "Bundle keeps the historical 51 SAR saving: 320 + 230 - 51 = 499. Add coffret packaging cost when supplier quote is known."
+    },
+    {
+      "product_id": "asmr-trio",
+      "name": "ASMR Trio Set",
+      "source": "Derived from ASMR 50 ml, ASMR Body Spray, and ASMR Body Cream workbooks",
+      "source_kind": "derived_set",
+      "default_size": "Trio Set",
+      "prices": {
+        "Trio Set": 499
+      },
+      "costs": {
+        "Trio Set": {
+          "ingredient_cost": 0,
+          "packaging_cost": 0,
+          "labor_cost": 0,
+          "other_cost": 145.36,
+          "total_cost": 145.36
+        }
+      },
+      "notes": "Price matches component launch sum rounded by current storefront strategy."
+    },
+    {
+      "product_id": "samr-trio",
+      "name": "SAMR Trio Set",
+      "source": "Derived from SAMR 50 ml, SAMR Body Spray, and SAMR Body Cream workbooks",
+      "source_kind": "derived_set",
+      "default_size": "Trio Set",
+      "prices": {
+        "Trio Set": 379
+      },
+      "costs": {
+        "Trio Set": {
+          "ingredient_cost": 0,
+          "packaging_cost": 0,
+          "labor_cost": 0,
+          "other_cost": 103.69,
+          "total_cost": 103.69
+        }
+      },
+      "notes": "Price matches component launch sum rounded by current storefront strategy."
+    },
+    {
+      "product_id": "discovery-set",
+      "name": "Discovery Set",
+      "source": "Derived from ASMR/SAMR launch strategy; sample packaging cost still requires supplier quote",
+      "source_kind": "derived_set",
+      "default_size": "2x 2 ml",
+      "prices": {
+        "2x 2 ml": 60
+      },
+      "costs": {
+        "2x 2 ml": {
+          "ingredient_cost": 4,
+          "packaging_cost": 8,
+          "labor_cost": 0,
+          "other_cost": 0,
+          "total_cost": 12
+        }
+      },
+      "notes": "Sample/vial packaging is estimated and should be replaced with a supplier quote."
+    }
+  ],
+  "stock_policy": "Do not import stock by SQL. Adjust sellable stock in admin so product_stock_movements and audit trail are recorded."
+}
