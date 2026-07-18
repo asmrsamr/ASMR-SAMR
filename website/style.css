@@ -2393,6 +2393,16 @@ body:has(.campaign-brand-hero) header:not(.scrolled) .mobile-nav-toggle span {
   padding: 2rem;
   border-top: 1px solid var(--border-whisper);
   background-color: var(--charcoal-800);
+  max-height: 58vh;
+  overflow-y: auto;
+}
+
+.cart-footer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cart-footer::-webkit-scrollbar-thumb {
+  background: rgba(196, 165, 102, 0.35);
 }
 
 .cart-total-row {
@@ -2407,6 +2417,68 @@ body:has(.campaign-brand-hero) header:not(.scrolled) .mobile-nav-toggle span {
   color: var(--taupe);
   margin-top: 0.5rem;
   display: block;
+}
+
+.cart-payment-fieldset {
+  border: 1px solid rgba(196, 165, 102, 0.22);
+  padding: 1rem;
+  margin: 1rem 0 0;
+  min-inline-size: 0;
+}
+
+.cart-payment-fieldset legend {
+  color: var(--gold);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  padding: 0 0.35rem;
+  text-transform: uppercase;
+}
+
+.cart-payment-options {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.cart-payment-option {
+  align-items: flex-start;
+  border: 1px solid rgba(235, 223, 198, 0.12);
+  cursor: pointer;
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: auto 1fr;
+  padding: 0.7rem;
+  transition: border-color var(--transition-tactile), background-color var(--transition-tactile);
+}
+
+.cart-payment-option:hover,
+.cart-payment-option:focus-within {
+  background-color: rgba(235, 223, 198, 0.045);
+  border-color: rgba(196, 165, 102, 0.42);
+}
+
+.cart-payment-option input {
+  accent-color: var(--gold);
+  margin-top: 0.12rem;
+}
+
+.cart-payment-option strong {
+  color: var(--ivory-100);
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cart-payment-option small,
+.cart-payment-note {
+  color: var(--taupe);
+  display: block;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  margin-top: 0.2rem;
 }
 
 /* Backdrop overlay */

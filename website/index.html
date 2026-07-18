@@ -91,6 +91,13 @@
         <span id="cart-label-total">Total Estimate</span>
         <span id="cart-total" class="text-gold">0 SAR</span>
       </div>
+      <fieldset class="cart-payment-fieldset" id="cart-payment-fieldset">
+        <legend id="cart-payment-label">Preferred payment</legend>
+        <div class="cart-payment-options" id="cart-payment-options" role="radiogroup" aria-labelledby="cart-payment-label">
+          <!-- Injected dynamically by app.js -->
+        </div>
+        <small class="cart-payment-note" id="cart-payment-note">Payment is confirmed manually on WhatsApp before delivery.</small>
+      </fieldset>
       <small class="cart-vat-note" id="cart-vat-label">Prices exclude 15% VAT. Order finalized on WhatsApp.</small>
       <button class="btn btn-primary btn-block" id="cart-checkout-btn" style="margin-top: 1.5rem;">
         Submit Checkout

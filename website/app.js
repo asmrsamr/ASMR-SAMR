@@ -40,6 +40,37 @@ const CONFIG = {
   RESERVED_COUNT: Math.max(0, Number(firstConfigValue(PUBLIC_CONFIG.reservedCount, PUBLIC_CONFIG.RESERVED_COUNT, CONFIG_DEFAULTS.RESERVED_COUNT)) || 0)
 };
 
+const PAYMENT_METHOD_OPTIONS = [
+  {
+    id: 'bank_transfer',
+    labelEn: 'Bank Transfer',
+    labelAr: 'تحويل بنكي',
+    detailEn: 'Manual IBAN transfer after WhatsApp confirmation.',
+    detailAr: 'تحويل يدوي إلى الآيبان بعد تأكيد الطلب عبر واتساب.'
+  },
+  {
+    id: 'stc_transfer',
+    labelEn: 'STC Transfer',
+    labelAr: 'تحويل STC',
+    detailEn: 'Use if STC Bank or wallet transfer is available for the order.',
+    detailAr: 'يستخدم إذا كان تحويل STC متاحا لهذا الطلب.'
+  },
+  {
+    id: 'cod_meetup',
+    labelEn: 'COD / Meet-up',
+    labelAr: 'الدفع عند الاستلام',
+    detailEn: 'For trusted local handover or approved delivery cases.',
+    detailAr: 'للتسليم المحلي أو الحالات التي يتم اعتمادها مسبقا.'
+  },
+  {
+    id: 'paypal',
+    labelEn: 'PayPal Fallback',
+    labelAr: 'PayPal',
+    detailEn: 'Optional fallback when PayPal is suitable for the customer.',
+    detailAr: 'خيار احتياطي عندما يناسب العميل استخدام PayPal.'
+  }
+];
+
 // Pre-launch checks to handle placeholder numbers gracefully
 const IS_WHATSAPP_PLACEHOLDER = (CONFIG.WHATSAPP_NUMBER === PLACEHOLDER_WHATSAPP_NUMBER);
 const IS_DOMAIN_PLACEHOLDER = (CONFIG.SITE_DOMAIN === PLACEHOLDER_SITE_DOMAIN);
@@ -84,7 +115,8 @@ const state = {
   lang: localStorage.getItem('asmr_samr_lang') || 'en',
   cart: JSON.parse(localStorage.getItem('asmr_samr_cart')) || [],
   currentRoute: window.location.hash || '#/',
-  selectedSize: {} // Stores size selections for detail pages: { productId: sizeString }
+  selectedSize: {}, // Stores size selections for detail pages: { productId: sizeString }
+  paymentMethod: localStorage.getItem('asmr_samr_payment_method') || 'bank_transfer'
 };
 
 let previousActiveElement = null;
@@ -1849,6 +1881,69 @@ function t(key) {
   return langData[key] || key;
 }
 
+function getPaymentMethodOption(method = state.paymentMethod) {
+  return PAYMENT_METHOD_OPTIONS.find(option => option.id === method) || PAYMENT_METHOD_OPTIONS[0];
+}
+
+function paymentMethodLabel(method = state.paymentMethod) {
+  const option = getPaymentMethodOption(method);
+  return state.lang === 'ar' ? option.labelAr : option.labelEn;
+}
+
+function paymentMethodDetail(method = state.paymentMethod) {
+  const option = getPaymentMethodOption(method);
+  return state.lang === 'ar' ? option.detailAr : option.detailEn;
+}
+
+function setCartPaymentMethod(method) {
+  state.paymentMethod = getPaymentMethodOption(method).id;
+  localStorage.setItem('asmr_samr_payment_method', state.paymentMethod);
+  renderCartPaymentOptions();
+  announceToScreenReader(state.lang === 'ar'
+    ? `تم اختيار طريقة الدفع: ${paymentMethodLabel()}`
+    : `Payment method selected: ${paymentMethodLabel()}`);
+}
+
+function renderCartPaymentOptions() {
+  const label = document.getElementById('cart-payment-label');
+  const note = document.getElementById('cart-payment-note');
+  const optionsRoot = document.getElementById('cart-payment-options');
+  if (label) label.textContent = state.lang === 'ar' ? 'طريقة الدفع المفضلة' : 'Preferred payment';
+  if (note) {
+    note.textContent = state.lang === 'ar'
+      ? 'يتم تأكيد الدفع يدويا عبر واتساب قبل التسليم. لا يتم حفظ بيانات البطاقات على الموقع.'
+      : 'Payment is confirmed manually on WhatsApp before delivery. No card details are stored on this site.';
+  }
+  if (!optionsRoot) return;
+  const selected = getPaymentMethodOption().id;
+  optionsRoot.innerHTML = PAYMENT_METHOD_OPTIONS.map(option => `
+    <label class="cart-payment-option">
+      <input type="radio" name="cart-payment-method" value="${esc(option.id)}" ${option.id === selected ? 'checked' : ''} onchange="setCartPaymentMethod(this.value)">
+      <span>
+        <strong>${esc(state.lang === 'ar' ? option.labelAr : option.labelEn)}</strong>
+        <small>${esc(state.lang === 'ar' ? option.detailAr : option.detailEn)}</small>
+      </span>
+    </label>
+  `).join('');
+}
+
+function orderStatusLabel(status, ar = state.lang === 'ar') {
+  const labels = {
+    pending_payment: ['PENDING PAYMENT', 'بانتظار الدفع'],
+    payment_sent: ['PAYMENT SENT', 'تم إرسال الدفع'],
+    paid: ['PAID', 'مدفوع'],
+    preparing: ['PREPARING', 'قيد التحضير'],
+    ready: ['READY', 'جاهز'],
+    shipped: ['SHIPPED', 'تم الشحن'],
+    delivered: ['DELIVERED', 'تم التوصيل'],
+    cancelled: ['CANCELLED', 'ملغي'],
+    awaiting_confirmation: ['AWAITING CONFIRMATION', 'بانتظار التأكيد'],
+    confirmed: ['CONFIRMED', 'مؤكد']
+  };
+  const pair = labels[status] || labels.awaiting_confirmation;
+  return ar ? pair[1] : pair[0];
+}
+
 // Router Management
 function initRouter() {
   window.addEventListener('hashchange', () => {
@@ -2348,11 +2443,18 @@ function updateLoggedOrder(orderId, patch) {
 
 function logOrder(type, items, total, message, options = {}) {
   const orders = getOrders();
+  const method = getPaymentMethodOption(options.paymentMethod || state.paymentMethod);
   const order = {
     id: options.orderNo || createStorefrontOrderNo(),
     ts: new Date().toISOString(),
     sourceRoute: window.location.hash || '#/',
-    type, items, total, message
+    type,
+    items,
+    total,
+    message,
+    paymentMethod: method.id,
+    paymentMethodLabel: state.lang === 'ar' ? method.labelAr : method.labelEn,
+    status: options.status || 'pending_payment'
   };
   orders.unshift(order);
   localStorage.setItem('asmr_samr_orders', JSON.stringify(orders.slice(0, 50)));
@@ -2364,6 +2466,7 @@ function logOrder(type, items, total, message, options = {}) {
 
 async function persistStorefrontOrder(order) {
   const profile = getProfile();
+  const paymentMethod = getPaymentMethodOption(order.paymentMethod || state.paymentMethod);
   const items = (order.items || []).map((item) => ({
     product_id: item.id,
     size: item.size,
@@ -2377,8 +2480,12 @@ async function persistStorefrontOrder(order) {
     p_customer_city: profile.city || null,
     p_customer_address: profile.address || null,
     p_source_route: order.sourceRoute || window.location.hash || '#/',
+    p_payment_method: paymentMethod.id,
     p_type: order.type === 'buy-now' ? 'buy_now' : order.type,
-    p_note: order.message || null,
+    p_note: [
+      `Preferred payment: ${paymentMethod.labelEn}`,
+      order.message || ''
+    ].filter(Boolean).join('\n\n'),
     p_items: items
   };
 
@@ -2389,7 +2496,7 @@ async function persistStorefrontOrder(order) {
     });
   } catch (error) {
     const message = String(error?.message || '');
-    const canFallback = /Could not find the function|schema cache|p_customer_email|p_source_route/i.test(message);
+    const canFallback = /Could not find the function|schema cache|p_customer_email|p_source_route|p_payment_method/i.test(message);
     if (!canFallback) throw error;
   }
 
@@ -2400,7 +2507,10 @@ async function persistStorefrontOrder(order) {
       p_customer_name: profile.name || null,
       p_customer_phone: profile.phone || null,
       p_type: order.type === 'buy-now' ? 'buy_now' : order.type,
-      p_note: order.message || null,
+      p_note: [
+        `Preferred payment: ${paymentMethod.labelEn}`,
+        order.message || ''
+      ].filter(Boolean).join('\n\n'),
       p_items: items
     }
   });
@@ -2443,8 +2553,9 @@ function saveProfileFromForm(e) {
 
 function clearAccountData() {
   if (!window.confirm(t('acct_clear_confirm'))) return;
-  ['asmr_samr_profile', 'asmr_samr_orders', 'asmr_samr_wishlist', 'asmr_samr_notif'].forEach(k => localStorage.removeItem(k));
+  ['asmr_samr_profile', 'asmr_samr_orders', 'asmr_samr_wishlist', 'asmr_samr_notif', 'asmr_samr_payment_method'].forEach(k => localStorage.removeItem(k));
   state.accountTab = 'overview';
+  state.paymentMethod = 'bank_transfer';
   renderApp();
   showToast(state.lang === 'ar' ? 'تم مسح بياناتك من هذا الجهاز' : 'Your data has been cleared from this device');
 }
@@ -2498,7 +2609,7 @@ const ADMIN_TABS = [
   'api-keys',
   'audit'
 ];
-const ADMIN_STATUS_OPTIONS = ['new', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled'];
+const ADMIN_STATUS_OPTIONS = ['pending_payment', 'payment_sent', 'paid', 'preparing', 'ready', 'delivered', 'cancelled'];
 const ADMIN_BADGE_OPTIONS = [
   'For Her',
   'For Him',
@@ -4523,8 +4634,7 @@ function renderRightSidebar(ar, profile, orders) {
     const size = firstItem.size || '';
     const productId = firstItem.id || 'samr-extrait';
     const imgUrl = productImages[productId] ? productImages[productId].webp : '';
-    const statusEn = o.status === 'delivered' ? 'DELIVERED' : 'AWAITING CONFIRMATION';
-    const statusAr = o.status === 'delivered' ? 'تم التوصيل' : 'بانتظار التأكيد';
+    const statusLabel = orderStatusLabel(o.status, ar);
     return `
       <div class="recent-order-item">
         <div class="recent-order-thumb">
@@ -4535,7 +4645,7 @@ function renderRightSidebar(ar, profile, orders) {
           <h4 class="recent-order-name">${qty}× ${esc(name)}${size ? ` (${esc(size)})` : ''}</h4>
           <div class="recent-order-status-row">
             <span>${o.total} ${ar ? 'ريال' : 'SAR'}</span>
-            <span class="status-delivered-chip ${o.status === 'delivered' ? '' : 'status-pending-chip'}">${ar ? statusAr : statusEn}</span>
+            <span class="status-delivered-chip ${o.status === 'delivered' ? '' : 'status-pending-chip'}">${statusLabel}</span>
           </div>
         </div>
       </div>
@@ -4640,8 +4750,8 @@ function renderAccount() {
           
           <a href="#" class="quick-access-card" onclick="switchAccountTab(event, 'payments')">
             <svg class="quick-card-icon" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-            <h4 class="quick-card-title">${ar ? 'طرق الدفع' : 'PAYMENT METHODS'}</h4>
-            <p class="quick-card-desc">${ar ? 'تحديث بطاقات الدفع المحفوظة.' : 'Update your saved payment methods.'}</p>
+            <h4 class="quick-card-title">${ar ? 'طرق الدفع' : 'LAUNCH PAYMENT'}</h4>
+            <p class="quick-card-desc">${ar ? 'مراجعة طرق الدفع اليدوية عبر واتساب.' : 'Review manual WhatsApp payment options.'}</p>
             <span class="quick-card-arrow">&rarr;</span>
           </a>
           
@@ -4693,12 +4803,14 @@ function renderAccount() {
           const d = new Date(o.ts);
           const when = d.toLocaleDateString(ar ? 'ar-SA' : 'en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
           const summary = (o.items || []).map(i => `${i.qty}× ${i.name} (${i.size})`).join(' · ');
+          const payment = o.paymentMethodLabel || paymentMethodLabel(o.paymentMethod || 'bank_transfer');
           return `
             <div class="account-order-row" style="display:flex; justify-content:space-between; align-items:center; padding:1.5rem; border-bottom:1px solid rgba(0,0,0,0.05);">
               <div>
                 <span class="account-order-type text-gold" style="font-weight:600; font-size:0.75rem; text-transform:uppercase; display:block; margin-bottom:0.2rem;">${typeLabel[o.type] || o.type}</span>
                 <span class="account-order-date" style="font-size:0.8rem; color:var(--taupe);">${when} · ${o.id}</span>
                 <p class="account-order-items" style="font-size:0.9rem; margin:0.4rem 0 0; color:var(--charcoal-900);">${summary}</p>
+                <p class="account-order-items" style="font-size:0.78rem; margin:0.3rem 0 0; color:var(--taupe);">${orderStatusLabel(o.status, ar)} · ${payment}</p>
               </div>
               <div style="text-align:right;">
                 <span class="account-order-total" style="font-weight:600; display:block; margin-bottom:0.5rem;">${o.total} ${ar ? 'ريال' : 'SAR'}</span>
@@ -4935,6 +5047,9 @@ async function checkoutToWhatsApp() {
     return;
   }
   const orderNo = createStorefrontOrderNo();
+  const paymentMethod = getPaymentMethodOption();
+  const paymentLabel = state.lang === 'ar' ? paymentMethod.labelAr : paymentMethod.labelEn;
+  const paymentDetail = state.lang === 'ar' ? paymentMethod.detailAr : paymentMethod.detailEn;
 
   let message = '';
   if (state.lang === 'ar') {
@@ -4963,9 +5078,11 @@ async function checkoutToWhatsApp() {
     message += `Subtotal: ${subtotal} SAR\n`;
     message += `VAT (15%): ${vat} SAR\n`;
     message += `Total Estimate: ${total} SAR\n\n`;
+    message += `Preferred Payment Method: ${paymentLabel}\n`;
+    message += `Payment Note: ${paymentDetail}\n\n`;
     message += `Order Reference: ${orderNo}\n`;
     message += `Batch Reference: B.077\n`;
-    message += `Please provide details to finalize my transfer. Shipped from ${CONFIG.PRODUCTION_CITY_EN}. Thank you.`;
+    message += `Please confirm availability and send the correct payment instructions. Shipped from ${CONFIG.PRODUCTION_CITY_EN}. Thank you.`;
   }
 
   const profile = getProfile();
@@ -4984,7 +5101,7 @@ async function checkoutToWhatsApp() {
     updateLoggedOrder(order.id, {
       remoteOrderId: remoteOrder?.id || null,
       remoteOrderNo: remoteOrder?.order_no || order.id,
-      status: remoteOrder?.status || 'awaiting_confirmation',
+      status: remoteOrder?.status || 'pending_payment',
       subtotal: remoteOrder?.subtotal || orderSubtotal,
       vat: remoteOrder?.vat || Math.round(orderSubtotal * 0.15),
       total: remoteOrder?.total || order.total,
@@ -5014,6 +5131,9 @@ async function buyNowWhatsApp(productId, size) {
   const { product, price: currentPrice } = selection;
   size = selection.size;
   const orderNo = createStorefrontOrderNo();
+  const paymentMethod = getPaymentMethodOption();
+  const paymentLabel = state.lang === 'ar' ? paymentMethod.labelAr : paymentMethod.labelEn;
+  const paymentDetail = state.lang === 'ar' ? paymentMethod.detailAr : paymentMethod.detailEn;
 
   const total = currentPrice + Math.round(currentPrice * 0.15);
   let message = '';
@@ -5029,9 +5149,11 @@ async function buyNowWhatsApp(productId, size) {
     message += `Product: ${product.nameEn}\n`;
     message += `Size: ${size}\n`;
     message += `Price: ${currentPrice} SAR (+ VAT: ${total} SAR)\n\n`;
+    message += `Preferred Payment Method: ${paymentLabel}\n`;
+    message += `Payment Note: ${paymentDetail}\n\n`;
     message += `Order Reference: ${orderNo}\n`;
     message += `Batch Reference: B.077\n`;
-    message += `Please send payment bank transfer instructions.`;
+    message += `Please confirm availability and send the correct payment instructions.`;
   }
 
   const order = logOrder('buy-now',
@@ -5042,7 +5164,7 @@ async function buyNowWhatsApp(productId, size) {
     updateLoggedOrder(order.id, {
       remoteOrderId: remoteOrder?.id || null,
       remoteOrderNo: remoteOrder?.order_no || order.id,
-      status: remoteOrder?.status || 'awaiting_confirmation',
+      status: remoteOrder?.status || 'pending_payment',
       subtotal: remoteOrder?.subtotal || currentPrice,
       vat: remoteOrder?.vat || Math.round(currentPrice * 0.15),
       total: remoteOrder?.total || total,
@@ -5116,6 +5238,7 @@ function renderHeader() {
   if (drawerVatLabel) drawerVatLabel.innerText = t('vat_note');
   const drawerCheckoutBtn = document.getElementById('cart-checkout-btn');
   if (drawerCheckoutBtn) drawerCheckoutBtn.innerText = t('checkout_text');
+  renderCartPaymentOptions();
 
   const subLabel = document.getElementById('cart-label-subtotal');
   if (subLabel) subLabel.innerText = state.lang === 'ar' ? 'المجموع الفرعي' : 'Subtotal';
@@ -5157,6 +5280,7 @@ function renderCartDrawer() {
   const container = document.getElementById('cart-items-container');
   if (!container) return;
   syncCartWithCatalog();
+  renderCartPaymentOptions();
 
   if (state.cart.length === 0) {
     container.innerHTML = `<div style="text-align: center; margin-top: 4rem; color: var(--taupe);">${t('cart_empty')}</div>`;
@@ -6565,6 +6689,7 @@ window.resendOrder = resendOrder;
 window.saveProfileFromForm = saveProfileFromForm;
 window.clearAccountData = clearAccountData;
 window.selectProductSize = selectProductSize;
+window.setCartPaymentMethod = setCartPaymentMethod;
 window.toggleAccordion = toggleAccordion;
 window.buyNowWhatsApp = buyNowWhatsApp;
 window.checkoutToWhatsApp = checkoutToWhatsApp;

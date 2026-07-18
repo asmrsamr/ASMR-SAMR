@@ -799,6 +799,10 @@
     return esc(value);
   }
 
+  function detailItem(label, value) {
+    return `<div><dt>${esc(label)}</dt><dd>${renderValue(value, label)}</dd></div>`;
+  }
+
   function openRecordModal(title, pairs) {
     openModal(`
       <span class="admin-eyebrow">Record details</span>
@@ -1393,6 +1397,11 @@
   const USER_STATUS_OPTIONS = choices(['invited', 'active', 'inactive', 'suspended']);
   const PRODUCT_STATUS_OPTIONS = choices(['draft', 'published', 'unpublished', 'archived']);
   const PRODUCT_TYPE_OPTIONS = choices(['extrait', 'edp', 'edt', 'spray', 'mist', 'cream', 'wash', 'set', 'sets', 'sample', 'gift_card']);
+  const ORDER_STATUS_OPTIONS = choices([
+    'pending_payment', 'payment_sent', 'paid', 'preparing', 'ready',
+    'shipped', 'delivered', 'cancelled', 'awaiting_confirmation', 'confirmed'
+  ]);
+  const ORDER_PAYMENT_METHOD_OPTIONS = choices(['bank_transfer', 'stc_transfer', 'cod_meetup', 'paypal', 'manual', 'other']);
 
   const CONFIGS = {
     orders: {
@@ -1400,35 +1409,41 @@
       table: 'orders',
       title: 'Orders',
       singular: 'Order',
-      description: 'Commerce orders with status, customer, channel, totals, and timestamps.',
+      description: 'WhatsApp-first commerce orders with manual payment, customer context, fulfillment status, and totals.',
       permission: 'orders',
-      searchFields: ['order_no', 'customer_name', 'customer_phone'],
+      searchFields: ['order_no', 'customer_name', 'customer_phone', 'customer_email', 'payment_method'],
       defaultSort: 'created_at',
       columns: [
         { key: 'order_no', label: 'Order' },
         { key: 'customer_name', label: 'Customer' },
         { key: 'total', label: 'Total', type: 'money' },
+        { key: 'payment_method', label: 'Payment', type: 'status' },
         { key: 'status', label: 'Status', type: 'status' },
         { key: 'created_at', label: 'Created', type: 'datetime' }
       ],
       filters: [{
         key: 'status',
         label: 'Status',
-        options: choices(['awaiting_confirmation', 'confirmed', 'paid', 'preparing', 'shipped', 'delivered', 'cancelled'])
+        options: ORDER_STATUS_OPTIONS
       }],
       fields: [
         { key: 'order_no', label: 'Order number', required: true, immutable: true, maxlength: 80 },
         { key: 'customer_id', label: 'Customer', nullable: true, lookup: { table: 'profiles', value: 'id', label: 'email', filter: { role: 'customer' } } },
         { key: 'customer_name', label: 'Customer name', nullable: true, maxlength: 160 },
         { key: 'customer_phone', label: 'Customer phone', type: 'tel', nullable: true, maxlength: 40 },
+        { key: 'customer_email', label: 'Customer email', type: 'email', nullable: true, maxlength: 254 },
+        { key: 'customer_city', label: 'Customer city', nullable: true, maxlength: 120 },
+        { key: 'customer_address', label: 'Customer address', type: 'textarea', wide: true, nullable: true, maxlength: 500 },
         { key: 'type', label: 'Order type', type: 'select', options: choices(['cart', 'buy_now', 'whatsapp', 'admin']), default: 'admin' },
         { key: 'channel', label: 'Channel', type: 'select', options: choices(['web', 'whatsapp', 'admin', 'phone', 'retail']), required: true, default: 'admin' },
-        { key: 'status', label: 'Status', type: 'select', options: choices(['awaiting_confirmation', 'confirmed', 'paid', 'preparing', 'shipped', 'delivered', 'cancelled']), required: true, default: 'awaiting_confirmation' },
+        { key: 'payment_method', label: 'Preferred payment', type: 'select', options: ORDER_PAYMENT_METHOD_OPTIONS, nullable: true, default: 'bank_transfer' },
+        { key: 'status', label: 'Status', type: 'select', options: ORDER_STATUS_OPTIONS, required: true, default: 'pending_payment' },
         { key: 'subtotal', label: 'Subtotal', type: 'number', step: '0.01', min: 0, default: 0 },
         { key: 'vat', label: 'VAT', type: 'number', step: '0.01', min: 0, default: 0 },
         { key: 'total', label: 'Total', type: 'number', step: '0.01', min: 0, required: true },
         { key: 'currency', label: 'Currency', required: true, default: 'SAR', maxlength: 3 },
         { key: 'coupon_code', label: 'Coupon code', nullable: true },
+        { key: 'source_route', label: 'Source route', nullable: true, maxlength: 160 },
         { key: 'note', label: 'Notes', type: 'textarea', wide: true, nullable: true, maxlength: 3000 }
       ],
       beforeSave: (payload) => {
@@ -4686,6 +4701,16 @@
         ${kpi('VAT', formatMoney(order.vat), '15% standard rate', 'stone')}
         ${kpi('Total', formatMoney(order.total), `${formatMoney(lineValue)} item value`, 'gold')}
       </div>
+      <dl class="admin-detail-grid">
+        ${detailItem('Status', titleCase(order.status || 'pending_payment'))}
+        ${detailItem('Preferred payment', titleCase(order.payment_method || 'bank_transfer'))}
+        ${detailItem('Phone', order.customer_phone || 'Not provided')}
+        ${detailItem('Email', order.customer_email || 'Not provided')}
+        ${detailItem('City', order.customer_city || 'Not provided')}
+        ${detailItem('Address', order.customer_address || 'Not provided')}
+        ${detailItem('Source route', order.source_route || 'Not tracked')}
+        ${detailItem('Notes', order.note || 'No notes')}
+      </dl>
       <div class="admin-data-table-wrap">
         ${runtime.orderItems.length ? `
           <table class="admin-data-table">
