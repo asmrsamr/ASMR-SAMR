@@ -81,3 +81,62 @@ After deploy:
 
 Do not complete fake customer orders in production unless you plan to clean them
 from the admin dashboard afterwards.
+
+## If The Live Site Is Stale
+
+Current diagnostic on 2026-07-18:
+
+- Local build from `Codex` commit `2aeb3c9` produces one asset version: `?v=2aeb3c9`.
+- `https://asmr-samr.pages.dev` still served older mixed versions during the check: `launch-phases-20260718a` and `admin-operations-20260717c`.
+- GitHub Actions quality gate passed for commit `2aeb3c9`, so the stale live site is a Cloudflare deployment/configuration issue, not a repository test failure.
+
+Check Cloudflare Pages:
+
+1. Open **Workers & Pages** then the `asmr-samr` Pages project.
+2. Go to **Deployments** and confirm whether a build exists for commit `2aeb3c9`.
+3. If it failed, open the build log and confirm the build command is `python scripts/build_static_site.py --output dist` and output directory is `dist`.
+4. If no build exists, go to **Settings > Builds & deployments** and confirm the production branch is `Codex`.
+5. Retry the latest deployment after fixing the branch/build settings.
+
+You can verify the live deployment from the repo with:
+
+```bash
+python scripts/verify_live_deployment.py --expected-version 2aeb3c9
+```
+
+## Optional GitHub Manual Deploy
+
+The repository includes a manual-only workflow:
+
+```text
+.github/workflows/cloudflare-pages-manual-deploy.yml
+```
+
+Use it only if Cloudflare Git integration is not auto-deploying.
+
+Required GitHub secret:
+
+- `CLOUDFLARE_API_TOKEN`
+
+Required GitHub variable or secret:
+
+- `CLOUDFLARE_ACCOUNT_ID`
+
+Optional GitHub variables:
+
+- `CLOUDFLARE_PAGES_PROJECT` default: `asmr-samr`
+- `ASMR_SAMR_SUPABASE_URL`
+- `ASMR_SAMR_WHATSAPP_NUMBER`
+- `ASMR_SAMR_SITE_DOMAIN`
+- `ASMR_SAMR_FOUNDER_NAME`
+- `ASMR_SAMR_INSTAGRAM_URL`
+- `ASMR_SAMR_PRODUCTION_CITY_EN`
+- `ASMR_SAMR_PRODUCTION_CITY_AR`
+- `ASMR_SAMR_RESERVED_COUNT`
+
+Optional GitHub secret:
+
+- `ASMR_SAMR_SUPABASE_ANON_KEY`
+
+Do not paste Cloudflare tokens into chat or commit them. Add them in GitHub
+repository settings as Actions secrets.

@@ -1,0 +1,91 @@
+name: Cloudflare Pages Manual Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_branch:
+        description: "Branch name to pass to Cloudflare Pages. Use the configured production branch for production."
+        required: true
+        default: "Codex"
+      run_live_check:
+        description: "Verify https://asmr-samr.pages.dev after upload"
+        type: boolean
+        required: true
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-pages-manual-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CF_ACCOUNT_ID_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_ACCOUNT_ID_VAR: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      CF_PAGES_PROJECT_VAR: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+      ASMR_SAMR_SUPABASE_URL: ${{ vars.ASMR_SAMR_SUPABASE_URL }}
+      ASMR_SAMR_SUPABASE_ANON_KEY: ${{ secrets.ASMR_SAMR_SUPABASE_ANON_KEY }}
+      ASMR_SAMR_WHATSAPP_NUMBER: ${{ vars.ASMR_SAMR_WHATSAPP_NUMBER }}
+      ASMR_SAMR_SITE_DOMAIN: ${{ vars.ASMR_SAMR_SITE_DOMAIN }}
+      ASMR_SAMR_FOUNDER_NAME: ${{ vars.ASMR_SAMR_FOUNDER_NAME }}
+      ASMR_SAMR_INSTAGRAM_URL: ${{ vars.ASMR_SAMR_INSTAGRAM_URL }}
+      ASMR_SAMR_PRODUCTION_CITY_EN: ${{ vars.ASMR_SAMR_PRODUCTION_CITY_EN }}
+      ASMR_SAMR_PRODUCTION_CITY_AR: ${{ vars.ASMR_SAMR_PRODUCTION_CITY_AR }}
+      ASMR_SAMR_RESERVED_COUNT: ${{ vars.ASMR_SAMR_RESERVED_COUNT }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Prepare deployment environment
+        run: |
+          echo "ASMR_SAMR_ASSET_VERSION=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+          echo "CLOUDFLARE_ACCOUNT_ID=${CF_ACCOUNT_ID_SECRET:-$CF_ACCOUNT_ID_VAR}" >> "$GITHUB_ENV"
+          echo "CLOUDFLARE_PAGES_PROJECT=${CF_PAGES_PROJECT_VAR:-asmr-samr}" >> "$GITHUB_ENV"
+
+      - name: Validate required Cloudflare credentials
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::Missing GitHub secret CLOUDFLARE_API_TOKEN"
+            exit 1
+          fi
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Missing GitHub variable or secret CLOUDFLARE_ACCOUNT_ID"
+            exit 1
+          fi
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check website/app.js
+          node --check website/admin-dashboard.js
+
+      - name: Build static deployment package
+        run: python scripts/build_static_site.py --output dist
+
+      - name: Deploy to Cloudflare Pages
+        run: >
+          npx --yes wrangler pages deploy dist
+          --project-name "$CLOUDFLARE_PAGES_PROJECT"
+          --branch "${{ inputs.deploy_branch }}"
+
+      - name: Verify live deployment
+        if: ${{ inputs.run_live_check }}
+        run: |
+          sleep 20
+          python scripts/verify_live_deployment.py --expected-version "${GITHUB_SHA::7}"

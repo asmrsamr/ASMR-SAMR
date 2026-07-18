@@ -77,7 +77,8 @@ def copy_source(output: Path) -> None:
 def deployment_config() -> dict[str, object]:
     config: dict[str, object] = {}
     for key, (env_name, fallback) in PUBLIC_CONFIG_FIELDS.items():
-        config[key] = os.environ.get(env_name, fallback).strip()
+        value = os.environ.get(env_name, "").strip()
+        config[key] = value or fallback
 
     reserved = os.environ.get("ASMR_SAMR_RESERVED_COUNT", "42").strip()
     try:
