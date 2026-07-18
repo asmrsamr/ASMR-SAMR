@@ -7,6 +7,9 @@ Branch: `Codex`
 
 Completed in this pass:
 
+- Consolidated `#/admin` onto the Supabase-backed `admin-dashboard.js` bridge; the legacy localStorage admin renderer is now quarantined behind an explicit development flag and is no longer the production admin route.
+- Unified source asset cache query strings and added build-time replacement so `style.css`, `app.js`, `admin-dashboard.js`, and `config.local.js` share one deployment version.
+- Verified live Excel launch pricing in Supabase with `python scripts/verify_live_launch_pricing.py`; all ASMR/SAMR launch prices now match the latest workbook revisions.
 - Added public launch policy routes for delivery, returns/exchange, privacy, and FAQ.
 - Added footer access to those launch pages without changing the existing header/menu navigation.
 - Updated static launch metadata to the free Cloudflare Pages URL and real WhatsApp number.
@@ -52,10 +55,13 @@ Pending external access:
 
 ## Phase 2: Operational Dashboard QA
 
-Status: In progress; repository implementation complete, live acceptance pending
+Status: Supabase admin is the production route; authenticated live acceptance pending
 
 Completed:
 
+- Production `#/admin` and `#/admin/<tab>` routes now render through the Supabase dashboard only.
+- Legacy localStorage admin rendering remains available only through an explicit development fallback flag for migration recovery.
+- Admin route contract tests now prevent the legacy admin from becoming the production route again.
 - Role-aware sidebar visibility.
 - Direct-route permission error behavior retained.
 - Public storefront and protected login regression checks.
@@ -76,7 +82,7 @@ Pending:
 
 ## Phase 3: Public Website Dynamic Catalog
 
-Status: Supabase-backed catalog active; commerce price/availability hardening applied
+Status: Supabase-backed catalog active; live launch pricing verified
 
 Completed:
 
@@ -87,10 +93,10 @@ Completed:
 - WhatsApp checkout and buy-now refresh the public catalog before generating the order message.
 - Local browser smoke test confirmed `#/product/samr-extrait` loads from Supabase and adds the current `50 ml` product selection to the cart.
 - Added an Excel-backed pricing extraction workflow using the latest ASMR and SAMR workbook revisions. The current launch prices are `SAMR 50 ml = 230 SAR`, `ASMR 50 ml = 320 SAR`, and `Duo Box = 499 SAR`.
+- Applied the update-only live pricing correction and verified every live product price against the latest Excel revisions.
 
 Pending:
 
-- Apply `supabase/imports/product-pricing-latest.sql` to the live Supabase project after admin/Supabase authentication is available.
 - Adjust real product stock through the admin dashboard or stock RPCs so movement history and audit logs remain accurate.
 - Add public inventory quantity/availability to the storefront catalog RPC if real-time out-of-stock blocking is required before checkout.
 - Replace the placeholder founder name after the final public identity is approved.
@@ -163,6 +169,7 @@ Completed:
 
 - Added `scripts/build_static_site.py` to produce a clean static `dist/` package from `website/`.
 - The package builder excludes developer-local `website/config.local.js` and writes a generated browser-safe runtime config from deployment environment variables.
+- The package builder rewrites storefront/admin asset query strings to one shared cache-busting version from `ASMR_SAMR_ASSET_VERSION` or the current short git SHA.
 - Added `website/test_deploy_package.py` to verify required package files, generated launch config values, and absence of developer-local config leakage.
 - Added the deployment package build/test to the GitHub quality gate.
 - Added `docs/deployment-package.md` with build commands, required public environment variables, and verification steps.

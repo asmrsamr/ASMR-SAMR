@@ -49,6 +49,7 @@ env.update(
         "ASMR_SAMR_SITE_DOMAIN": "https://example.test",
         "ASMR_SAMR_FOUNDER_NAME": "Launch Founder",
         "ASMR_SAMR_RESERVED_COUNT": "77",
+        "ASMR_SAMR_ASSET_VERSION": "deploytest123",
     }
 )
 
@@ -65,6 +66,10 @@ try:
 
     for relative in ("index.html", "app.js", "admin-dashboard.js", "style.css", "config.local.js", "assets"):
         (ok if (output / relative).exists() else fail)(f"package contains {relative}")
+
+    generated_index = (output / "index.html").read_text(encoding="utf-8")
+    asset_versions = set(re.findall(r"\?v=([^'\"]+)", generated_index))
+    (ok if asset_versions == {"deploytest123"} else fail)("deployment assets use one explicit cache-busting version")
 
     generated = (output / "config.local.js").read_text(encoding="utf-8")
     match = re.search(r"window\.ASMR_SAMR_CONFIG\s*=\s*(\{[\s\S]*\});", generated)

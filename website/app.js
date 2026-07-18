@@ -2467,6 +2467,7 @@ const ADMIN_STATE_KEY = 'asmr_samr_admin_state_v1';
 const ADMIN_REMOTE_CACHE_KEY = 'asmr_samr_admin_remote_cache_v1';
 const ADMIN_SESSION_KEY = 'asmr_samr_admin_supabase_session_v1';
 const ADMIN_STAFF_ROLES = ['admin', 'manager', 'finance', 'marketing', 'inventory', 'production', 'support'];
+const LEGACY_ADMIN_FALLBACK_FLAG = 'asmr_samr_enable_legacy_admin_fallback';
 const ADMIN_TABS = [
   'overview',
   'orders',
@@ -3163,7 +3164,7 @@ function renderAdminKpi(label, value, helper, tone = '') {
   `;
 }
 
-function renderAdmin(activeTab = 'overview') {
+function renderSupabaseAdminRoute(activeTab = 'overview') {
   if (window.ASMRSAMRAdmin && typeof window.ASMRSAMRAdmin.render === 'function') {
     return window.ASMRSAMRAdmin.render(activeTab);
   }
@@ -3175,8 +3176,24 @@ function renderAdmin(activeTab = 'overview') {
       <a class="btn btn-primary" href="#/">Return to storefront</a>
     </main>
   `;
+}
 
-  /* Legacy dashboard rendering remains below for migration history only. */
+function isLegacyAdminFallbackEnabled() {
+  const cfg = window.ASMR_SAMR_CONFIG || window.ASMR_SAMR_SUPABASE || {};
+  if (cfg.enableLegacyAdminFallback === true) return true;
+  try {
+    return sessionStorage.getItem(LEGACY_ADMIN_FALLBACK_FLAG) === 'true';
+  } catch (_error) {
+    return false;
+  }
+}
+
+function renderAdmin(activeTab = 'overview') {
+  if (!isLegacyAdminFallbackEnabled()) {
+    return renderSupabaseAdminRoute(activeTab);
+  }
+
+  /* Legacy dashboard rendering is retained only for explicit development fallback. */
   const tab = ADMIN_TABS.includes(activeTab) ? activeTab : 'overview';
   const analytics = getAdminAnalytics();
   const tabLabel = tab.charAt(0).toUpperCase() + tab.slice(1);
@@ -6470,7 +6487,7 @@ function renderApp() {
     mainRoot.innerHTML = renderFAQ();
   } else if (route === '#/admin' || route.startsWith('#/admin/')) {
     const sub = route.startsWith('#/admin/') ? route.substring('#/admin/'.length).replace(/\/+$/, '') : 'overview';
-    mainRoot.innerHTML = renderAdmin(sub);
+    mainRoot.innerHTML = renderSupabaseAdminRoute(sub);
   } else if (route === '#/account' || route.startsWith('#/account/')) {
     // Account tabs are real, linkable sub-routes: #/account/<tab>.
     // This makes direct navigation, refresh, and back/forward work per tab,

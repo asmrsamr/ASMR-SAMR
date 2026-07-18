@@ -198,7 +198,7 @@ print("\n[10] Dashboard routing + header controls")
 
 # ---- 11 · live admin operations dashboard ------------------------------------
 print("\n[11] Live admin operations dashboard")
-(ok if "route.startsWith('#/admin/')" in js else fail)("admin routes wired (#/admin, #/admin/<tab>)")
+(ok if "route.startsWith('#/admin/')" in js and "renderSupabaseAdminRoute(sub)" in js else fail)("admin routes wired to the Supabase dashboard (#/admin, #/admin/<tab>)")
 (ok if "admin-dashboard.js" in html else fail)("Supabase admin application is loaded")
 for fn in ("renderOverview", "renderProducts", "renderOrders", "renderInventory",
            "renderIngredients", "renderFinance", "renderContent",
@@ -217,8 +217,10 @@ for handler in ("openGenericForm", "saveGeneric", "deleteGeneric", "exportCurren
 (ok if "rpc/get_storefront_catalog" in js else fail)("public catalog uses the safe server-side projection")
 (ok if "website_content?select=content_type" in js and "storefrontContent" in js else fail)("published homepage content is loaded from Supabase")
 (ok if "function renderApp() {\n  applyAdminState();" not in js else fail)("legacy local admin state cannot overwrite the storefront catalog")
+(ok if "mainRoot.innerHTML = renderAdmin(sub)" not in js and "enableLegacyAdminFallback === true" in js else fail)("legacy local admin is quarantined behind an explicit development flag")
 (ok if "WELCOME10" not in js and "DUO50" not in js else fail)("legacy seeded coupons are absent")
 (ok if "(0, eval)" not in html and "config.local.js" in html else fail)("browser config loads without eval or CSP bypasses")
+(ok if len(set(re.findall(r"\\?v=([^'\\\"]+)", html))) == 1 else fail)("source HTML uses one shared asset cache version")
 (ok if "loadPublicCatalogFromSupabase().then" in js else fail)("storefront renders before the live catalog refresh completes")
 (ok if "Number.parseFloat(left)" in js else fail)("dynamic product sizes remain in numeric order")
 (ok if "persistStorefrontOrder" in js and "rpc/submit_storefront_order" in js else fail)("storefront orders use a transactional Supabase RPC")
@@ -283,11 +285,22 @@ for function_name in ("admin-api-keys", "verify-api-key", "admin-users", "admin-
 print("\n[14] Excel workbook pricing import")
 pricing_manifest_path = os.path.join(HERE, "..", "data", "product-pricing-latest.json")
 pricing_sql_path = os.path.join(HERE, "..", "supabase", "imports", "product-pricing-latest.sql")
-if os.path.exists(pricing_manifest_path) and os.path.exists(pricing_sql_path):
+pricing_price_only_sql_path = os.path.join(HERE, "..", "supabase", "imports", "product-pricing-prices-only.sql")
+pricing_update_only_sql_path = os.path.join(HERE, "..", "supabase", "imports", "product-pricing-update-existing.sql")
+if (
+    os.path.exists(pricing_manifest_path)
+    and os.path.exists(pricing_sql_path)
+    and os.path.exists(pricing_price_only_sql_path)
+    and os.path.exists(pricing_update_only_sql_path)
+):
     with open(pricing_manifest_path, encoding="utf-8") as f:
         pricing_manifest = json.load(f)
     with open(pricing_sql_path, encoding="utf-8") as f:
         pricing_sql = f.read()
+    with open(pricing_price_only_sql_path, encoding="utf-8") as f:
+        price_only_sql = f.read()
+    with open(pricing_update_only_sql_path, encoding="utf-8") as f:
+        update_only_sql = f.read()
     records_by_id = {row["product_id"]: row for row in pricing_manifest.get("records", [])}
     for pid, size, price in (
         ("asmr-extrait", "50 ml", 320),
@@ -308,10 +321,18 @@ if os.path.exists(pricing_manifest_path) and os.path.exists(pricing_sql_path):
      else fail)("pricing import updates cost components with allocation methods")
     (ok if "product_inventory" not in pricing_sql.lower() else fail)(
         "pricing import does not mutate inventory quantities")
+    (ok if "other_cost" not in pricing_sql.lower() else fail)(
+        "pricing import matches the current product_cost_snapshots schema")
+    (ok if "set is_default = false" in pricing_sql.lower() else fail)(
+        "pricing import clears variant defaults before assigning new defaults")
+    (ok if "insert into public.product_prices" in price_only_sql.lower() and "product_cost_snapshots" not in price_only_sql.lower()
+     else fail)("price-only import is available for storefront price recovery")
+    (ok if "update public.product_prices" in update_only_sql.lower() and "on conflict" not in update_only_sql.lower()
+     else fail)("update-only import avoids ON CONFLICT when live constraints are missing")
     (ok if "Duo Box Duo" not in pricing_sql and "Trio Set Trio" not in pricing_sql else fail)(
         "derived set variant names are not duplicated")
 else:
-    fail("Excel pricing manifest and Supabase import SQL are present")
+    fail("Excel pricing manifest and Supabase import SQL files are present")
 
 # ---- summary -----------------------------------------------------------------
 print("\n" + "=" * 70)

@@ -423,7 +423,6 @@ def render_sql(manifest: dict[str, Any]) -> str:
         f"({sql(record['product_id'])}, {sql(record['costs'][record['default_size']].get('ingredient_cost', 0))}, "
         f"{sql(record['costs'][record['default_size']].get('packaging_cost', 0))}, "
         f"{sql(record['costs'][record['default_size']].get('labor_cost', 0))}, "
-        f"{sql(record['costs'][record['default_size']].get('other_cost', 0))}, "
         f"{sql(record['costs'][record['default_size']]['total_cost'])}, "
         f"{sql(record['costs'][record['default_size']]['total_cost'])}, "
         f"{sql(record['prices'][record['default_size']])}, "
@@ -457,6 +456,12 @@ from (values
   {product_values}
 ) as v(product_id, cost)
 where p.id = v.product_id;
+
+update public.product_variants
+set is_default = false,
+    updated_at = now()
+where product_id in ({product_id_list})
+  and archived_at is null;
 
 update public.product_variants pv
 set price = v.price,
@@ -499,7 +504,7 @@ values
   {component_values};
 
 insert into public.product_cost_snapshots (
-  product_id, ingredient_cost, packaging_cost, labor_cost, other_cost,
+  product_id, ingredient_cost, packaging_cost, labor_cost,
   total_cost, cost_per_unit, selling_price, gross_profit, recommended_price
 )
 values

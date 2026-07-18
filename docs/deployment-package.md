@@ -24,6 +24,7 @@ Optional public variables:
 - `ASMR_SAMR_PRODUCTION_CITY_EN`
 - `ASMR_SAMR_PRODUCTION_CITY_AR`
 - `ASMR_SAMR_RESERVED_COUNT`
+- `ASMR_SAMR_ASSET_VERSION` for an explicit shared cache-busting version; if omitted, the builder uses the current short git SHA.
 
 Example:
 
@@ -48,5 +49,11 @@ python -m http.server 8000 --directory dist
 ```
 
 Then open `http://localhost:8000/#/admin/status` and confirm launch readiness.
+
+Verify the live Cloudflare Pages deployment after upload:
+
+```bash
+python scripts/verify_live_deployment.py --expected-version "$(git rev-parse --short HEAD)"
+```
 
 For free hosting setup, see [cloudflare-pages-free-hosting.md](cloudflare-pages-free-hosting.md).

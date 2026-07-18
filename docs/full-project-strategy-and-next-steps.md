@@ -9,6 +9,12 @@ Current checkout path: WhatsApp `966560505651`
 
 The project is now shaped as a luxury fragrance ecommerce site with a working public storefront, product pages, cart, WhatsApp checkout flow, and Supabase-backed admin architecture. The design direction should remain stable: warm ivory, sand, stone, champagne, graphite, charcoal, architectural campaign photography, and restrained luxury typography.
 
+Current technical baseline:
+
+- `#/admin` and `#/admin/<tab>` render through the Supabase-backed dashboard, not the legacy localStorage admin.
+- Live Supabase launch pricing matches the latest Excel revisions.
+- Static deployment rewrites storefront/admin bundle query strings to one shared cache-busting version.
+
 The free launch stack is:
 
 - Cloudflare Pages Free for the static website.
@@ -39,7 +45,10 @@ Generated artifacts:
 
 - `data/product-pricing-latest.json`
 - `supabase/imports/product-pricing-latest.sql`
+- `supabase/imports/product-pricing-prices-only.sql`
+- `supabase/imports/product-pricing-update-existing.sql`
 - `scripts/extract_excel_product_pricing.py`
+- `scripts/verify_live_launch_pricing.py`
 
 Current launch prices:
 
@@ -57,10 +66,10 @@ Do not update sellable stock directly through the pricing SQL. Use the admin das
 ## Immediate Phase
 
 1. Restore full admin access.
-2. Apply the pricing import to Supabase.
-3. Enter real inventory stock through the admin dashboard.
-4. Run authenticated admin QA.
-5. Deploy the current branch after Cloudflare auth or GitHub auto-deploy is ready.
+2. Enter real inventory stock through the admin dashboard.
+3. Run authenticated admin QA.
+4. Confirm final founder/domain metadata.
+5. Deploy the current branch through GitHub-connected Cloudflare Pages.
 
 ## Admin Access Recovery
 
@@ -86,12 +95,13 @@ Goal: make the storefront and admin dashboard show the same truth.
 
 Steps:
 
-1. Apply `supabase/imports/product-pricing-latest.sql` in Supabase SQL Editor or an authenticated Supabase CLI session.
-2. Verify `product_prices`, `product_variants`, `product_cost_components`, and `product_cost_snapshots`.
-3. Enter live stock quantities through Product or Inventory adjustments.
-4. Upload final product images to Supabase Storage if the live database does not already reference the optimized WebP assets.
-5. Confirm every product has status, availability, primary image, price, SKU, and public description.
-6. Confirm archived or unavailable products do not appear as buyable.
+1. Keep `python scripts/verify_live_launch_pricing.py` green after any pricing change.
+2. Verify `product_prices`, `product_variants`, `product_cost_components`, and `product_cost_snapshots` during authenticated admin QA.
+3. Use `supabase/imports/product-pricing-update-existing.sql` only if live prices drift again.
+4. Enter live stock quantities through Product or Inventory adjustments.
+5. Upload final product images to Supabase Storage if the live database does not already reference the optimized WebP assets.
+6. Confirm every product has status, availability, primary image, price, SKU, and public description.
+7. Confirm archived or unavailable products do not appear as buyable.
 
 Acceptance:
 
