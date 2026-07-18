@@ -40,6 +40,7 @@ Generated artifacts:
 - `data/product-pricing-latest.json`
 - `supabase/imports/product-pricing-latest.sql`
 - `scripts/extract_excel_product_pricing.py`
+- `scripts/verify_live_launch_pricing.py`
 
 Current launch prices:
 
@@ -88,10 +89,11 @@ Steps:
 
 1. Apply `supabase/imports/product-pricing-latest.sql` in Supabase SQL Editor or an authenticated Supabase CLI session.
 2. Verify `product_prices`, `product_variants`, `product_cost_components`, and `product_cost_snapshots`.
-3. Enter live stock quantities through Product or Inventory adjustments.
-4. Upload final product images to Supabase Storage if the live database does not already reference the optimized WebP assets.
-5. Confirm every product has status, availability, primary image, price, SKU, and public description.
-6. Confirm archived or unavailable products do not appear as buyable.
+3. Run `python scripts/verify_live_launch_pricing.py` and confirm every live price passes.
+4. Enter live stock quantities through Product or Inventory adjustments.
+5. Upload final product images to Supabase Storage if the live database does not already reference the optimized WebP assets.
+6. Confirm every product has status, availability, primary image, price, SKU, and public description.
+7. Confirm archived or unavailable products do not appear as buyable.
 
 Acceptance:
 
