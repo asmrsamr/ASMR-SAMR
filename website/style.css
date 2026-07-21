@@ -49,6 +49,7 @@ html {
   font-size: 16px;
   background-color: var(--charcoal-900);
   color: var(--ivory-100);
+  overflow-x: hidden;
 }
 
 body {
@@ -2269,7 +2270,9 @@ body:has(.campaign-brand-hero) header:not(.scrolled) .mobile-nav-toggle span {
   box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
   z-index: 200;
   transform: translateX(100%);
-  transition: transform var(--transition-smooth);
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform var(--transition-smooth), visibility 0s linear 500ms;
   display: flex;
   flex-direction: column;
   border-left: 1px solid var(--border-whisper);
@@ -2286,6 +2289,9 @@ body:has(.campaign-brand-hero) header:not(.scrolled) .mobile-nav-toggle span {
 
 .cart-drawer.open {
   transform: translateX(0);
+  visibility: visible;
+  pointer-events: auto;
+  transition: transform var(--transition-smooth), visibility 0s;
 }
 
 [dir="rtl"] .cart-drawer.open {
@@ -2873,7 +2879,9 @@ footer {
     padding: 6rem 2.5rem 2rem;
     z-index: 99;
     transform: translateX(100%);
-    transition: transform var(--transition-smooth);
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform var(--transition-smooth), visibility 0s linear 500ms;
     list-style: none;
     gap: 1.8rem;
   }
@@ -2889,6 +2897,9 @@ footer {
 
   .nav-links.open {
     transform: translateX(0);
+    visibility: visible;
+    pointer-events: auto;
+    transition: transform var(--transition-smooth), visibility 0s;
   }
 
   .nav-links a {
@@ -3688,6 +3699,8 @@ body:has(.account-dashboard-wrapper) .discovery-banner {
   }
   
   body:has(.account-dashboard-wrapper) header {
+    left: 0 !important;
+    right: 0 !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
     width: 100% !important;

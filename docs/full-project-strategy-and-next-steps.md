@@ -1,6 +1,6 @@
 # ASMR & SAMR Full Project Strategy And Remaining Steps
 
-Date: 2026-07-18
+Date: 2026-07-22
 Branch: `Codex`
 Current production target: `https://asmr-samr.pages.dev`
 Current checkout path: WhatsApp `966560505651`
@@ -14,6 +14,10 @@ Current technical baseline:
 - `#/admin` and `#/admin/<tab>` render through the Supabase-backed dashboard, not the legacy localStorage admin.
 - Live Supabase launch pricing matches the latest Excel revisions.
 - Static deployment rewrites storefront/admin bundle query strings to one shared cache-busting version.
+- The live manual-payment checkout migration is applied and the new RPC signature is verified.
+- Desktop and 375 px mobile route QA passes locally after fixing closed-drawer overflow and the mobile Account header offset.
+- Automated gates currently pass: 226 website checks, 37 admin checks, 29 security checks, and 16 deployment-package checks.
+- Production Cloudflare deployment remains blocked only by the missing GitHub secret `CLOUDFLARE_API_TOKEN`; the current live site still serves the older mixed-version assets.
 
 The free launch stack is:
 
@@ -65,11 +69,11 @@ Do not update sellable stock directly through the pricing SQL. Use the admin das
 
 ## Immediate Phase
 
-1. Restore full admin access.
-2. Enter real inventory stock through the admin dashboard.
-3. Run authenticated admin QA.
-4. Confirm final founder/domain metadata.
-5. Deploy the current branch through GitHub-connected Cloudflare Pages.
+1. Create a new least-privilege Cloudflare Pages token and store it only as the GitHub Actions secret `CLOUDFLARE_API_TOKEN`.
+2. Rerun the deployment workflow and verify the production asset cache version.
+3. Restore recovery administrator access and run authenticated admin QA.
+4. Enter real inventory stock through the admin dashboard.
+5. Confirm final delivery, returns, founder, and inventory metadata.
 
 ## Admin Access Recovery
 

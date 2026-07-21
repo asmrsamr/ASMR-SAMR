@@ -1,7 +1,30 @@
 # Phase Execution Status
 
-Date: 2026-07-17
+Date: 2026-07-22
 Branch: `Codex`
+
+## 2026-07-22 Completion Update
+
+Completed in this pass:
+
+- Applied `supabase/migrations/20260718193000_manual_payment_checkout_flow.sql` to the live Supabase project from the authenticated SQL Editor.
+- Verified the new `submit_storefront_order` signature through the public RPC boundary: an intentionally invalid payment method now returns the expected `P0001 Invalid payment method` validation response instead of `PGRST202`.
+- Confirmed live Supabase prices still match the latest Excel revisions for all 18 product/size records.
+- Completed desktop browser QA for Home, ASMR, SAMR, Shop, product detail, Gifting, Story, Contact, Delivery, Returns, Privacy, FAQ, and Account with no broken images or horizontal overflow.
+- Completed 375 px mobile browser QA and fixed off-canvas cart/navigation overflow on the ASMR and SAMR campaign pages.
+- Fixed the mobile Account header so its cart/account controls no longer retain the desktop sidebar offset below 768 px.
+- Verified the settled mobile navigation and cart drawer open/close states, including visibility, pointer blocking, `aria-hidden`, and `inert` behavior.
+- Verified protected direct routes such as `#/admin/products` remain on the admin sign-in screen when no authorized session exists.
+- Added regression coverage for root overflow containment, closed drawer interaction states, and the mobile Account header offset.
+- Current automated result: `226` website checks, `37` admin contract checks, `29` security checks, and `16` deployment-package checks pass.
+
+Remaining external launch blockers:
+
+- GitHub does not have a `CLOUDFLARE_API_TOKEN` secret, so the automatic Cloudflare Pages workflow cannot publish the current commit.
+- `https://asmr-samr.pages.dev` still serves mixed old cache versions (`admin-operations-20260717c` and `launch-phases-20260718a`) until that deployment succeeds.
+- Authenticated admin CRUD/RLS acceptance still needs credentials supplied through local environment variables; no QA password is stored in the repository.
+- Recovery administrator access for `jooo4444@gmail.com` still needs to be created or re-sent and accepted.
+- Real stock quantities, costs, delivery rules, and approved policy wording still require owner input.
 
 ## 2026-07-18 Phase 1-6 Execution Update
 
@@ -104,7 +127,7 @@ Pending:
 
 ## Phase 5: Checkout And Orders
 
-Status: Live checkout order context migration applied; launch checkout validation pending
+Status: Live manual-payment checkout migration applied and RPC boundary verified
 
 Completed:
 
@@ -115,10 +138,12 @@ Completed:
 - Cart checkout and buy-now wait for Supabase order persistence, record the remote order id/status/totals back into local order history, and mark sync as pending if the network is unavailable.
 - WhatsApp cart checkout includes the order reference and customer delivery details when the visitor saved them in Account.
 - Live Supabase verification confirmed 4 new order context columns and 2 `submit_storefront_order` RPC overloads.
+- Applied `20260718193000_manual_payment_checkout_flow.sql`, adding the structured payment method, operational manual-payment statuses, updated admin overview, and refreshed PostgREST schema.
+- Verified the deployed RPC accepts the new `p_payment_method` signature and rejects invalid values before any order is created.
 
 Pending:
 
-- Run an end-to-end checkout against live Supabase after the real WhatsApp number is configured.
+- Run one owner-observed end-to-end order using the configured WhatsApp number and confirm the created row appears in Admin Orders.
 - Decide whether to add public inventory availability to the storefront RPC before launch.
 
 ## Phase 6: Storefront Inventory Availability
@@ -163,7 +188,7 @@ Pending:
 
 ## Phase 8: Static Deployment Package
 
-Status: Repository implementation complete; production upload pending
+Status: Repository implementation complete; Cloudflare credential blocks production upload
 
 Completed:
 
@@ -180,8 +205,8 @@ Completed:
 
 Pending:
 
-- Provide final production values for domain, founder metadata, and publishable Supabase key at deployment time.
-- Upload or deploy the generated `dist/` directory to the selected hosting provider.
+- Add a new least-privilege Cloudflare Pages token as the GitHub Actions secret `CLOUDFLARE_API_TOKEN`.
+- Rerun the `Cloudflare Pages Deploy` workflow from `main` and confirm the live assets share the new git cache version.
 - Run final production smoke tests after deployment.
 
 ## Later Phases

@@ -143,6 +143,15 @@ mq = len(re.findall(r"@media", css))
  else ok)("mobile hamburger menu (7-item nav shows in full on 375px — add a menu)")
 
 # ---- 7 · launch blockers (placeholders that MUST change before go-live) -----
+(ok if re.search(r"html\s*\{[^}]*overflow-x:\s*hidden", css, re.S) else fail)(
+    "document root contains off-canvas mobile overflow")
+(ok if ".cart-drawer.open" in css and "visibility: hidden" in css and "pointer-events: none" in css
+ else fail)("closed cart drawer is removed from mobile layout and interaction")
+(ok if ".nav-links.open" in css and css.count("visibility: visible") >= 2 else fail)(
+    "closed mobile navigation is hidden until opened")
+(ok if re.search(r"@media \(max-width: 768px\)[\s\S]*?body:has\(\.account-dashboard-wrapper\) header\s*\{[^}]*left:\s*0\s*!important;[^}]*right:\s*0\s*!important;", css)
+ else fail)("mobile account header resets the desktop sidebar offset")
+
 print("\n[7] Launch blockers / placeholders")
 (warn if re.search(r"WHATSAPP_NUMBER:\s*'966500000000'", js) or "IS_WHATSAPP_PLACEHOLDER = true" in js.replace("  ", " ")
  else ok)("WhatsApp number still a placeholder - set the real number before launch")
