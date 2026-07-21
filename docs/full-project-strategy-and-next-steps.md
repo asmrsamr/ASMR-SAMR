@@ -16,6 +16,7 @@ Current technical baseline:
 - Static deployment rewrites storefront/admin bundle query strings to one shared cache-busting version.
 - The live manual-payment checkout migration is applied and the new RPC signature is verified.
 - Desktop and 375 px mobile route QA passes locally after fixing closed-drawer overflow and the mobile Account header offset.
+- Both Supabase administrator profiles are verified as `admin / active`; the recovery account is confirmed and has signed in successfully.
 - Automated gates currently pass: 226 website checks, 37 admin checks, 29 security checks, and 16 deployment-package checks.
 - Production Cloudflare deployment remains blocked only by the missing GitHub secret `CLOUDFLARE_API_TOKEN`; the current live site still serves the older mixed-version assets.
 
@@ -71,25 +72,22 @@ Do not update sellable stock directly through the pricing SQL. Use the admin das
 
 1. Create a new least-privilege Cloudflare Pages token and store it only as the GitHub Actions secret `CLOUDFLARE_API_TOKEN`.
 2. Rerun the deployment workflow and verify the production asset cache version.
-3. Restore recovery administrator access and run authenticated admin QA.
+3. Run authenticated admin CRUD/RLS QA using owner-supplied local test credentials; do not store a password in the repository.
 4. Enter real inventory stock through the admin dashboard.
 5. Confirm final delivery, returns, founder, and inventory metadata.
 
-## Admin Access Recovery
+## Admin Access Verification
 
 Primary admin email: `j.zoneng@gmail.com`
 Recovery admin email: `jooo4444@gmail.com`
 
-Because the recovery invite was not received:
+Verified on 2026-07-22:
 
-1. Check spam, promotions, and blocked sender folders for Supabase/auth emails.
-2. In Supabase Dashboard, go to Authentication, then Users.
-3. Remove any stale pending invite for `jooo4444@gmail.com` if one exists.
-4. Send a fresh invite.
-5. If the email still does not arrive, create the user manually with email confirmed and a temporary password.
-6. Assign the correct admin/staff role using the existing role-management flow.
-7. Log in with the recovery user and verify it can open protected admin routes.
-8. Change the temporary password immediately after first login.
+- Both profiles exist in `public.profiles` with role `admin` and status `active`.
+- The recovery Auth user is confirmed and has completed a successful sign-in.
+- No replacement invite or temporary password is required.
+
+Remaining acceptance work is to run the authenticated admin CRUD/RLS test suite with credentials supplied only through local environment variables. No password should be committed, pasted into chat, or stored in the browser configuration.
 
 Do not paste Supabase service-role keys, API secrets, or personal tokens into chat or source files.
 

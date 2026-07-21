@@ -15,6 +15,7 @@ Completed in this pass:
 - Fixed the mobile Account header so its cart/account controls no longer retain the desktop sidebar offset below 768 px.
 - Verified the settled mobile navigation and cart drawer open/close states, including visibility, pointer blocking, `aria-hidden`, and `inert` behavior.
 - Verified protected direct routes such as `#/admin/products` remain on the admin sign-in screen when no authorized session exists.
+- Verified both administrator profiles directly in Supabase: `j.zoneng@gmail.com` and `jooo4444@gmail.com` are `admin / active`; the recovery account is confirmed and has completed a successful sign-in.
 - Added regression coverage for root overflow containment, closed drawer interaction states, and the mobile Account header offset.
 - Current automated result: `226` website checks, `37` admin contract checks, `29` security checks, and `16` deployment-package checks pass.
 
@@ -23,7 +24,6 @@ Remaining external launch blockers:
 - GitHub does not have a `CLOUDFLARE_API_TOKEN` secret, so the automatic Cloudflare Pages workflow cannot publish the current commit.
 - `https://asmr-samr.pages.dev` still serves mixed old cache versions (`admin-operations-20260717c` and `launch-phases-20260718a`) until that deployment succeeds.
 - Authenticated admin CRUD/RLS acceptance still needs credentials supplied through local environment variables; no QA password is stored in the repository.
-- Recovery administrator access for `jooo4444@gmail.com` still needs to be created or re-sent and accepted.
 - Real stock quantities, costs, delivery rules, and approved policy wording still require owner input.
 
 ## 2026-07-18 Phase 1-6 Execution Update
@@ -47,14 +47,13 @@ Completed in this pass:
 Still requires owner action:
 
 - Rotate or delete any Cloudflare API token pasted into chat.
-- Accept the recovery admin invite for `jooo4444@gmail.com`.
 - Confirm whether founder metadata should remain the brand entity or a public person name.
 - Run the real WhatsApp checkout smoke without sending the message.
 - Enter final live inventory, product costs, and order operations data in admin.
 
 ## Phase 1: Security And Access
 
-Status: Live access hardening applied; authenticated acceptance pending
+Status: Live access hardening applied; administrator profiles verified; authenticated CRUD acceptance pending
 
 Completed:
 
@@ -68,11 +67,11 @@ Completed:
 - Supabase migration `20260717131500_phase1_access_hardening.sql` applied to project `thpuomqhqghqskyegpfj`.
 - Primary administrator created/promoted: `j.zoneng@gmail.com`.
 - Recovery administrator invited/promoted: `jooo4444@gmail.com`.
+- Supabase verification confirms both profiles are active administrators, and the recovery account is confirmed and has signed in successfully.
 - Live `admin-users` Edge Function source verified in the Supabase Code view with the secured staff-role implementation.
 
 Pending external access:
 
-- Recovery administrator must accept the Supabase invite and set credentials.
 - Run the authenticated role matrix with a real admin session.
 - If a strict timestamped function redeploy is required, authenticate the Supabase CLI or deploy from an account/API token that can refresh the Edge Function deployment. The live source currently matches the secured implementation.
 
