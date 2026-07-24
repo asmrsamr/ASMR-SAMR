@@ -5,7 +5,7 @@
 // ==========================================
 const PUBLIC_CONFIG = window.ASMR_SAMR_CONFIG || window.ASMR_SAMR_SUPABASE || {};
 const PLACEHOLDER_WHATSAPP_NUMBER = '966500000000';
-const PLACEHOLDER_SITE_DOMAIN = 'https://asmrsamr.com';
+const PLACEHOLDER_SITE_DOMAIN = 'https://asmr-samr.pages.dev';
 const PLACEHOLDER_FOUNDER_NAME = 'Artisan Perfumer & Founder';
 
 function firstConfigValue(...values) {
@@ -23,7 +23,7 @@ function normalizeSiteDomain(value) {
 const CONFIG_DEFAULTS = {
   WHATSAPP_NUMBER: '966560505651', // Target WhatsApp phone number (with country code, no +)
   INSTAGRAM_URL: 'https://instagram.com/asmr.samr.perfumes', // Instagram profile link
-  SITE_DOMAIN: 'https://asmr-samr.pages.dev', // Production site domain (without trailing slash)
+  SITE_DOMAIN: 'https://asmrsamr.com', // Production site domain (without trailing slash)
   FOUNDER_NAME: 'ASMR & SAMR Fragrances', // Public brand/founder metadata
   PRODUCTION_CITY_EN: 'Riyadh', // Production city in English
   PRODUCTION_CITY_AR: 'الرياض', // Production city in Arabic

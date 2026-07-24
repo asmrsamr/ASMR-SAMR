@@ -38,7 +38,7 @@ PUBLIC_CONFIG_FIELDS = {
     "supabaseUrl": ("ASMR_SAMR_SUPABASE_URL", "https://thpuomqhqghqskyegpfj.supabase.co"),
     "supabaseAnonKey": ("ASMR_SAMR_SUPABASE_ANON_KEY", "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY"),
     "whatsappNumber": ("ASMR_SAMR_WHATSAPP_NUMBER", "966560505651"),
-    "siteDomain": ("ASMR_SAMR_SITE_DOMAIN", "https://asmr-samr.pages.dev"),
+    "siteDomain": ("ASMR_SAMR_SITE_DOMAIN", "https://asmrsamr.com"),
     "founderName": ("ASMR_SAMR_FOUNDER_NAME", "ASMR & SAMR Fragrances"),
     "instagramUrl": ("ASMR_SAMR_INSTAGRAM_URL", "https://instagram.com/asmr.samr.perfumes"),
     "productionCityEn": ("ASMR_SAMR_PRODUCTION_CITY_EN", "Riyadh"),
