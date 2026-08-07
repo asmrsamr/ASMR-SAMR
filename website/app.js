@@ -134,6 +134,16 @@ function esc(value) {
     .replace(/'/g, '&#39;');
 }
 
+function togglePasswordVisibility(button) {
+  const shell = button && button.closest('.password-input-shell');
+  const input = shell && shell.querySelector('input');
+  if (!input) return;
+  const reveal = input.type === 'password';
+  input.type = reveal ? 'text' : 'password';
+  button.setAttribute('aria-pressed', String(reveal));
+  button.setAttribute('aria-label', reveal ? 'Hide password' : 'Show password');
+}
+
 // On-theme, non-blocking toast — replaces blocking native browser dialogs
 function showToast(message) {
   let host = document.getElementById('toast-host');
@@ -2577,7 +2587,7 @@ function saveNotificationPrefs(e) {
 const ADMIN_STATE_KEY = 'asmr_samr_admin_state_v1';
 const ADMIN_REMOTE_CACHE_KEY = 'asmr_samr_admin_remote_cache_v1';
 const ADMIN_SESSION_KEY = 'asmr_samr_admin_supabase_session_v1';
-const ADMIN_STAFF_ROLES = ['admin', 'manager', 'finance', 'marketing', 'inventory', 'production', 'support'];
+const ADMIN_STAFF_ROLES = ['owner', 'admin', 'manager', 'finance', 'marketing', 'inventory', 'production', 'support'];
 const LEGACY_ADMIN_FALLBACK_FLAG = 'asmr_samr_enable_legacy_admin_fallback';
 const ADMIN_TABS = [
   'overview',
@@ -4190,7 +4200,7 @@ function renderAdminSettings(analytics) {
         <div class="admin-panel-heading"><div><span class="admin-eyebrow">Secure sign in</span><h2>Admin Supabase login</h2></div></div>
         <form class="admin-form" onsubmit="adminLogin(event)">
           <label>Email<input id="admin-login-email" type="email" autocomplete="email" required></label>
-          <label>Password<input id="admin-login-password" type="password" autocomplete="current-password" required></label>
+          <label>Password<span class="password-input-shell"><input id="admin-login-password" type="password" autocomplete="current-password" required><button type="button" class="password-visibility-toggle" aria-label="Show password" aria-pressed="false" onclick="togglePasswordVisibility(this)"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M2.1 12s3.6-6 9.9-6 9.9 6 9.9 6-3.6 6-9.9 6-9.9-6-9.9-6Z"></path><circle cx="12" cy="12" r="2.75"></circle></svg></button></span></label>
           <button type="submit" class="admin-primary-btn">Sign in and sync</button>
           <button type="button" class="admin-secondary-btn" onclick="adminLogout()">Sign out</button>
         </form>

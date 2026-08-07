@@ -7,7 +7,8 @@
   const ADMIN_MAX_SESSION_MS = 8 * 60 * 60 * 1000;
   const DEFAULT_URL = 'https://thpuomqhqghqskyegpfj.supabase.co';
   const PAGE_SIZE = 20;
-  const STAFF_ROLES = new Set(['admin', 'manager', 'finance', 'marketing', 'inventory', 'production', 'support']);
+  const PRIVILEGED_ROLES = new Set(['owner', 'admin']);
+  const STAFF_ROLES = new Set(['owner', 'admin', 'manager', 'finance', 'marketing', 'inventory', 'production', 'support']);
   const SENSITIVE_FIELDS = new Set([
     'password', 'password_hash', 'key_hash', 'code_hash', 'raw_key', 'raw_code',
     'service_role', 'access_token', 'refresh_token', 'raw'
@@ -95,6 +96,8 @@
     aborters: new Map(),
     activeForm: null,
     confirmation: null,
+    modalOpener: null,
+    dataIssues: [],
     flashTimer: 0,
     searchTimer: 0,
     sessionGuardStarted: false,
@@ -352,9 +355,13 @@
 
   function can(permission) {
     return Boolean(runtime.profile && (
-      runtime.profile.role === 'admin' ||
+      PRIVILEGED_ROLES.has(runtime.profile.role) ||
       runtime.permissions.has(permission)
     ));
+  }
+
+  function isPrivilegedAdmin() {
+    return Boolean(runtime.profile && PRIVILEGED_ROLES.has(runtime.profile.role));
   }
 
   function canRead(config) {
@@ -415,6 +422,23 @@
     </div>`;
   }
 
+  function updateDataHealth() {
+    const node = document.getElementById('admin-data-health');
+    if (!node) return;
+    const count = runtime.dataIssues.length;
+    node.hidden = count === 0;
+    node.innerHTML = count ? `
+      <strong>Some dashboard data could not be loaded.</strong>
+      <span>${esc(`${count} request${count === 1 ? '' : 's'} failed. Totals on this page may be incomplete.`)}</span>
+      <button type="button" class="admin-secondary-btn" onclick="ASMRSAMRAdmin.reloadCurrentPage()">Retry</button>
+    ` : '';
+  }
+
+  function recordDataIssue(error) {
+    runtime.dataIssues.push(errorMessage(error));
+    updateDataHealth();
+  }
+
   function renderNav(activeTab) {
     return NAV_SECTIONS.map((section) => {
       const tabs = section.tabs.filter(tabVisibleForCurrentRole);
@@ -436,7 +460,7 @@
 
   function tabVisibleForCurrentRole(tab) {
     if (!runtime.profile) return true;
-    if (runtime.profile.role === 'admin') return true;
+    if (isPrivilegedAdmin()) return true;
     if (tab === 'users' || tab === 'api-keys') return false;
     const groups = TAB_PERMISSION_GROUPS[tab] || [];
     return groups.some((group) =>
@@ -504,6 +528,7 @@
             </div>
           </header>
           <div id="admin-flash" class="admin-flash" role="status" aria-live="polite"></div>
+          <div id="admin-data-health" class="admin-data-health" role="alert" hidden></div>
           <section id="admin-live-root" aria-live="polite">${loadingState()}</section>
         </main>
         <div id="admin-modal-root"></div>
@@ -514,6 +539,8 @@
   async function mount(tab, section, mountId) {
     const root = document.getElementById('admin-live-root');
     if (!root || mountId !== runtime.mountId) return;
+    runtime.dataIssues = [];
+    updateDataHealth();
     if (!getConfig().anonKey) {
       renderConfigRequired(root);
       updateIdentity(null);
@@ -546,7 +573,7 @@
         return;
       }
       runtime.profile = profile;
-      if (profile.role === 'admin') {
+      if (PRIVILEGED_ROLES.has(profile.role)) {
         runtime.permissions = new Set(['*']);
       } else {
         const permissionResult = await db(
@@ -655,7 +682,7 @@
         <p>Use an active administrator or staff account. Each module is checked again by Supabase Row Level Security.</p>
         <form class="admin-settings-form" onsubmit="ASMRSAMRAdmin.login(event)" novalidate>
           <label><span>Email</span><input name="email" type="email" autocomplete="username" required></label>
-          <label><span>Password</span><input name="password" type="password" autocomplete="current-password" required minlength="8"></label>
+          <label><span>Password</span><span class="password-input-shell"><input name="password" type="password" autocomplete="current-password" required minlength="8"><button type="button" class="password-visibility-toggle" aria-label="Show password" aria-pressed="false" onclick="togglePasswordVisibility(this)"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M2.1 12s3.6-6 9.9-6 9.9 6 9.9 6-3.6 6-9.9 6-9.9-6-9.9-6Z"></path><circle cx="12" cy="12" r="2.75"></circle></svg></button></span></label>
           <p class="admin-form-error" id="admin-login-error" ${message ? '' : 'hidden'}>${esc(message)}</p>
           <button type="submit" class="admin-primary-btn">Sign in</button>
         </form>
@@ -761,6 +788,7 @@
   function openModal(content, label = 'Dialog') {
     const root = document.getElementById('admin-modal-root');
     if (!root) return;
+    runtime.modalOpener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     root.innerHTML = `
       <div class="admin-editor-backdrop" role="presentation" onclick="ASMRSAMRAdmin.backdropClose(event)">
         <section class="admin-product-editor admin-modal" role="dialog" aria-modal="true" aria-label="${attr(label)}">
@@ -770,6 +798,9 @@
       </div>
     `;
     document.body.classList.add('admin-editor-open');
+    document.querySelector('.admin-sidebar')?.setAttribute('inert', '');
+    document.querySelector('.admin-main')?.setAttribute('inert', '');
+    document.addEventListener('keydown', handleModalKeydown);
     const focusable = root.querySelector('input, select, textarea, button:not(.admin-editor-close), a');
     if (focusable) window.setTimeout(() => focusable.focus(), 0);
   }
@@ -778,6 +809,41 @@
     const root = document.getElementById('admin-modal-root');
     if (root) root.innerHTML = '';
     document.body.classList.remove('admin-editor-open');
+    document.querySelector('.admin-sidebar')?.removeAttribute('inert');
+    document.querySelector('.admin-main')?.removeAttribute('inert');
+    document.removeEventListener('keydown', handleModalKeydown);
+    runtime.confirmation = null;
+    runtime.oneTimeSecret = null;
+    const opener = runtime.modalOpener;
+    runtime.modalOpener = null;
+    if (opener && opener.isConnected) window.setTimeout(() => opener.focus(), 0);
+  }
+
+  function handleModalKeydown(event) {
+    const dialog = document.querySelector('#admin-modal-root [role="dialog"]');
+    if (!dialog) return;
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeModal();
+      return;
+    }
+    if (event.key !== 'Tab') return;
+    const focusable = Array.from(dialog.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )).filter((node) => node.getClientRects().length > 0);
+    if (!focusable.length) {
+      event.preventDefault();
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   }
 
   function backdropClose(event) {
@@ -867,6 +933,8 @@
   async function reloadCurrentPage() {
     const root = document.getElementById('admin-live-root');
     if (!root) return;
+    runtime.dataIssues = [];
+    updateDataHealth();
     root.innerHTML = loadingState();
     await dispatchPage(runtime.tab, runtime.section, root, runtime.mountId);
   }
@@ -1393,7 +1461,10 @@
     }
   }
 
-  const ROLE_OPTIONS = choices(['customer', 'admin', 'manager', 'finance', 'marketing', 'inventory', 'production', 'support']);
+  const ROLE_OPTIONS = [
+    ['owner', 'Owner / Super Admin'],
+    ...choices(['customer', 'admin', 'manager', 'finance', 'marketing', 'inventory', 'production', 'support'])
+  ];
   const USER_STATUS_OPTIONS = choices(['invited', 'active', 'inactive', 'suspended']);
   const PRODUCT_STATUS_OPTIONS = choices(['draft', 'published', 'unpublished', 'archived']);
   const PRODUCT_TYPE_OPTIONS = choices(['extrait', 'edp', 'edt', 'spray', 'mist', 'cream', 'wash', 'set', 'sets', 'sample', 'gift_card']);
@@ -1743,7 +1814,7 @@
         { key: 'revenue', label: 'Revenue', type: 'number', min: 0, step: '0.01', default: 0 },
         { key: 'orders_count', label: 'Orders', type: 'number', min: 0, step: 1, default: 0 },
         { key: 'conversions', label: 'Conversions', type: 'number', min: 0, step: 1, default: 0 },
-        { key: 'owner_id', label: 'Owner', nullable: true, lookup: { table: 'profiles', value: 'id', label: 'email' } },
+        { key: 'owner_id', label: 'Owner', nullable: true, lookup: { table: 'staff_directory', value: 'id', label: 'email' } },
         { key: 'notes', label: 'Notes', type: 'textarea', wide: true, nullable: true, maxlength: 3000 }
       ],
       createdBy: 'created_by',
@@ -2267,7 +2338,7 @@
           { key: 'phone', label: 'Phone', type: 'tel', nullable: true, maxlength: 40 }, { key: 'subject', label: 'Subject', nullable: true, maxlength: 300 },
           { key: 'message', label: 'Message', type: 'textarea', wide: true, nullable: true, maxlength: 5000 },
           { key: 'status', label: 'Status', type: 'select', options: choices(['new', 'assigned', 'in_progress', 'resolved', 'closed', 'cancelled']), required: true, default: 'new' },
-          { key: 'assigned_to', label: 'Assigned to', nullable: true, lookup: { table: 'profiles', value: 'id', label: 'email' } },
+          { key: 'assigned_to', label: 'Assigned to', nullable: true, lookup: { table: 'staff_directory', value: 'id', label: 'email' } },
           { key: 'notes', label: 'Internal notes', type: 'textarea', wide: true, nullable: true, maxlength: 3000 }
         ],
         deleteMode: 'hard', canDelete: (row) => ['new', 'cancelled'].includes(row.status)
@@ -2401,7 +2472,7 @@
           { key: 'scheduled_at', label: 'Scheduled at', type: 'datetime-local', nullable: true },
           { key: 'status', label: 'Status', type: 'select', options: choices(['idea', 'draft', 'review', 'scheduled', 'published', 'archived']), required: true, default: 'idea' },
           { key: 'campaign_id', label: 'Campaign', nullable: true, lookup: { table: 'marketing_campaigns', value: 'id', label: 'name' } },
-          { key: 'owner_id', label: 'Owner', nullable: true, lookup: { table: 'profiles', value: 'id', label: 'email' } },
+          { key: 'owner_id', label: 'Owner', nullable: true, lookup: { table: 'staff_directory', value: 'id', label: 'email' } },
           { key: 'attachment_document_id', label: 'Attachment document ID', nullable: true },
           { key: 'notes', label: 'Notes', type: 'textarea', wide: true, nullable: true, maxlength: 3000 }
         ], deleteMode: 'hard', canDelete: (row) => ['idea', 'draft', 'archived'].includes(row.status)
@@ -2549,9 +2620,15 @@
     if (tab === 'marketing') return renderMarketing(section || 'overview', root);
     if (tab === 'ingredients') return renderIngredients(section || 'ingredients', root);
     if (tab === 'finance') return renderFinance(section || 'overview', root);
-    if (tab === 'users') return renderUsers(root);
+    if (tab === 'users') {
+      if (!isPrivilegedAdmin()) return root.innerHTML = errorState(new Error('Owner or administrator access is required.'));
+      return renderUsers(root);
+    }
     if (tab === 'gifting') return renderGiftCards(root);
-    if (tab === 'api-keys') return renderApiKeys(root);
+    if (tab === 'api-keys') {
+      if (!isPrivilegedAdmin()) return root.innerHTML = errorState(new Error('Owner or administrator access is required.'));
+      return renderApiKeys(root);
+    }
     if (tab === 'roles') return renderRoles(root);
     if (tab === 'reports') return renderReports(root);
     if (tab === 'settings') return renderSettings(section || 'shipping', root);
@@ -2564,7 +2641,8 @@
     try {
       const result = await db(path);
       return Array.isArray(result.data) ? result.data : (result.data ? [result.data] : []);
-    } catch (_) {
+    } catch (error) {
+      recordDataIssue(error);
       return [];
     }
   }
@@ -3497,7 +3575,7 @@
 
   async function renderRoles(root) {
     root.innerHTML = loadingState('Loading roles and permissions');
-    if (runtime.profile.role !== 'admin') {
+    if (!isPrivilegedAdmin()) {
       root.innerHTML = errorState(new Error('Only administrators can manage roles and permissions.'));
       return;
     }
@@ -3519,7 +3597,7 @@
                 <tr>
                   <th scope="row">${esc(permission)}</th>
                   ${roles.map((role) => {
-                    const implicit = role.name === 'admin';
+                    const implicit = PRIVILEGED_ROLES.has(role.name);
                     const checked = implicit || assigned.has(`${role.name}:${permission}`);
                     return `<td><input type="checkbox" aria-label="${attr(permission)} for ${attr(role.label)}"
                       ${checked ? 'checked' : ''} ${implicit ? 'disabled' : ''}
@@ -3535,7 +3613,7 @@
   }
 
   async function toggleRolePermission(role, permission, checked) {
-    if (runtime.profile.role !== 'admin' || role === 'admin') return;
+    if (!isPrivilegedAdmin() || PRIVILEGED_ROLES.has(role)) return;
     try {
       setBusy(true);
       if (checked) {
@@ -4487,7 +4565,7 @@
             ${locations.map((location) => `<option value="${attr(location.id)}">${esc(location.name)}</option>`).join('')}
           </select></label>
           <label class="admin-editor-wide"><span>Reason *</span><textarea name="reason" rows="3" required maxlength="500"></textarea></label>
-          ${runtime.profile.role === 'admin' ? `<label class="admin-editor-wide"><span>Administrator override</span><input type="checkbox" name="allow_negative"> Allow negative stock only when the physical count requires it</label>` : ''}
+          ${isPrivilegedAdmin() ? `<label class="admin-editor-wide"><span>Administrator override</span><input type="checkbox" name="allow_negative"> Allow negative stock only when the physical count requires it</label>` : ''}
         </div>
         <p class="admin-form-error" id="admin-stock-error" hidden></p>
         <div class="admin-editor-actions"><button type="button" class="admin-secondary-btn" onclick="ASMRSAMRAdmin.closeModal()">Cancel</button><button type="submit" class="admin-primary-btn">Record movement</button></div>
@@ -4616,7 +4694,7 @@
           <label><span>Reference type</span><input name="reference_type" maxlength="80"></label>
           <label><span>Reference ID</span><input name="reference_id" maxlength="160"></label>
           <label class="admin-editor-wide"><span>Reason *</span><textarea name="reason" rows="3" required maxlength="500"></textarea></label>
-          ${runtime.profile.role === 'admin' ? `<label class="admin-editor-wide"><span>Administrator override</span><input type="checkbox" name="allow_negative"> Permit negative stock only for a documented physical correction</label>` : ''}
+          ${isPrivilegedAdmin() ? `<label class="admin-editor-wide"><span>Administrator override</span><input type="checkbox" name="allow_negative"> Permit negative stock only for a documented physical correction</label>` : ''}
         </div>
         <p class="admin-form-error" id="admin-ingredient-stock-error" hidden></p>
         <div class="admin-editor-actions"><button type="button" class="admin-secondary-btn" onclick="ASMRSAMRAdmin.closeModal()">Cancel</button><button type="submit" class="admin-primary-btn">Record movement</button></div>
@@ -5130,7 +5208,7 @@
       <h2>${esc(batch.batch_number)}</h2>
       <p>Confirmation deducts every formula ingredient transactionally, records consumption and stock movements, and calculates actual batch and bottle cost.</p>
       <form class="admin-settings-form" onsubmit="ASMRSAMRAdmin.runBatchConfirmation(event)">
-        ${runtime.profile.role === 'admin' ? `<label><span>Negative stock override</span><input type="checkbox" name="allow_negative"> Allow only after checking physical stock and formula quantities</label>` : ''}
+        ${isPrivilegedAdmin() ? `<label><span>Negative stock override</span><input type="checkbox" name="allow_negative"> Allow only after checking physical stock and formula quantities</label>` : ''}
         <div class="admin-editor-actions"><button type="button" class="admin-secondary-btn" onclick="ASMRSAMRAdmin.closeModal()">Cancel</button><button type="submit" class="admin-primary-btn">Confirm and deduct</button></div>
       </form>
     `, 'Confirm production batch');
@@ -5388,7 +5466,7 @@
       fields: [],
       readOnly: true,
       rowActions: (_row, index) => `
-        ${runtime.profile.role === 'admin' ? `<button type="button" onclick="ASMRSAMRAdmin.openUserEditor('users', ${index})">Manage</button>` : ''}
+        ${isPrivilegedAdmin() ? `<button type="button" onclick="ASMRSAMRAdmin.openUserEditor('users', ${index})">Manage</button>` : ''}
         <button type="button" onclick="ASMRSAMRAdmin.openUserRelations('users', ${index})">History</button>
         ${can('customers.write') ? `<button type="button" onclick="ASMRSAMRAdmin.openRewardAdjustment('users', ${index})">Points</button>` : ''}
       `
@@ -5408,7 +5486,7 @@
         ${kpi('Inactive / suspended', formatNumber(suspended, 0), 'Accounts without active access', suspended ? 'danger' : 'green')}
         ${kpi('Reward points', formatNumber(points, 0), 'Current customer balances', 'stone')}
       </div>
-      ${runtime.profile.role === 'admin' ? `
+      ${isPrivilegedAdmin() ? `
         <div class="admin-page-command"><button type="button" class="admin-primary-btn" onclick="ASMRSAMRAdmin.openInviteUser()">Invite user</button></div>
       ` : ''}
       <div id="admin-submodule-root"></div>
@@ -5418,7 +5496,7 @@
   }
 
   function openInviteUser() {
-    if (runtime.profile.role !== 'admin') return;
+    if (!isPrivilegedAdmin()) return;
     openModal(`
       <span class="admin-eyebrow">Secure invitation</span>
       <h2>Invite a user</h2>
@@ -5468,7 +5546,7 @@
 
   function openUserEditor(key, index) {
     const user = userFromKey(key, index);
-    if (!user || runtime.profile.role !== 'admin') return;
+    if (!user || !isPrivilegedAdmin()) return;
     runtime.userKey = key;
     runtime.userRecord = user;
     openModal(`
@@ -5840,8 +5918,8 @@
   async function renderApiKeys(root) {
     runtime.apiQuery = runtime.apiQuery || { search: '', status: '', page: 1, pageSize: 20 };
     root.innerHTML = loadingState('Loading redacted API keys');
-    if (runtime.profile.role !== 'admin') {
-      root.innerHTML = errorState(new Error('Only active administrators can manage API keys.'));
+    if (!isPrivilegedAdmin()) {
+      root.innerHTML = errorState(new Error('Only active owners or administrators can manage API keys.'));
       return;
     }
     try {
@@ -6147,7 +6225,7 @@
 
   async function fetchAllForConfig(config) {
     if (!config || !canRead(config)) throw new Error('You do not have permission to export this module.');
-    if (!can('exports.run') && runtime.profile.role !== 'admin') {
+    if (!can('exports.run') && !isPrivilegedAdmin()) {
       throw new Error('Your role does not include export permission.');
     }
     const query = { ...queryState(config.key), page: 1, pageSize: 1000 };
@@ -6189,7 +6267,8 @@
   }
 
   function csvCell(value) {
-    const text = String(value == null ? '' : value);
+    const original = String(value == null ? '' : value);
+    const text = /^[\t\r\n ]*[=+\-@]/.test(original) ? `'${original}` : original;
     return /[",\r\n]/.test(text) ? '"' + text.replaceAll('"', '""') + '"' : text;
   }
 
@@ -6387,21 +6466,18 @@
   }
 
   async function recordExport(config, format, count) {
-    try {
-      await db('data_exports', {
-        method: 'POST',
-        headers: { Prefer: 'return=minimal' },
-        body: {
-          module: config.key,
-          format,
-          filters: queryState(config.key),
-          row_count: count,
-          created_by: runtime.profile.id
-        }
-      });
-    } catch (_) {
-      // Export audit failure must not expose data or silently elevate permissions.
-    }
+    if (!runtime.profile) throw new Error('Sign in before exporting data.');
+    await db('data_exports', {
+      method: 'POST',
+      headers: { Prefer: 'return=minimal' },
+      body: {
+        module: config.key,
+        format,
+        filters: queryState(config.key),
+        row_count: count,
+        created_by: runtime.profile.id
+      }
+    });
   }
 
   async function performExport(config, format, providedRows) {
@@ -6411,6 +6487,7 @@
       const table = exportTable(config, rows);
       const slug = String(config.key || config.title).replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '').toLowerCase();
       const date = new Date().toISOString().slice(0, 10);
+      await recordExport(config, format, rows.length);
       if (format === 'csv') {
         downloadBlob(new Blob([buildCsv(table)], { type: 'text/csv;charset=utf-8' }), `${slug}-${date}.csv`);
       } else if (format === 'xlsx') {
@@ -6422,7 +6499,6 @@
       } else {
         throw new Error('Unsupported export format.');
       }
-      await recordExport(config, format, rows.length);
       announce(`${config.title} exported as ${format.toUpperCase()}.`);
     } catch (error) {
       announce(errorMessage(error), 'error');

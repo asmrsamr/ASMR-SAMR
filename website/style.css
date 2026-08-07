@@ -5075,6 +5075,83 @@ body:has(.admin-dashboard-enhanced) {
   color: #71352E;
 }
 
+.admin-data-health {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+  border: 1px solid rgba(176, 86, 75, 0.38);
+  border-radius: 6px;
+  background: #F7ECE9;
+  color: #6D342D;
+  padding: 0.75rem 0.9rem;
+}
+
+.admin-data-health[hidden] {
+  display: none;
+}
+
+.admin-data-health span {
+  flex: 1 1 auto;
+  font-size: 0.8rem;
+}
+
+.password-input-shell {
+  position: relative;
+  display: block;
+}
+
+.password-input-shell input {
+  width: 100%;
+  padding-right: 3rem !important;
+  box-sizing: border-box;
+}
+
+.password-visibility-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #675D53;
+  cursor: pointer;
+}
+
+.password-visibility-toggle:hover {
+  background: rgba(156, 123, 60, 0.1);
+  color: #2F2924;
+}
+
+.password-visibility-toggle:focus-visible {
+  outline: 2px solid #9C7B3C;
+  outline-offset: 2px;
+}
+
+.password-visibility-toggle svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.password-visibility-toggle[aria-pressed="true"]::after {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 1.5px;
+  transform: rotate(-42deg);
+  background: currentColor;
+}
+
 .admin-is-busy .admin-main::after {
   content: '';
   position: fixed;
@@ -5844,6 +5921,16 @@ body:has(.admin-dashboard-enhanced) {
 
   .admin-secret-once {
     display: grid;
+  }
+
+  .admin-data-health {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .admin-data-health strong,
+  .admin-data-health span {
+    flex-basis: 100%;
   }
 }
 

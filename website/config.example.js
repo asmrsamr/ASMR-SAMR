@@ -12,6 +12,6 @@ window.ASMR_SAMR_CONFIG = {
   productionCityAr: 'الرياض',
   reservedCount: 42,
   // Descriptive only; profile roles and Supabase RLS authorize access.
-  adminRoles: ['admin', 'manager', 'finance', 'marketing', 'inventory', 'production', 'support'],
+  adminRoles: ['owner', 'admin', 'manager', 'finance', 'marketing', 'inventory', 'production', 'support'],
   adminRequireAuth: true
 };

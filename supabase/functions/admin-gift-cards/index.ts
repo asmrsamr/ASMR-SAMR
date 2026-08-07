@@ -29,7 +29,7 @@ const handler = withSupabase({ auth: "user" }, async (req, ctx) => {
   if (actorError || !actor || actor.status !== "active") {
     return jsonResponse(req, { error: "Authorized finance access required" }, 403);
   }
-  let allowed = actor.role === "admin";
+  let allowed = ["owner", "admin"].includes(actor.role);
   if (!allowed) {
     const { data } = await ctx.supabaseAdmin.from("role_permissions")
       .select("permission").eq("role_name", actor.role).in("permission", ["finance.write", "finance.post"]);

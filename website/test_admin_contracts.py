@@ -45,7 +45,7 @@ check(nav_tabs == expected_tabs, "all intended dashboard tabs appear exactly onc
 generic_block = re.search(r"const genericMap = \{(.*?)\n    \};", admin_js, re.S)
 generic_tabs = set(re.findall(r"(?:^|\n)\s*(?:'([^']+)'|([a-z-]+)):\s*CONFIGS", generic_block.group(1) if generic_block else ""))
 generic_tabs = {left or right for left, right in generic_tabs}
-explicit_tabs = set(re.findall(r"if \(tab === '([^']+)'\) return", admin_js))
+explicit_tabs = set(re.findall(r"if \(tab === '([^']+)'\)", admin_js))
 check(nav_tabs <= generic_tabs | explicit_tabs, "every sidebar tab dispatches to a connected page")
 check("route === '#/admin' || route.startsWith('#/admin/')" in app_js, "direct admin URLs are routed by the application")
 check("mainRoot.innerHTML = renderSupabaseAdminRoute(sub)" in app_js, "admin routes render only the Supabase dashboard bridge")
@@ -70,7 +70,7 @@ check("['profiles', 'products', 'ingredients', 'formulas', 'production_batches',
 check("audit_row_change" in sql and "audit_logs" in sql, "sensitive CRUD operations have database audit coverage")
 
 print("\n[3] Session and role consistency")
-staff_roles = {"admin", "manager", "finance", "marketing", "inventory", "production", "support"}
+staff_roles = {"owner", "admin", "manager", "finance", "marketing", "inventory", "production", "support"}
 role_line = re.search(r"const ADMIN_STAFF_ROLES = \[(.*?)\];", app_js)
 app_roles = set(re.findall(r"'([^']+)'", role_line.group(1) if role_line else ""))
 config_roles = set(re.findall(r"'([^']+)'", re.search(r"adminRoles:\s*\[(.*?)\]", example_config).group(1)))
@@ -81,7 +81,16 @@ check("sessionStorage.setItem(ADMIN_SESSION_KEY" in app_js, "fallback admin logi
 check("localStorage.setItem(ADMIN_REMOTE_CACHE_KEY" not in app_js, "protected remote cache is not persisted in localStorage")
 check("sessionStorage.setItem(ADMIN_REMOTE_CACHE_KEY" in app_js, "protected remote cache is tab-scoped")
 
-print("\n[4] Responsive sidebar")
+print("\n[4] Security and accessibility remediation")
+check("PRIVILEGED_ROLES = new Set(['owner', 'admin'])" in admin_js, "owner and administrator are the explicit privileged roles")
+check("Owner or administrator access is required." in admin_js, "direct privileged routes enforce authorization")
+check("await recordExport(config, format, rows.length);" in admin_js, "export audit is recorded before file delivery")
+check("^[\\t\\r\\n ]*[=+\\-@]" in admin_js, "CSV cells neutralize spreadsheet formulas")
+check("recordDataIssue(error)" in admin_js and "admin-data-health" in admin_js, "partial dashboard failures remain visible")
+check("handleModalKeydown" in admin_js and "event.key === 'Escape'" in admin_js, "dialogs support focus containment and Escape")
+check("togglePasswordVisibility" in app_js and "password-visibility-toggle" in admin_js, "password fields provide an accessible visibility control")
+
+print("\n[5] Responsive sidebar")
 check(".admin-sidebar" in css and "position: fixed" in css, "dashboard sidebar remains fixed")
 check(".admin-nav" in css and "overflow-y: auto" in css, "dashboard navigation scrolls independently")
 check(".admin-sidebar-footer" in css, "profile, settings, and logout remain in the sidebar footer")

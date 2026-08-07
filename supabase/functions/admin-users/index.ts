@@ -9,6 +9,7 @@ import {
 
 const roles = new Set([
   "customer",
+  "owner",
   "admin",
   "manager",
   "finance",
@@ -17,6 +18,7 @@ const roles = new Set([
   "production",
   "support",
 ]);
+const privilegedRoles = new Set(["owner", "admin"]);
 const statuses = new Set(["invited", "active", "inactive", "suspended"]);
 const tiers = new Set(["ivory", "amber", "signature"]);
 
@@ -31,7 +33,7 @@ const handler = withSupabase({ auth: "user" }, async (req, ctx) => {
     .select("id, role, status")
     .eq("id", actorId)
     .maybeSingle();
-  if (actorError || !actor || actor.role !== "admin" || actor.status !== "active") {
+  if (actorError || !actor || !privilegedRoles.has(actor.role) || actor.status !== "active") {
     return jsonResponse(req, { error: "Administrator access required" }, 403);
   }
 
@@ -65,6 +67,9 @@ const handler = withSupabase({ auth: "user" }, async (req, ctx) => {
         return jsonResponse(req, { error: "A valid email is required" }, 422);
       }
       if (!roles.has(role)) return jsonResponse(req, { error: "Invalid role" }, 422);
+      if (role === "owner" && actor.role !== "owner") {
+        return jsonResponse(req, { error: "Only an owner can invite another owner" }, 403);
+      }
 
       const redirectTo = Deno.env.get("ADMIN_INVITE_REDIRECT_URL") || undefined;
       const { data, error } = await ctx.supabaseAdmin.auth.admin.inviteUserByEmail(email, {
@@ -91,7 +96,7 @@ const handler = withSupabase({ auth: "user" }, async (req, ctx) => {
 
     if (!userId) return jsonResponse(req, { error: "User id is required" }, 422);
     if (userId === actorId && ["suspend", "deactivate", "anonymize"].includes(action)) {
-      return jsonResponse(req, { error: "You cannot disable your own administrator account" }, 409);
+      return jsonResponse(req, { error: "You cannot disable your own privileged account" }, 409);
     }
 
     const { data: existing, error: existingError } = await ctx.supabaseAdmin
@@ -101,27 +106,30 @@ const handler = withSupabase({ auth: "user" }, async (req, ctx) => {
       .maybeSingle();
     if (existingError) throw existingError;
     if (!existing) return jsonResponse(req, { error: "User not found" }, 404);
+    if (existing.role === "owner" && actor.role !== "owner") {
+      return jsonResponse(req, { error: "Only an owner can modify an owner account" }, 403);
+    }
 
     const protectAdminContinuity = async (nextRole: string, nextStatus: string) => {
-      if (existing.role !== "admin" || (nextRole === "admin" && nextStatus === "active")) {
+      if (!privilegedRoles.has(existing.role) || (privilegedRoles.has(nextRole) && nextStatus === "active")) {
         return null;
       }
       if (userId === actorId) {
         return jsonResponse(req, {
-          error: "You cannot disable or demote your own administrator account",
+          error: "You cannot disable or demote your own privileged account",
         }, 409);
       }
       const { count, error } = await ctx.supabaseAdmin
         .from("profiles")
         .select("id", { count: "exact", head: true })
-        .eq("role", "admin")
+        .in("role", ["owner", "admin"])
         .eq("status", "active")
         .is("anonymized_at", null)
         .neq("id", userId);
       if (error) throw error;
       if (!count) {
         return jsonResponse(req, {
-          error: "At least one active administrator must remain",
+          error: "At least one active owner or administrator must remain",
         }, 409);
       }
       return null;
@@ -133,6 +141,9 @@ const handler = withSupabase({ auth: "user" }, async (req, ctx) => {
       const tier = cleanString(body.membership_tier, 32) || existing.membership_tier;
       if (!roles.has(role) || !statuses.has(status) || !tiers.has(tier)) {
         return jsonResponse(req, { error: "Invalid role, status, or membership tier" }, 422);
+      }
+      if (role === "owner" && actor.role !== "owner") {
+        return jsonResponse(req, { error: "Only an owner can assign the owner role" }, 403);
       }
       const continuityError = await protectAdminContinuity(role, status);
       if (continuityError) return continuityError;

@@ -89,11 +89,14 @@ check("tab === 'users' || tab === 'api-keys'" in admin_js, "user and API-key nav
 
 print("\n[2] RBAC and administrator continuity")
 check("role_name = (select private.current_role())" in sql, "staff can read only their own role permissions")
-check("Only an administrator can modify staff profiles" in sql, "non-admin roles cannot modify staff profiles")
-check("At least one active administrator must remain" in sql, "database protects the final active administrator")
-check("Administrators cannot disable or demote their own account" in sql, "database prevents administrator self-lockout")
+check("Only an owner or administrator can modify staff profiles" in sql, "ordinary staff cannot modify privileged profiles")
+check("At least one active owner or administrator must remain" in sql, "database protects privileged-account continuity")
+check("At least one active owner must remain" in sql, "database protects owner continuity")
+check("Owners and administrators cannot disable or demote their own account" in sql, "database prevents privileged self-lockout")
 check("protectAdminContinuity" in edge_users, "user-management Edge Function protects administrator continuity")
-check("You cannot disable or demote your own administrator account" in edge_users, "Edge Function prevents administrator self-lockout")
+check("You cannot disable or demote your own privileged account" in edge_users, "Edge Function prevents privileged self-lockout")
+check("role = 'customer'" in sql and "profiles_staff_read" in sql, "customer permissions cannot read staff profiles")
+check("Only an owner can assign the owner role" in edge_users, "administrator accounts cannot elevate users to owner")
 check("raw_user_meta_data ->> 'role'" not in sql.lower(), "user-editable metadata is not used for authorization")
 
 print("\n[3] RLS and privileged database code")
@@ -157,6 +160,8 @@ def request_json(url: str, method: str, headers: dict[str, str], body: object | 
         except json.JSONDecodeError:
             payload = raw
         return error.code, payload
+    except urllib.error.URLError as error:
+        return 0, {"network_error": str(error.reason)}
 
 
 print("\n[4] Live anonymous boundary")
@@ -180,28 +185,31 @@ else:
             public_headers,
             {},
         )
-        products = catalog.get("products", []) if isinstance(catalog, dict) else []
-        check(status == 200 and bool(products), "safe storefront catalog RPC is publicly available")
+        if status == 0:
+            warning("network DNS is unavailable; live Supabase denial checks skipped")
+        else:
+            products = catalog.get("products", []) if isinstance(catalog, dict) else []
+            check(status == 200 and bool(products), "safe storefront catalog RPC is publicly available")
 
-        protected_paths = [
-            "api_keys?select=id&limit=1",
-            "role_permissions?select=role_name,permission&limit=1",
-            "profiles?select=id,role,status&limit=1",
-            "products?select=id,cost&limit=1",
-        ]
-        for path in protected_paths:
-            status, payload = request_json(f"{supabase_url}/rest/v1/{path}", "GET", public_headers)
-            unavailable = status in {401, 403, 404} or (status == 200 and payload in (None, []))
-            check(unavailable, f"anonymous data unavailable: {path.split('?')[0]}")
+            protected_paths = [
+                "api_keys?select=id&limit=1",
+                "role_permissions?select=role_name,permission&limit=1",
+                "profiles?select=id,role,status&limit=1",
+                "products?select=id,cost&limit=1",
+            ]
+            for path in protected_paths:
+                status, payload = request_json(f"{supabase_url}/rest/v1/{path}", "GET", public_headers)
+                unavailable = status in {401, 403, 404} or (status == 200 and payload in (None, []))
+                check(unavailable, f"anonymous data unavailable: {path.split('?')[0]}")
 
-        for function_name in ("admin-api-keys", "admin-users", "admin-gift-cards"):
-            status, _ = request_json(
-                f"{supabase_url}/functions/v1/{function_name}",
-                "POST",
-                public_headers,
-                {"action": "list"},
-            )
-            check(status in {401, 403}, f"unauthenticated Edge Function denied: {function_name}")
+            for function_name in ("admin-api-keys", "admin-users", "admin-gift-cards"):
+                status, _ = request_json(
+                    f"{supabase_url}/functions/v1/{function_name}",
+                    "POST",
+                    public_headers,
+                    {"action": "list"},
+                )
+                check(status in {401, 403}, f"unauthenticated Edge Function denied: {function_name}")
 
 print("\n" + "=" * 72)
 print(f"{len(passed)} passed | {len(warned)} warnings | {len(failed)} failed")

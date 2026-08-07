@@ -26,7 +26,7 @@ const authenticatedHandler = withSupabase(
       .eq("id", actorId)
       .maybeSingle();
 
-    if (profileError || !profile || profile.role !== "admin" || profile.status !== "active") {
+    if (profileError || !profile || !["owner", "admin"].includes(profile.role) || profile.status !== "active") {
       return jsonResponse(req, { error: "Administrator access required" }, 403);
     }
 

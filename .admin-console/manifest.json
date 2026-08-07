@@ -1,0 +1,210 @@
+{
+  "$schema": "./admin-console.manifest.schema.json",
+  "manifestVersion": "2.0",
+  "profile": "regulated",
+  "platform": {
+    "name": "ASMR & SAMR Admin Console",
+    "summary": "Supabase-backed operations console for ASMR & SAMR ecommerce, inventory, production, finance, marketing, customer, and system administration.",
+    "archetypes": [
+      "commerce"
+    ],
+    "tenancy": "unknown",
+    "regulatedData": [],
+    "sourceSystems": [],
+    "operationalObjectives": [],
+    "stack": {
+      "frontend": "Static HTML/CSS/vanilla JavaScript",
+      "backend": "Supabase Deno Edge Functions",
+      "database": "Supabase Postgres with RLS",
+      "auth": "Supabase Auth",
+      "jobs": "Supabase/Postgres operations; no queue framework detected",
+      "hosting": "Cloudflare Pages",
+      "designSystem": "Custom ASMR & SAMR luxury design system",
+      "adminFramework": "none"
+    },
+    "researchSources": [],
+    "volumes": {
+      "entityCounts": "",
+      "peakConcurrentOperators": "",
+      "retentionHorizon": ""
+    }
+  },
+  "roles": [],
+  "entities": [],
+  "workQueues": [],
+  "screens": [],
+  "integrations": [],
+  "crossCutting": {
+    "authentication": {
+      "implemented": false,
+      "mfaForPrivilegedRoles": false,
+      "sessionRevocation": false,
+      "stepUpForSensitiveActions": false,
+      "evidence": []
+    },
+    "authorization": {
+      "serverEnforced": false,
+      "defaultDeny": false,
+      "objectAndScopeChecks": false,
+      "policyTests": [],
+      "evidence": []
+    },
+    "audit": {
+      "privilegedMutations": false,
+      "privilegedReadsWhenRequired": false,
+      "capturesActorTargetReasonResult": false,
+      "capturesSafeBeforeAfter": false,
+      "tamperProtected": false,
+      "evidence": []
+    },
+    "safety": {
+      "riskClassifiedActions": false,
+      "recoveryDefined": false,
+      "bulkPreviewAndPartialFailure": false,
+      "highRiskApprovalOrStepUp": false,
+      "evidence": []
+    },
+    "data": {
+      "releaseUsesRealSources": false,
+      "sensitiveFieldsClassified": false,
+      "retentionDefined": false,
+      "tenantIsolationTested": false,
+      "evidence": []
+    },
+    "experience": {
+      "wcagTarget": "2.2 AA",
+      "keyboardCriticalFlowsTested": false,
+      "responsiveCriticalFlowsTested": false,
+      "localizationRequirementsHandled": false,
+      "evidence": []
+    },
+    "observability": {
+      "adminApiInstrumented": false,
+      "jobsAndIntegrationsMonitored": false,
+      "highRiskActionsDetectable": false,
+      "correlationIdsExposedSafely": false,
+      "evidence": []
+    }
+  },
+  "qualityGates": [
+    {
+      "id": "build",
+      "status": "pending",
+      "threshold": "Project build succeeds",
+      "evidence": [],
+      "rationale": ""
+    },
+    {
+      "id": "typecheck",
+      "status": "pending",
+      "threshold": "Configured type checks succeed",
+      "evidence": [],
+      "rationale": ""
+    },
+    {
+      "id": "lint",
+      "status": "pending",
+      "threshold": "Configured lint checks succeed",
+      "evidence": [],
+      "rationale": ""
+    },
+    {
+      "id": "tests",
+      "status": "pending",
+      "threshold": "Required automated tests succeed",
+      "evidence": [],
+      "rationale": ""
+    },
+    {
+      "id": "browser",
+      "status": "pending",
+      "threshold": "Critical role workflows pass in a real browser",
+      "evidence": [],
+      "rationale": ""
+    },
+    {
+      "id": "accessibility",
+      "status": "pending",
+      "threshold": "WCAG target and keyboard checks pass",
+      "evidence": [],
+      "rationale": ""
+    },
+    {
+      "id": "security",
+      "status": "pending",
+      "threshold": "Authorization, tenant, and high-risk action checks pass",
+      "evidence": [],
+      "rationale": ""
+    },
+    {
+      "id": "performance",
+      "status": "pending",
+      "threshold": "Project-defined production-volume budgets pass",
+      "evidence": [],
+      "rationale": ""
+    }
+  ],
+  "decisions": [],
+  "gaps": [
+    {
+      "id": "users-route-profile-scope",
+      "severity": "high",
+      "description": "The hidden users route can be opened directly by non-admin roles with customers.read, and profiles RLS permits those roles to select all profiles.",
+      "status": "fixed",
+      "rationale": "Navigation hiding is not authorization; this can expose staff and customer profile data beyond the intended role boundary.",
+      "evidence": [
+        "website/admin-dashboard.js:437",
+        "website/admin-dashboard.js:2527",
+        "website/admin-dashboard.js:5370",
+        "supabase/migrations/20260717074706_admin_security_and_operations.sql:1052",
+        "supabase/migrations/20260717074551_extend_admin_operations.sql:43"
+      ]
+    },
+    {
+      "id": "export-audit-fail-open",
+      "severity": "high",
+      "description": "Dashboard exports are downloaded before the audit event is attempted, and audit insertion failures are swallowed.",
+      "status": "fixed",
+      "rationale": "Regulated exports must be auditable and should fail closed when the audit record cannot be persisted.",
+      "evidence": [
+        "website/admin-dashboard.js:6389",
+        "website/admin-dashboard.js:6407"
+      ]
+    },
+    {
+      "id": "csv-formula-injection",
+      "severity": "high",
+      "description": "CSV export escaping does not neutralize cells beginning with spreadsheet formula control characters.",
+      "status": "fixed",
+      "rationale": "User-controlled names, descriptions, notes, and contact fields can become executable formulas when an export is opened in spreadsheet software.",
+      "evidence": [
+        "website/admin-dashboard.js:6191"
+      ]
+    },
+    {
+      "id": "dashboard-errors-masked-as-empty",
+      "severity": "medium",
+      "description": "safeRows converts all request failures into empty arrays across operational dashboards.",
+      "status": "fixed",
+      "rationale": "Authorization, schema, and availability failures can be misrepresented as zero sales, zero stock, or no records instead of a degraded/error state.",
+      "evidence": [
+        "website/admin-dashboard.js:2563",
+        "website/admin-dashboard.js:2601"
+      ]
+    },
+    {
+      "id": "modal-keyboard-contract",
+      "severity": "medium",
+      "description": "Admin modals set initial focus but do not trap focus, restore the opener, or implement Escape-to-close behavior.",
+      "status": "fixed",
+      "rationale": "Critical edit and confirmation workflows are not fully keyboard operable against the WCAG 2.2 AA target.",
+      "evidence": [
+        "website/admin-dashboard.js:761",
+        "website/admin-dashboard.js:777"
+      ]
+    }
+  ],
+  "declaredStatic": [],
+  "feedback": [],
+  "agents": []
+}
