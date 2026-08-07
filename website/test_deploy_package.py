@@ -80,6 +80,7 @@ try:
         (ok if parsed.get("siteDomain") == "https://example.test" else fail)("generated config uses deployment domain")
         (ok if parsed.get("founderName") == "Launch Founder" else fail)("generated config uses deployment founder metadata")
         (ok if parsed.get("reservedCount") == 77 else fail)("generated config uses deployment reserved count")
+        (ok if "owner" in parsed.get("adminRoles", []) else fail)("generated config authorizes the owner role")
     else:
         fail("generated config exposes window.ASMR_SAMR_CONFIG")
 

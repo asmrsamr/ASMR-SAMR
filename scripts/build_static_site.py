@@ -86,7 +86,16 @@ def deployment_config() -> dict[str, object]:
     except ValueError:
         config["reservedCount"] = 42
 
-    config["adminRoles"] = ["admin", "manager", "finance", "marketing", "inventory", "production", "support"]
+    config["adminRoles"] = [
+        "owner",
+        "admin",
+        "manager",
+        "finance",
+        "marketing",
+        "inventory",
+        "production",
+        "support",
+    ]
     config["adminRequireAuth"] = True
     return config
 
