@@ -62,7 +62,6 @@ jobs:
           echo "ASMR_SAMR_ASSET_VERSION=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
           echo "CLOUDFLARE_ACCOUNT_ID=${CF_ACCOUNT_ID_SECRET:-$CF_ACCOUNT_ID_VAR}" >> "$GITHUB_ENV"
           echo "CLOUDFLARE_PAGES_PROJECT=${CF_PAGES_PROJECT_VAR:-asmr-samr}" >> "$GITHUB_ENV"
-          echo "CLOUDFLARE_DEPLOY_BRANCH=${DEPLOY_BRANCH_INPUT:-$GITHUB_REF_NAME}" >> "$GITHUB_ENV"
           echo "RUN_LIVE_CHECK=${RUN_LIVE_CHECK_INPUT:-true}" >> "$GITHUB_ENV"
 
       - name: Validate required Cloudflare credentials
@@ -75,6 +74,39 @@ jobs:
             echo "::error::Missing GitHub variable or secret CLOUDFLARE_ACCOUNT_ID"
             exit 1
           fi
+
+      - name: Resolve Cloudflare deployment branch
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          account_id = os.environ["CLOUDFLARE_ACCOUNT_ID"]
+          project = os.environ["CLOUDFLARE_PAGES_PROJECT"]
+          request = urllib.request.Request(
+              f"https://api.cloudflare.com/client/v4/accounts/{account_id}/pages/projects/{project}",
+              headers={"Authorization": f"Bearer {os.environ['CLOUDFLARE_API_TOKEN']}"},
+          )
+          with urllib.request.urlopen(request, timeout=30) as response:
+              payload = json.load(response)
+
+          if not payload.get("success"):
+              raise SystemExit("Cloudflare did not return the Pages project configuration")
+
+          production_branch = str(payload["result"].get("production_branch") or "").strip()
+          if not production_branch:
+              raise SystemExit("Cloudflare Pages project has no configured production branch")
+
+          run_live_check = os.environ.get("RUN_LIVE_CHECK", "true").lower() == "true"
+          requested_branch = os.environ.get("DEPLOY_BRANCH_INPUT", "").strip()
+          deploy_branch = production_branch if run_live_check else (requested_branch or os.environ["GITHUB_REF_NAME"])
+
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
+              env_file.write(f"CLOUDFLARE_DEPLOY_BRANCH={deploy_branch}\n")
+
+          print(f"Deploying branch '{deploy_branch}' (Cloudflare production branch: '{production_branch}')")
+          PY
 
       - name: Check JavaScript syntax
         run: |
