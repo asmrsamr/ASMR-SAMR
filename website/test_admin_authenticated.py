@@ -122,10 +122,11 @@ try:
         row.get("permission") for row in permission_rows
         if isinstance(row, dict) and row.get("permission")
     } if isinstance(permission_rows, list) else set()
-    result("PASS" if status == 200 and (role == "admin" or permissions) else "FAIL", "role permissions load for the signed-in account")
+    privileged = role in {"owner", "admin"}
+    result("PASS" if status == 200 and (privileged or permissions) else "FAIL", "role permissions load for the signed-in account")
 
     probes = {
-        "dashboard": "dashboard_overview?select=total_sales&limit=1",
+        "dashboard": "admin_business_overview?select=total_sales&limit=1",
         "products": "products?select=id&limit=1",
         "inventory": "product_inventory?select=product_id&limit=1",
         "customers": "profiles?select=id&limit=1",
@@ -142,7 +143,7 @@ try:
         "finance": "finance_transactions?select=id&limit=1",
         "costing": "product_cost_components?select=id&limit=1",
     }
-    readable_modules = set(probes) if role == "admin" else {
+    readable_modules = set(probes) if privileged else {
         permission.split(".", 1)[0]
         for permission in permissions
         if permission.endswith((".read", ".write"))
@@ -151,7 +152,7 @@ try:
         status, _, _ = request_json(f"{base_url}/rest/v1/{probes[module]}", "GET", headers)
         result("PASS" if status == 200 else "FAIL", f"{role} can read authorized {module} data")
 
-    if ALLOW_WRITES and (role == "admin" or "marketing.write" in permissions):
+    if ALLOW_WRITES and (privileged or "marketing.write" in permissions):
         qa_name = f"QA-{int(time.time())}"
         create_headers = {**headers, "Prefer": "return=representation"}
         status, created, _ = request_json(
@@ -178,7 +179,7 @@ try:
                 {**headers, "Prefer": "return=minimal"},
             )
             result("PASS" if status == 204 else "FAIL", "transient campaign can be deleted")
-            if role == "admin" or "reports.read" in permissions:
+            if privileged or "reports.read" in permissions:
                 status, audit_rows, _ = request_json(
                     f"{base_url}/rest/v1/audit_logs?entity_type=eq.marketing_campaigns&entity_id=eq.{encoded_id}&select=action&order=created_at.asc",
                     "GET",

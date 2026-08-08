@@ -236,7 +236,11 @@ const handler = withSupabase({ auth: "user" }, async (req, ctx) => {
 
     return jsonResponse(req, { error: "Unknown action" }, 400);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "User operation failed";
+    const message = error instanceof Error
+      ? error.message
+      : error && typeof error === "object" && "message" in error
+        ? String(error.message)
+        : "User operation failed";
     return jsonResponse(req, { error: message }, 400);
   }
 });

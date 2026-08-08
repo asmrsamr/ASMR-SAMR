@@ -68,6 +68,10 @@ check("archiveField: false" in admin_js, "status-only cancellation does not writ
 check("archiveStatus: { field: 'status', value: 'cancelled' }" in admin_js, "orders and planned production can be cancelled safely")
 check("['profiles', 'products', 'ingredients', 'formulas', 'production_batches', 'orders']" in sql, "database blocks hard deletion of protected business records")
 check("audit_row_change" in sql and "audit_logs" in sql, "sensitive CRUD operations have database audit coverage")
+check('name="product_images"' in admin_js and "storeProductImages(savedRecord" in admin_js,
+      "product create and edit forms include managed photo upload")
+check("The product was saved, but its photos need attention" in admin_js,
+      "partial product-image failures preserve the saved product and report recovery guidance")
 
 print("\n[3] Session and role consistency")
 staff_roles = {"owner", "admin", "manager", "finance", "marketing", "inventory", "production", "support"}
@@ -89,6 +93,19 @@ check("^[\\t\\r\\n ]*[=+\\-@]" in admin_js, "CSV cells neutralize spreadsheet fo
 check("recordDataIssue(error)" in admin_js and "admin-data-health" in admin_js, "partial dashboard failures remain visible")
 check("handleModalKeydown" in admin_js and "event.key === 'Escape'" in admin_js, "dialogs support focus containment and Escape")
 check("togglePasswordVisibility" in app_js and "password-visibility-toggle" in admin_js, "password fields provide an accessible visibility control")
+check("function saveOwnProfile" in admin_js and "admin-users" in admin_js,
+      "admin profile identity is editable through authorized data paths")
+check("requestOwnPasswordReset" in admin_js and "openOwnAuditLog" in admin_js,
+      "admin profile provides recovery and account-activity controls")
+check("grant usage on schema private to service_role" in sql
+      and "grant execute on function private.current_role() to service_role" in sql,
+      "profile Edge Function can execute the narrowly scoped private trigger guards")
+check("renderSettings(section || 'overview'" in admin_js and "function renderSettingsOverview" in admin_js,
+      "Settings opens a dedicated control overview instead of Shipping Methods")
+check("e.currentTarget.checkValidity()" in app_js and "e.currentTarget.reportValidity()" in app_js,
+      "customer profile edits use native form validation")
+check('href="#/account/preferences"' in app_js and 'href="#/account/orders"' in app_js,
+      "customer dashboard links expose their real direct routes")
 
 print("\n[5] Responsive sidebar")
 check(".admin-sidebar" in css and "position: fixed" in css, "dashboard sidebar remains fixed")

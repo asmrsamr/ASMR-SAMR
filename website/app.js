@@ -2549,6 +2549,10 @@ function resendOrder(orderId) {
 
 function saveProfileFromForm(e) {
   e.preventDefault();
+  if (!e.currentTarget.checkValidity()) {
+    e.currentTarget.reportValidity();
+    return;
+  }
   const name = (document.getElementById('acct-name') || {}).value || '';
   const phone = (document.getElementById('acct-phone') || {}).value || '';
   const email = (document.getElementById('acct-email') || {}).value || '';
@@ -4573,39 +4577,39 @@ function renderLeftSidebar(ar, activeTab, profile) {
         <div class="user-avatar-circle">${esc((profile.name || (ar ? 'ض' : 'G')).trim()[0].toUpperCase())}</div>
         <h4 class="user-name-title">${profile.name ? esc(profile.name) : (ar ? 'ضيف' : 'Guest')}</h4>
         <p class="user-email-subtitle">${profile.email ? esc(profile.email) : (ar ? 'أضف بياناتك في التفضيلات' : 'Add your details in Preferences')}</p>
-        <a href="#/account" class="view-profile-link" onclick="switchAccountTab(event, 'preferences')">${ar ? 'عرض الملف الشخصي' : 'VIEW PROFILE'}</a>
+        <a href="#/account/preferences" class="view-profile-link" onclick="switchAccountTab(event, 'preferences')">${ar ? 'عرض الملف الشخصي' : 'VIEW PROFILE'}</a>
       </div>
 
       <nav class="sidebar-nav">
-        <a href="#" class="sidebar-nav-item ${activeTab === 'overview' ? 'active' : ''}" onclick="switchAccountTab(event, 'overview')">
+        <a href="#/account" class="sidebar-nav-item ${activeTab === 'overview' ? 'active' : ''}" onclick="switchAccountTab(event, 'overview')">
           <svg class="nav-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
           <span>${ar ? 'لوحة التحكم' : 'OVERVIEW'}</span>
         </a>
-        <a href="#" class="sidebar-nav-item ${activeTab === 'orders' ? 'active' : ''}" onclick="switchAccountTab(event, 'orders')">
+        <a href="#/account/orders" class="sidebar-nav-item ${activeTab === 'orders' ? 'active' : ''}" onclick="switchAccountTab(event, 'orders')">
           <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8h16v10z"/></svg>
           <span>${ar ? 'الطلبات' : 'ORDERS'}</span>
         </a>
-        <a href="#" class="sidebar-nav-item ${activeTab === 'addresses' ? 'active' : ''}" onclick="switchAccountTab(event, 'addresses')">
+        <a href="#/account/addresses" class="sidebar-nav-item ${activeTab === 'addresses' ? 'active' : ''}" onclick="switchAccountTab(event, 'addresses')">
           <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
           <span>${ar ? 'العناوين' : 'ADDRESSES'}</span>
         </a>
-        <a href="#" class="sidebar-nav-item ${activeTab === 'payments' ? 'active' : ''}" onclick="switchAccountTab(event, 'payments')">
+        <a href="#/account/payments" class="sidebar-nav-item ${activeTab === 'payments' ? 'active' : ''}" onclick="switchAccountTab(event, 'payments')">
           <svg class="nav-icon" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
           <span>${ar ? 'طرق الدفع' : 'PAYMENT METHODS'}</span>
         </a>
-        <a href="#" class="sidebar-nav-item ${activeTab === 'wishlist' ? 'active' : ''}" onclick="switchAccountTab(event, 'wishlist')">
+        <a href="#/account/wishlist" class="sidebar-nav-item ${activeTab === 'wishlist' ? 'active' : ''}" onclick="switchAccountTab(event, 'wishlist')">
           <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
           <span>${ar ? 'المفضلة' : 'WISHLIST'}</span>
         </a>
-        <a href="#" class="sidebar-nav-item ${activeTab === 'rewards' ? 'active' : ''}" onclick="switchAccountTab(event, 'rewards')">
+        <a href="#/account/rewards" class="sidebar-nav-item ${activeTab === 'rewards' ? 'active' : ''}" onclick="switchAccountTab(event, 'rewards')">
           <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
           <span>${ar ? 'المكافآت' : 'REWARDS'}</span>
         </a>
-        <a href="#" class="sidebar-nav-item ${activeTab === 'preferences' ? 'active' : ''}" onclick="switchAccountTab(event, 'preferences')">
+        <a href="#/account/preferences" class="sidebar-nav-item ${activeTab === 'preferences' ? 'active' : ''}" onclick="switchAccountTab(event, 'preferences')">
           <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
           <span>${ar ? 'التفضيلات' : 'PREFERENCES'}</span>
         </a>
-        <a href="#" class="sidebar-nav-item ${activeTab === 'notifications' ? 'active' : ''}" onclick="switchAccountTab(event, 'notifications')">
+        <a href="#/account/notifications" class="sidebar-nav-item ${activeTab === 'notifications' ? 'active' : ''}" onclick="switchAccountTab(event, 'notifications')">
           <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
           <span>${ar ? 'الإشعارات' : 'NOTIFICATIONS'}</span>
         </a>
@@ -4680,7 +4684,7 @@ function renderRightSidebar(ar, profile, orders) {
       <div class="acct-card-light" style="background-color: transparent; border: none; padding: 0;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
           <h3 class="quick-access-title" style="margin:0;">${recentOrdersLabel}</h3>
-          <a href="#" style="font-size:0.75rem; color:var(--gold); text-decoration:underline;" onclick="switchAccountTab(event, 'orders')">${viewAllOrdersLabel}</a>
+          <a href="#/account/orders" style="font-size:0.75rem; color:var(--gold); text-decoration:underline;" onclick="switchAccountTab(event, 'orders')">${viewAllOrdersLabel}</a>
         </div>
         <div class="recent-orders-list">
           ${recentOrdersListHtml || `<p style="font-size:0.8rem; color:var(--taupe);">${ar ? 'لا توجد طلبات سابقة.' : 'No recent orders.'}</p>`}
@@ -4744,28 +4748,28 @@ function renderAccount() {
       <div class="quick-access-section">
         <h3 class="quick-access-title">${ar ? 'وصول سريع' : 'QUICK ACCESS'}</h3>
         <div class="quick-access-grid">
-          <a href="#" class="quick-access-card" onclick="switchAccountTab(event, 'orders')">
+          <a href="#/account/orders" class="quick-access-card" onclick="switchAccountTab(event, 'orders')">
             <svg class="quick-card-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8h16v10z"/></svg>
             <h4 class="quick-card-title">${ar ? 'عرض الطلبات' : 'VIEW ORDERS'}</h4>
             <p class="quick-card-desc">${ar ? 'تتبع شحناتك، الإرجاع، أو الشراء مرة أخرى.' : 'Track, return or buy again.'}</p>
             <span class="quick-card-arrow">&rarr;</span>
           </a>
           
-          <a href="#" class="quick-access-card" onclick="switchAccountTab(event, 'addresses')">
+          <a href="#/account/addresses" class="quick-access-card" onclick="switchAccountTab(event, 'addresses')">
             <svg class="quick-card-icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
             <h4 class="quick-card-title">${ar ? 'العناوين' : 'ADDRESSES'}</h4>
             <p class="quick-card-desc">${ar ? 'إدارة عناوين الشحن والتوصيل.' : 'Manage your shipping addresses.'}</p>
             <span class="quick-card-arrow">&rarr;</span>
           </a>
           
-          <a href="#" class="quick-access-card" onclick="switchAccountTab(event, 'payments')">
+          <a href="#/account/payments" class="quick-access-card" onclick="switchAccountTab(event, 'payments')">
             <svg class="quick-card-icon" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
             <h4 class="quick-card-title">${ar ? 'طرق الدفع' : 'LAUNCH PAYMENT'}</h4>
             <p class="quick-card-desc">${ar ? 'مراجعة طرق الدفع اليدوية عبر واتساب.' : 'Review manual WhatsApp payment options.'}</p>
             <span class="quick-card-arrow">&rarr;</span>
           </a>
           
-          <a href="#" class="quick-access-card" onclick="switchAccountTab(event, 'wishlist')">
+          <a href="#/account/wishlist" class="quick-access-card" onclick="switchAccountTab(event, 'wishlist')">
             <svg class="quick-card-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
             <h4 class="quick-card-title">${ar ? 'المفضلة' : 'WISHLIST'}</h4>
             <p class="quick-card-desc">${ar ? 'عطورك المفضلة، المحفوظة لوقت لاحق.' : 'Your favorite scents, saved for later.'}</p>
@@ -4960,27 +4964,27 @@ function renderAccount() {
         <form onsubmit="saveProfileFromForm(event)" novalidate style="display: flex; flex-direction: column; gap: 1rem;">
           <div>
             <label class="account-label" for="acct-name" style="font-size:0.8rem; color:var(--gold); text-transform:uppercase; margin-bottom:0.4rem; display:block;">${t('acct_name')}</label>
-            <input type="text" id="acct-name" class="form-input" value="${(profile.name || '').replace(/"/g, '&quot;')}" autocomplete="name" placeholder="e.g. Yousif">
+            <input type="text" id="acct-name" class="form-input" value="${esc(profile.name || '')}" autocomplete="name" maxlength="160" placeholder="e.g. Yousif">
           </div>
           
           <div>
             <label class="account-label" for="acct-phone" style="font-size:0.8rem; color:var(--gold); text-transform:uppercase; margin-bottom:0.4rem; display:block;">${t('acct_phone')}</label>
-            <input type="tel" id="acct-phone" class="form-input" value="${(profile.phone || '').replace(/"/g, '&quot;')}" autocomplete="tel" dir="ltr" style="text-align: start;" placeholder="e.g. +966 50 000 0000">
+            <input type="tel" id="acct-phone" class="form-input" value="${esc(profile.phone || '')}" autocomplete="tel" maxlength="40" dir="ltr" style="text-align: start;" placeholder="e.g. +966 50 000 0000">
           </div>
 
           <div>
             <label class="account-label" for="acct-email" style="font-size:0.8rem; color:var(--gold); text-transform:uppercase; margin-bottom:0.4rem; display:block;">${ar ? 'البريد الإلكتروني' : 'Email Address'}</label>
-            <input type="email" id="acct-email" class="form-input" value="${(profile.email || '').replace(/"/g, '&quot;')}" autocomplete="email" placeholder="e.g. client@brand.com">
+            <input type="email" id="acct-email" class="form-input" value="${esc(profile.email || '')}" autocomplete="email" maxlength="254" placeholder="e.g. client@brand.com">
           </div>
 
           <div>
             <label class="account-label" for="acct-city" style="font-size:0.8rem; color:var(--gold); text-transform:uppercase; margin-bottom:0.4rem; display:block;">${ar ? 'المدينة' : 'City'}</label>
-            <input type="text" id="acct-city" class="form-input" value="${(profile.city || '').replace(/"/g, '&quot;')}" placeholder="e.g. Riyadh">
+            <input type="text" id="acct-city" class="form-input" value="${esc(profile.city || '')}" maxlength="120" placeholder="e.g. Riyadh">
           </div>
 
           <div>
             <label class="account-label" for="acct-address" style="font-size:0.8rem; color:var(--gold); text-transform:uppercase; margin-bottom:0.4rem; display:block;">${ar ? 'عنوان التوصيل (الحي، الشارع)' : 'Delivery Address (District, Street)'}</label>
-            <input type="text" id="acct-address" class="form-input" value="${(profile.address || '').replace(/"/g, '&quot;')}" placeholder="e.g. Al Olaya, Tahlia St.">
+            <input type="text" id="acct-address" class="form-input" value="${esc(profile.address || '')}" maxlength="500" placeholder="e.g. Al Olaya, Tahlia St.">
           </div>
 
           <div>

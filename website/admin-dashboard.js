@@ -101,7 +101,8 @@
     flashTimer: 0,
     searchTimer: 0,
     sessionGuardStarted: false,
-    lastSessionTouch: 0
+    lastSessionTouch: 0,
+    productFormPreviewUrls: []
   };
 
   function esc(value) {
@@ -771,18 +772,96 @@
 
   function openProfile() {
     if (!runtime.profile) return;
-    openRecordModal('Admin profile', [
-      ['Name', runtime.profile.full_name],
-      ['Email', runtime.profile.email],
-      ['Phone', runtime.profile.phone],
-      ['Role', titleCase(runtime.profile.role)],
-      ['Status', titleCase(runtime.profile.status)],
-      ['Membership', titleCase(runtime.profile.membership_tier)],
-      ['Reward points', runtime.profile.points],
-      ['Last login', formatDate(runtime.profile.last_login_at)],
-      ['Last activity', formatDate(runtime.profile.last_activity_at)],
-      ['Created', formatDate(runtime.profile.created_at)]
-    ]);
+    openModal(`
+      <span class="admin-eyebrow">Account profile</span>
+      <h2>${esc(runtime.profile.full_name || runtime.profile.email || 'Admin profile')}</h2>
+      <form class="admin-product-editor-form" onsubmit="ASMRSAMRAdmin.saveOwnProfile(event)" novalidate>
+        <div class="admin-editor-grid">
+          <label><span>Full name *</span><input name="full_name" value="${attr(runtime.profile.full_name)}" autocomplete="name" maxlength="160" required></label>
+          <label><span>Email *</span><input name="email" type="email" value="${attr(runtime.profile.email)}" autocomplete="email" maxlength="254" required ${isPrivilegedAdmin() ? '' : 'disabled'}>${isPrivilegedAdmin() ? '' : '<small>Only an owner or administrator can change a staff login email.</small>'}</label>
+          <label><span>Phone</span><input name="phone" type="tel" value="${attr(runtime.profile.phone)}" autocomplete="tel" maxlength="40"></label>
+          <label><span>Role</span><input value="${attr(titleCase(runtime.profile.role))}" disabled></label>
+          <label><span>Account status</span><input value="${attr(titleCase(runtime.profile.status))}" disabled></label>
+          <label><span>Membership</span><input value="${attr(titleCase(runtime.profile.membership_tier || 'ivory'))}" disabled></label>
+        </div>
+        <div class="admin-profile-facts" aria-label="Account activity">
+          <div><span>Reward points</span><strong>${esc(formatNumber(runtime.profile.points, 0))}</strong></div>
+          <div><span>Last login</span><strong>${esc(formatDate(runtime.profile.last_login_at))}</strong></div>
+          <div><span>Last activity</span><strong>${esc(formatDate(runtime.profile.last_activity_at))}</strong></div>
+          <div><span>Account created</span><strong>${esc(formatDate(runtime.profile.created_at))}</strong></div>
+        </div>
+        <p class="admin-form-error" id="admin-own-profile-error" hidden></p>
+        <div class="admin-editor-actions">
+          <button type="button" class="admin-secondary-btn" onclick="ASMRSAMRAdmin.requestOwnPasswordReset()">Send password-reset email</button>
+          ${tabVisibleForCurrentRole('audit') ? '<button type="button" class="admin-secondary-btn" onclick="ASMRSAMRAdmin.openOwnAuditLog()">View account activity</button>' : ''}
+          <button type="button" class="admin-secondary-btn" onclick="ASMRSAMRAdmin.closeModal()">Cancel</button>
+          <button type="submit" class="admin-primary-btn">Save profile</button>
+        </div>
+      </form>
+    `, 'Edit admin profile');
+  }
+
+  async function saveOwnProfile(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const errorNode = document.getElementById('admin-own-profile-error');
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    const data = new FormData(form);
+    try {
+      setBusy(true);
+      const identity = {
+        full_name: String(data.get('full_name') || '').trim(),
+        phone: String(data.get('phone') || '').trim()
+      };
+      const result = isPrivilegedAdmin()
+        ? await edge('admin-users', {
+            action: 'update',
+            id: runtime.profile.id,
+            ...identity,
+            email: String(data.get('email') || '').trim(),
+            role: runtime.profile.role,
+            status: runtime.profile.status,
+            membership_tier: runtime.profile.membership_tier || 'ivory'
+          })
+        : await db(`profiles?id=eq.${encodeURIComponent(runtime.profile.id)}`, {
+            method: 'PATCH',
+            headers: { Prefer: 'return=representation' },
+            body: identity
+          });
+      const updatedProfile = Array.isArray(result.data) ? result.data[0] : result.data;
+      runtime.profile = { ...runtime.profile, ...(updatedProfile || {}) };
+      updateIdentity(runtime.profile);
+      closeModal();
+      announce('Profile updated securely.');
+    } catch (error) {
+      if (errorNode) {
+        errorNode.hidden = false;
+        errorNode.textContent = errorMessage(error);
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function requestOwnPasswordReset() {
+    if (!runtime.profile) return;
+    confirmAction({
+      title: 'Send password-reset email',
+      message: `Supabase will send a one-time recovery link to ${runtime.profile.email}. No password is exposed in the dashboard.`,
+      confirmLabel: 'Send reset link',
+      action: () => isPrivilegedAdmin()
+        ? edge('admin-users', { action: 'password_reset', id: runtime.profile.id })
+        : request('/auth/v1/recover', { method: 'POST', public: true, body: { email: runtime.profile.email } }),
+      success: 'Password-reset email requested.'
+    });
+  }
+
+  function openOwnAuditLog() {
+    closeModal();
+    window.location.hash = '#/admin/audit';
   }
 
   function openModal(content, label = 'Dialog') {
@@ -814,6 +893,8 @@
     document.removeEventListener('keydown', handleModalKeydown);
     runtime.confirmation = null;
     runtime.oneTimeSecret = null;
+    runtime.productFormPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+    runtime.productFormPreviewUrls = [];
     const opener = runtime.modalOpener;
     runtime.modalOpener = null;
     if (opener && opener.isConnected) window.setTimeout(() => opener.focus(), 0);
@@ -1230,6 +1311,55 @@
       ${field.maxlength ? `maxlength="${field.maxlength}"` : ''}>`;
   }
 
+  function productFormMedia(existing) {
+    const images = Array.isArray(existing && existing.product_images) ? existing.product_images : [];
+    return `
+      <section class="admin-product-form-media admin-editor-wide" aria-labelledby="admin-product-media-title">
+        <div class="admin-panel-heading">
+          <div>
+            <span class="admin-eyebrow">Product media</span>
+            <h3 id="admin-product-media-title">${existing ? 'Add product photos' : 'Product photos'}</h3>
+            <p>${existing ? 'Attach more product photography while saving these product changes.' : 'Select the product photography now; the files upload immediately after the product record is created.'}</p>
+          </div>
+          ${existing && images.length ? `<span class="admin-status-chip confirmed">${esc(images.length)} attached</span>` : ''}
+        </div>
+        <label class="admin-product-photo-picker" for="admin-product-images">
+          <span>Choose photos</span>
+          <input id="admin-product-images" type="file" name="product_images"
+                 accept="image/jpeg,image/png,image/webp,image/avif" multiple
+                 onchange="ASMRSAMRAdmin.previewProductFormImages(this)">
+          <small>JPEG, PNG, WebP, or AVIF. Maximum 8 MB per image. The first new image becomes primary when no primary image exists.</small>
+        </label>
+        <div class="admin-form-media-grid" id="admin-product-form-media-preview" aria-live="polite">
+          ${images.slice().sort((left, right) => Number(left.sort_order || 0) - Number(right.sort_order || 0)).map((image) => {
+            const source = safeUrl(image.public_url || image.fallback_url);
+            return source ? `<figure><img src="${attr(source)}" alt="${attr(image.alt_text || existing.name_en || 'Product photo')}"><figcaption>${image.is_primary ? 'Primary' : esc(image.title || 'Attached')}</figcaption></figure>` : '';
+          }).join('')}
+        </div>
+        <div class="admin-upload-progress" id="admin-product-form-upload-progress" aria-live="polite"></div>
+      </section>
+    `;
+  }
+
+  function previewProductFormImages(input) {
+    runtime.productFormPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+    runtime.productFormPreviewUrls = [];
+    const preview = document.getElementById('admin-product-form-media-preview');
+    if (!preview) return;
+    const existing = runtime.activeForm && runtime.activeForm.existing;
+    const existingImages = Array.isArray(existing && existing.product_images) ? existing.product_images : [];
+    const existingHtml = existingImages.slice().sort((left, right) => Number(left.sort_order || 0) - Number(right.sort_order || 0)).map((image) => {
+      const source = safeUrl(image.public_url || image.fallback_url);
+      return source ? `<figure><img src="${attr(source)}" alt="${attr(image.alt_text || existing.name_en || 'Product photo')}"><figcaption>${image.is_primary ? 'Primary' : esc(image.title || 'Attached')}</figcaption></figure>` : '';
+    }).join('');
+    const selectedHtml = Array.from(input.files || []).map((file, index) => {
+      const source = URL.createObjectURL(file);
+      runtime.productFormPreviewUrls.push(source);
+      return `<figure class="is-new"><img src="${attr(source)}" alt="Selected product photo preview"><figcaption>${index === 0 && !existingImages.some((image) => image.is_primary) ? 'New primary' : esc(file.name)}</figcaption></figure>`;
+    }).join('');
+    preview.innerHTML = existingHtml + selectedHtml;
+  }
+
   async function openGenericForm(key, rowIndex) {
     const config = runtime.configs[key];
     if (!config || !canWrite(config) || config.readOnly) return;
@@ -1254,10 +1384,11 @@
             </label>
           `).join('')}
         </div>
+        ${config.key === 'products' ? productFormMedia(existing) : ''}
         <p class="admin-form-error" id="admin-form-error" hidden></p>
         <div class="admin-editor-actions">
           <button type="button" class="admin-secondary-btn" onclick="ASMRSAMRAdmin.closeModal()">Cancel</button>
-          <button type="submit" class="admin-primary-btn">${existing ? 'Save changes' : 'Create'}</button>
+          <button type="submit" class="admin-primary-btn">${existing ? 'Save product' : (config.key === 'products' ? 'Create product' : 'Create')}</button>
         </div>
       </form>
     `, existing ? `Edit ${config.title}` : `Add ${config.title}`);
@@ -1316,27 +1447,61 @@
 
     const config = active.config;
     const formError = document.getElementById('admin-form-error');
+    const productImageFiles = config.key === 'products' && form.elements.product_images
+      ? Array.from(form.elements.product_images.files || [])
+      : [];
+    const productImageError = validateProductImageFiles(productImageFiles);
+    if (productImageError) {
+      if (formError) {
+        formError.hidden = false;
+        formError.textContent = productImageError;
+      }
+      return;
+    }
     try {
       setBusy(true);
       Object.assign(payload, config.fixedPayload || {});
       if (config.beforeSave) await config.beforeSave(payload, active.existing);
       if (!active.existing && config.createdBy) payload[config.createdBy] = runtime.profile.id;
       if (config.updatedBy) payload[config.updatedBy] = runtime.profile.id;
+      let result;
       if (active.existing) {
-        await db(`${config.table}?${recordFilter(config, active.existing)}`, {
+        result = await db(`${config.table}?${recordFilter(config, active.existing)}`, {
           method: 'PATCH',
           headers: { Prefer: 'return=representation' },
           body: payload
         });
       } else {
-        await db(config.table, {
+        result = await db(config.table, {
           method: 'POST',
           headers: { Prefer: 'return=representation' },
           body: payload
         });
       }
+      const returned = Array.isArray(result.data) ? result.data[0] : result.data;
+      const savedRecord = { ...(active.existing || {}), ...payload, ...(returned || {}) };
+      if (productImageFiles.length) {
+        const progress = document.getElementById('admin-product-form-upload-progress');
+        try {
+          await storeProductImages(savedRecord, productImageFiles, progress, active.existing && active.existing.product_images);
+        } catch (imageError) {
+          active.existing = savedRecord;
+          if (form.elements.product_images) form.elements.product_images.value = '';
+          runtime.productFormPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+          runtime.productFormPreviewUrls = [];
+          if (formError) {
+            formError.hidden = false;
+            formError.textContent = `The product was saved, but its photos need attention: ${errorMessage(imageError)}`;
+          }
+          announce('Product saved, but one or more photos did not upload.', 'error');
+          if (document.getElementById('admin-crud-results')) await loadGeneric(config);
+          return;
+        }
+      }
       closeModal();
-      announce(active.existing ? 'Changes saved.' : 'Record created.');
+      announce(config.key === 'products'
+        ? `Product ${active.existing ? 'updated' : 'created'}${productImageFiles.length ? ` with ${productImageFiles.length} photo${productImageFiles.length === 1 ? '' : 's'}` : ''}.`
+        : (active.existing ? 'Changes saved.' : 'Record created.'));
       if (document.getElementById('admin-crud-results')) await loadGeneric(config);
       else await reloadCurrentPage();
     } catch (error) {
@@ -2631,7 +2796,7 @@
     }
     if (tab === 'roles') return renderRoles(root);
     if (tab === 'reports') return renderReports(root);
-    if (tab === 'settings') return renderSettings(section || 'shipping', root);
+    if (tab === 'settings') return renderSettings(section || 'overview', root);
     if (tab === 'status') return renderSystemStatus(root);
     if (genericMap[tab]) return renderGeneric(genericMap[tab], root);
     root.innerHTML = emptyState('Module unavailable', 'This route is not connected to a dashboard module.');
@@ -3444,11 +3609,63 @@
   }
 
   const SETTINGS_TABS = [
+    ['overview', 'General'],
     ['shipping', 'Shipping'],
     ['taxes', 'Taxes'],
     ['locations', 'Locations'],
     ['security', 'API Keys']
   ];
+
+  function renderSettingsOverview(root) {
+    const profile = runtime.profile || {};
+    root.innerHTML = `
+      <div class="admin-settings-grid">
+        <article class="admin-panel admin-settings-card">
+          <div class="admin-panel-heading">
+            <div><span class="admin-eyebrow">Account</span><h2>Profile &amp; access</h2><p>Maintain your administrator identity and recovery controls.</p></div>
+          </div>
+          <dl class="admin-settings-summary">
+            <div><dt>Signed in as</dt><dd>${esc(profile.full_name || profile.email || 'Administrator')}</dd></div>
+            <div><dt>Role</dt><dd>${esc(titleCase(profile.role))}</dd></div>
+            <div><dt>Status</dt><dd>${esc(titleCase(profile.status))}</dd></div>
+          </dl>
+          <div class="admin-settings-actions">
+            <button type="button" class="admin-primary-btn" onclick="ASMRSAMRAdmin.openProfile()">Edit profile</button>
+            <button type="button" class="admin-secondary-btn" onclick="ASMRSAMRAdmin.requestOwnPasswordReset()">Password recovery</button>
+          </div>
+        </article>
+        <article class="admin-panel admin-settings-card">
+          <div class="admin-panel-heading">
+            <div><span class="admin-eyebrow">Commerce</span><h2>Delivery &amp; tax</h2><p>Configure the controls used by fulfilment, checkout, and inventory operations.</p></div>
+          </div>
+          <div class="admin-settings-actions">
+            <a class="admin-primary-btn" href="#/admin/settings/shipping">Shipping methods</a>
+            <a class="admin-secondary-btn" href="#/admin/settings/taxes">Tax rates</a>
+            <a class="admin-secondary-btn" href="#/admin/settings/locations">Inventory locations</a>
+          </div>
+        </article>
+        <article class="admin-panel admin-settings-card">
+          <div class="admin-panel-heading">
+            <div><span class="admin-eyebrow">Security</span><h2>Access controls</h2><p>Manage credentials, staff permissions, and sensitive activity records.</p></div>
+          </div>
+          <div class="admin-settings-actions">
+            ${isPrivilegedAdmin() ? '<a class="admin-primary-btn" href="#/admin/settings/security">API keys</a><a class="admin-secondary-btn" href="#/admin/users">User management</a>' : ''}
+            ${tabVisibleForCurrentRole('roles') ? '<a class="admin-secondary-btn" href="#/admin/roles">Roles &amp; permissions</a>' : ''}
+            ${tabVisibleForCurrentRole('audit') ? '<a class="admin-secondary-btn" href="#/admin/audit">Audit log</a>' : ''}
+          </div>
+        </article>
+        <article class="admin-panel admin-settings-card">
+          <div class="admin-panel-heading">
+            <div><span class="admin-eyebrow">System</span><h2>Operational status</h2><p>Check the authenticated session, database modules, and protected storage.</p></div>
+          </div>
+          <div class="admin-settings-actions">
+            <a class="admin-primary-btn" href="#/admin/status">Open system status</a>
+            <a class="admin-secondary-btn" href="#/admin/reports">Reports &amp; exports</a>
+          </div>
+        </article>
+      </div>
+    `;
+  }
 
   function settingsConfig(section) {
     if (section === 'shipping') {
@@ -3543,13 +3760,15 @@
   }
 
   async function renderSettings(section, root) {
-    if (!SETTINGS_TABS.some(([key]) => key === section)) section = 'shipping';
+    const availableTabs = SETTINGS_TABS.filter(([key]) => key !== 'security' || isPrivilegedAdmin());
+    if (!availableTabs.some(([key]) => key === section)) section = 'overview';
     root.innerHTML = `
-      ${sectionTabs('settings', section, SETTINGS_TABS)}
+      ${sectionTabs('settings', section, availableTabs)}
       <div id="admin-submodule-root"></div>
     `;
     const child = document.getElementById('admin-submodule-root');
     if (!child) return;
+    if (section === 'overview') return renderSettingsOverview(child);
     if (section === 'security') return renderApiKeys(child);
     return renderGeneric(settingsConfig(section), child);
   }
@@ -3851,6 +4070,65 @@
     });
   }
 
+  function validateProductImageFiles(files) {
+    const allowed = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif']);
+    const invalid = files.find((file) => !allowed.has(file.type) || file.size > 8 * 1024 * 1024);
+    return invalid ? `${invalid.name} is not a supported image under 8 MB.` : '';
+  }
+
+  async function storeProductImages(product, files, progress, attachedImages = []) {
+    if (!product || !product.id || !files.length) return [];
+    const validationError = validateProductImageFiles(files);
+    if (validationError) throw new Error(validationError);
+    const existing = Array.isArray(attachedImages) ? attachedImages : [];
+    const hasPrimary = existing.some((image) => image.is_primary);
+    let position = existing.reduce((highest, image) => Math.max(highest, Number(image.sort_order) || 0), -1) + 1;
+    const created = [];
+    for (let index = 0; index < files.length; index += 1) {
+      const file = files[index];
+      const path = `${product.id}/${crypto.randomUUID()}-${cleanFileName(file.name)}`;
+      let objectUploaded = false;
+      try {
+        await uploadStorageFile('product-images', path, file, (percent) => {
+          if (progress) {
+            progress.innerHTML = `<span>Uploading ${esc(file.name)} (${index + 1} of ${files.length}) - ${percent}%</span><i style="width:${percent}%"></i>`;
+          }
+        });
+        objectUploaded = true;
+        const dimensions = await imageDimensions(file);
+        const config = getConfig();
+        const result = await db('product_images', {
+          method: 'POST',
+          headers: { Prefer: 'return=representation' },
+          body: {
+            product_id: product.id,
+            storage_bucket: 'product-images',
+            storage_path: path,
+            public_url: `${config.url}/storage/v1/object/public/product-images/${path.split('/').map(encodeURIComponent).join('/')}`,
+            alt_text: product.name_en || product.id,
+            title: file.name.replace(/\.[^.]+$/, ''),
+            mime_type: file.type,
+            file_size: file.size,
+            width: dimensions.width,
+            height: dimensions.height,
+            is_primary: !hasPrimary && index === 0,
+            sort_order: position,
+            created_by: runtime.profile.id
+          }
+        });
+        created.push(...(Array.isArray(result.data) ? result.data : [result.data]).filter(Boolean));
+        position += 1;
+      } catch (error) {
+        if (objectUploaded) {
+          await request(storageObjectPath('product-images', path), { method: 'DELETE' }).catch(() => null);
+        }
+        throw error;
+      }
+    }
+    if (progress) progress.innerHTML = `<span>${files.length} photo${files.length === 1 ? '' : 's'} uploaded successfully.</span>`;
+    return created;
+  }
+
   async function openImages(index) {
     const product = runtime.rows.products && runtime.rows.products[index];
     if (!product) return;
@@ -3905,10 +4183,9 @@
     const files = Array.from(event.currentTarget.elements.images.files || []);
     const progress = document.getElementById('admin-upload-progress');
     if (!runtime.mediaProduct || !files.length) return;
-    const allowed = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif']);
-    const invalid = files.find((file) => !allowed.has(file.type) || file.size > 8 * 1024 * 1024);
-    if (invalid) {
-      announce(`${invalid.name} is not a supported image under 8 MB.`, 'error');
+    const validationError = validateProductImageFiles(files);
+    if (validationError) {
+      announce(validationError, 'error');
       return;
     }
     try {
@@ -6570,10 +6847,14 @@
     logout,
     toggleSidebar,
     openProfile,
+    saveOwnProfile,
+    requestOwnPasswordReset,
+    openOwnAuditLog,
     closeModal,
     backdropClose,
     runConfirmation,
     openGenericForm,
+    previewProductFormImages,
     saveGeneric,
     viewGeneric,
     deleteGeneric,

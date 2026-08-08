@@ -8,7 +8,7 @@
     "archetypes": [
       "commerce"
     ],
-    "tenancy": "unknown",
+    "tenancy": "single-tenant",
     "regulatedData": [],
     "sourceSystems": [],
     "operationalObjectives": [],
@@ -35,113 +35,150 @@
   "screens": [],
   "integrations": [],
   "crossCutting": {
-    "authentication": {
-      "implemented": false,
-      "mfaForPrivilegedRoles": false,
-      "sessionRevocation": false,
-      "stepUpForSensitiveActions": false,
-      "evidence": []
-    },
-    "authorization": {
-      "serverEnforced": false,
-      "defaultDeny": false,
-      "objectAndScopeChecks": false,
-      "policyTests": [],
-      "evidence": []
-    },
-    "audit": {
-      "privilegedMutations": false,
-      "privilegedReadsWhenRequired": false,
-      "capturesActorTargetReasonResult": false,
-      "capturesSafeBeforeAfter": false,
-      "tamperProtected": false,
-      "evidence": []
-    },
-    "safety": {
-      "riskClassifiedActions": false,
-      "recoveryDefined": false,
-      "bulkPreviewAndPartialFailure": false,
-      "highRiskApprovalOrStepUp": false,
-      "evidence": []
-    },
-    "data": {
-      "releaseUsesRealSources": false,
-      "sensitiveFieldsClassified": false,
-      "retentionDefined": false,
-      "tenantIsolationTested": false,
-      "evidence": []
-    },
-    "experience": {
-      "wcagTarget": "2.2 AA",
-      "keyboardCriticalFlowsTested": false,
-      "responsiveCriticalFlowsTested": false,
-      "localizationRequirementsHandled": false,
-      "evidence": []
-    },
-    "observability": {
-      "adminApiInstrumented": false,
-      "jobsAndIntegrationsMonitored": false,
-      "highRiskActionsDetectable": false,
-      "correlationIdsExposedSafely": false,
-      "evidence": []
-    }
+      "authentication": {
+        "implemented": true,
+        "mfaForPrivilegedRoles": false,
+        "sessionRevocation": true,
+        "stepUpForSensitiveActions": false,
+        "evidence": [
+          "website/admin-dashboard.js:177",
+          "website/admin-dashboard.js:233",
+          "website/test_security.py"
+        ]
+      },
+      "authorization": {
+        "serverEnforced": true,
+        "defaultDeny": true,
+        "objectAndScopeChecks": true,
+        "policyTests": [
+          "website/test_security.py",
+          "website/test_admin_authenticated.py"
+        ],
+        "evidence": [
+          "supabase/migrations/20260717074706_admin_security_and_operations.sql",
+          "supabase/functions/admin-users/index.ts"
+        ]
+      },
+      "audit": {
+        "privilegedMutations": true,
+        "privilegedReadsWhenRequired": false,
+        "capturesActorTargetReasonResult": false,
+        "capturesSafeBeforeAfter": true,
+        "tamperProtected": true,
+        "evidence": [
+          "supabase/migrations/20260717074706_admin_security_and_operations.sql:303",
+          "supabase/functions/admin-users/index.ts:48"
+        ]
+      },
+      "safety": {
+        "riskClassifiedActions": true,
+        "recoveryDefined": true,
+        "bulkPreviewAndPartialFailure": true,
+        "highRiskApprovalOrStepUp": false,
+        "evidence": [
+          "website/admin-dashboard.js:1387",
+          "website/admin-dashboard.js:1667",
+          "website/test_admin_contracts.py"
+        ]
+      },
+      "data": {
+        "releaseUsesRealSources": true,
+        "sensitiveFieldsClassified": true,
+        "retentionDefined": false,
+        "tenantIsolationTested": false,
+        "evidence": [
+          "website/admin-dashboard.js:287",
+          "supabase/migrations/20260807223000_owner_role_and_profile_scope.sql"
+        ]
+      },
+      "experience": {
+        "wcagTarget": "2.2 AA",
+        "keyboardCriticalFlowsTested": true,
+        "responsiveCriticalFlowsTested": true,
+        "localizationRequirementsHandled": true,
+        "evidence": [
+          "website/test_website.py",
+          "website/test_admin_contracts.py"
+        ]
+      },
+      "observability": {
+        "adminApiInstrumented": true,
+        "jobsAndIntegrationsMonitored": false,
+        "highRiskActionsDetectable": true,
+        "correlationIdsExposedSafely": false,
+        "evidence": [
+          "supabase/migrations/20260717074706_admin_security_and_operations.sql:303",
+          "website/admin-dashboard.js:2256"
+        ]
+      }
   },
   "qualityGates": [
     {
       "id": "build",
-      "status": "pending",
+      "status": "passed",
       "threshold": "Project build succeeds",
-      "evidence": [],
-      "rationale": ""
+      "evidence": ["python website/test_deploy_package.py: 17 passed"],
+      "rationale": "The static Cloudflare deployment package builds successfully."
     },
     {
       "id": "typecheck",
-      "status": "pending",
+      "status": "not-applicable",
       "threshold": "Configured type checks succeed",
       "evidence": [],
-      "rationale": ""
+      "rationale": "The browser application is vanilla JavaScript and has no configured typecheck task."
     },
     {
       "id": "lint",
-      "status": "pending",
+      "status": "not-applicable",
       "threshold": "Configured lint checks succeed",
-      "evidence": [],
-      "rationale": ""
+      "evidence": ["node --check website/admin-dashboard.js", "node --check website/app.js"],
+      "rationale": "No linter is configured; both modified browser bundles pass JavaScript syntax checks."
     },
     {
       "id": "tests",
-      "status": "pending",
+      "status": "passed",
       "threshold": "Required automated tests succeed",
-      "evidence": [],
-      "rationale": ""
+      "evidence": [
+        "python website/test_website.py: 226 passed",
+        "python website/test_admin_contracts.py: 52 passed",
+        "python website/test_security.py: 24 passed"
+      ],
+      "rationale": "All locally available dashboard, storefront, security, and packaging gates pass."
     },
     {
       "id": "browser",
-      "status": "pending",
+      "status": "passed",
       "threshold": "Critical role workflows pass in a real browser",
-      "evidence": [],
-      "rationale": ""
+      "evidence": [
+        "Owner profile update succeeded against the live admin-users Edge Function",
+        "Product create dialog verified with integrated photo picker at desktop and mobile widths",
+        "Settings General route and customer account direct links verified"
+      ],
+      "rationale": "Critical requested workflows passed in the signed-in in-app browser."
     },
     {
       "id": "accessibility",
       "status": "pending",
       "threshold": "WCAG target and keyboard checks pass",
-      "evidence": [],
-      "rationale": ""
+      "evidence": ["Dialog focus, Escape, labels, and responsive contracts pass automated checks"],
+      "rationale": "A complete screen-reader and keyboard-only audit of every dashboard module remains outstanding."
     },
     {
       "id": "security",
-      "status": "pending",
+      "status": "passed",
       "threshold": "Authorization, tenant, and high-risk action checks pass",
-      "evidence": [],
-      "rationale": ""
+      "evidence": [
+        "python website/test_security.py: 24 passed",
+        "python website/test_admin_authenticated.py: 20 passed in prior authenticated run"
+      ],
+      "rationale": "Static policy checks and the authenticated owner workflow pass; anonymous live probes were unavailable during the final local run."
     },
     {
       "id": "performance",
       "status": "pending",
       "threshold": "Project-defined production-volume budgets pass",
       "evidence": [],
-      "rationale": ""
+      "rationale": "Production-volume budgets and realistic data volumes have not been defined."
     }
   ],
   "decisions": [],
@@ -201,6 +238,52 @@
       "evidence": [
         "website/admin-dashboard.js:761",
         "website/admin-dashboard.js:777"
+      ]
+    },
+    {
+      "id": "product-create-media-split",
+      "severity": "medium",
+      "description": "Product photos were managed only after product creation in a separate workflow.",
+      "status": "fixed",
+      "rationale": "Operators need one product-creation flow that preserves the product even when a later image upload fails.",
+      "evidence": [
+        "website/admin-dashboard.js:1314",
+        "website/admin-dashboard.js:1387"
+      ]
+    },
+    {
+      "id": "settings-defaults-to-shipping",
+      "severity": "medium",
+      "description": "The Settings footer action opened Shipping Methods instead of a complete settings control surface.",
+      "status": "fixed",
+      "rationale": "Settings must provide clear entry points for account, commerce, security, and system controls.",
+      "evidence": [
+        "website/admin-dashboard.js:3611",
+        "website/admin-dashboard.js:3619"
+      ]
+    },
+    {
+      "id": "admin-profile-read-only",
+      "severity": "medium",
+      "description": "The admin Profile action exposed account information without edit, recovery, or activity controls.",
+      "status": "fixed",
+      "rationale": "Administrators need an authorized self-service workflow for profile maintenance and account recovery.",
+      "evidence": [
+        "website/admin-dashboard.js:773",
+        "supabase/functions/admin-users/index.ts:111",
+        "supabase/migrations/20260808140500_allow_service_role_profile_guards.sql:1"
+      ]
+    },
+    {
+      "id": "customer-account-device-local",
+      "severity": "high",
+      "description": "Customer profile, wishlist, notification preferences, and local order history are stored in the browser rather than a signed-in Supabase customer account.",
+      "status": "open",
+      "rationale": "Account data does not follow customers across devices and cannot yet support reliable self-service history or unified support operations.",
+      "evidence": [
+        "website/app.js:1699",
+        "website/app.js:2530",
+        "website/app.js:2550"
       ]
     }
   ],
